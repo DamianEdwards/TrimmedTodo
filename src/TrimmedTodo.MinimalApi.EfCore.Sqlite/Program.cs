@@ -1,46 +1,38 @@
-using Microsoft.AspNetCore.OpenApi;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+var connectionString = builder.Configuration.GetConnectionString("TodoDb") ?? "Data Source=todos.db";
+builder.Services.AddSqlite<TodoDb>(connectionString)
+                .AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication().AddJwtBearer();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+await EnsureDb(app.Services, app.Logger);
+
+if (!app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseExceptionHandler("/error");
+    app.MapGet("/error", () => Results.Problem("An error occurred.", statusCode: 500))
+        .ExcludeFromDescription();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+app.MapTodoApi();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+async Task EnsureDb(IServiceProvider services, ILogger logger)
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    logger.LogInformation("Ensuring database exists and is up to date at connection string '{connectionString}'", connectionString);
+
+    using var db = services.CreateScope().ServiceProvider.GetRequiredService<TodoDb>();
+    await db.Database.MigrateAsync();
 }
