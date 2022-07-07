@@ -87,9 +87,7 @@ public static class TodoApi
 
                 return TypedResults.NoContent();
             })
-            .WithName("MarkIncomplete")
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status204NoContent);
+            .WithName("MarkIncomplete");
 
         group.MapDelete("/todos/{id}", async Task<Results<NoContent, NotFound>> (int id, TodoDb db) =>
             {
