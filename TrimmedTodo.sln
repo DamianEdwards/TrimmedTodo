@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{42D7C3C4-1A33-430D-9694-E37AD0044933}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrimmedTodo.Console.EfCore.Sqlite", "src\TrimmedTodo.Console.EfCore.Sqlite\TrimmedTodo.Console.EfCore.Sqlite.csproj", "{257210C9-B9F1-488D-95A1-DE23E65401F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrimmedTodo.MinimalApi.EfCore.Sqlite", "src\TrimmedTodo.MinimalApi.EfCore.Sqlite\TrimmedTodo.MinimalApi.EfCore.Sqlite.csproj", "{1C36BAB2-8FE6-465C-9162-BBA800C4841C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{257210C9-B9F1-488D-95A1-DE23E65401F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{257210C9-B9F1-488D-95A1-DE23E65401F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{257210C9-B9F1-488D-95A1-DE23E65401F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{257210C9-B9F1-488D-95A1-DE23E65401F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C36BAB2-8FE6-465C-9162-BBA800C4841C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C36BAB2-8FE6-465C-9162-BBA800C4841C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C36BAB2-8FE6-465C-9162-BBA800C4841C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C36BAB2-8FE6-465C-9162-BBA800C4841C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{257210C9-B9F1-488D-95A1-DE23E65401F3} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
+		{1C36BAB2-8FE6-465C-9162-BBA800C4841C} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
+	EndGlobalSection
+EndGlobal
