@@ -6,7 +6,7 @@ An exploration of [.NET 7 trimming](https://docs.microsoft.com/dotnet/core/deplo
 
 ### Requirements
 
-This solution currently uses a daily .NET 7 SDK `main` build (see exact min-version required in the [`global.json`](global.json)). You can grab such a build from https://github.com/dotnet/installer
+This solution currently uses a daily .NET 7 SDK `main` build (see exact min-version required in the [`global.json`](global.json)). You can grab such a build from the [installer repo](https://github.com/dotnet/installer).
 
 ### Running
 
