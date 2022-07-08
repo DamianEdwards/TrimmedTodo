@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-var db = new TodoDb();
+using var db = new TodoDb();
 
 await EnsureDb(db);
 

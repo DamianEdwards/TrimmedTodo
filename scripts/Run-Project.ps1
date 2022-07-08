@@ -24,8 +24,8 @@ if (Test-Path -Path "$artifacts\$projectName") {
     Get-ChildItem -Path "$artifacts\$projectName" | Remove-Item -Recurse -Force;
 }
 dotnet clean -v q --nologo
-Get-ChildItem -Path "bin" -Recurse | Remove-Item -Recurse -Force;
-Get-ChildItem -Path "obj" -Recurse | Remove-Item -Recurse -Force;
+Get-ChildItem -Include bin -Recurse -Directory | Remove-Item -Recurse -Force;
+Get-ChildItem -Include obj -Recurse -Directory | Remove-Item -Recurse -Force;
 
 Write-Host "Publishing ${projectName}: dotnet publish -c Release -r $Rid --self-contained";
 dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true /p:PublishSingleFile=true

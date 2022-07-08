@@ -1,13 +1,20 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (!builder.Environment.IsDevelopment())
+{
+    builder.WebHost.ConfigureKestrel(o => o.ListenLocalhost(5079));
+}
 
 var connectionString = builder.Configuration.GetConnectionString("TodoDb") ?? "Data Source=todos.db";
 builder.Services.AddSqlite<TodoDb>(connectionString)
                 .AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+builder.Services.AddAuthorizationBuilder();
 
 var app = builder.Build();
 
@@ -23,7 +30,10 @@ if (!app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapTodoApi();
 

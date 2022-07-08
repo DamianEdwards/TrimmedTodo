@@ -12,26 +12,33 @@ public static class TodoApi
 
         group.WithTags("Todos");
 
-        group.MapGet("/todos", async (TodoDb db) =>
+        group.MapGet("/", async (TodoDb db) =>
             await db.Todos.ToListAsync())
             .WithName("GetAllTodos");
 
-        group.MapGet("/todos/complete", async (TodoDb db) =>
+        group.MapGet("/complete", async (TodoDb db) =>
             await db.Todos.Where(t => t.IsComplete).ToListAsync())
             .WithName("GetCompleteTodos");
 
-        group.MapGet("/todos/incomplete", async (TodoDb db) =>
+        group.MapGet("/incomplete", async (TodoDb db) =>
             await db.Todos.Where(t => !t.IsComplete).ToListAsync())
             .WithName("GetIncompleteTodos");
 
-        group.MapGet("/todos/{id}", async Task<Results<Ok<Todo>, NotFound>> (int id, TodoDb db) =>
+        group.MapGet("/{id:int}", async Task<Results<Ok<Todo>, NotFound>> (int id, TodoDb db) =>
             await db.Todos.FindAsync(id)
                 is Todo todo
                     ? TypedResults.Ok(todo)
                     : TypedResults.NotFound())
             .WithName("GetTodoById");
 
-        group.MapPost("/todos", async Task<Results<Created<Todo>, ValidationProblem>> (Todo todo, TodoDb db) =>
+        group.MapGet("/find", async Task<Results<Ok<Todo>, NotFound>> (string title, bool? isComplete, TodoDb db) =>
+            await db.Todos.SingleOrDefaultAsync(t => t.Title == title && t.IsComplete == (isComplete ?? false))
+                is Todo todo
+                    ? TypedResults.Ok(todo)
+                    : TypedResults.NotFound())
+            .WithName("FindTodo");
+
+        group.MapPost("/", async Task<Results<Created<Todo>, ValidationProblem>> (Todo todo, TodoDb db) =>
             {
                 //if (!MiniValidator.TryValidate(todo, out var errors))
                 //    return TypedResults.ValidationProblem(errors);
@@ -43,7 +50,7 @@ public static class TodoApi
             })
             .WithName("CreateTodo");
 
-        group.MapPut("/todos/{id}", async Task<Results<NoContent, NotFound, ValidationProblem>> (int id, Todo inputTodo, TodoDb db) =>
+        group.MapPut("/{id}", async Task<Results<NoContent, NotFound, ValidationProblem>> (int id, Todo inputTodo, TodoDb db) =>
             {
                 //if (!MiniValidator.TryValidate(inputTodo, out var errors))
                 //    return TypedResults.ValidationProblem(errors);
@@ -61,7 +68,7 @@ public static class TodoApi
             })
             .WithName("UpdateTodo");
 
-        group.MapPut("/todos/{id}/mark-complete", async Task<Results<NoContent, NotFound>> (int id, TodoDb db) =>
+        group.MapPut("/{id}/mark-complete", async Task<Results<NoContent, NotFound>> (int id, TodoDb db) =>
             {
                 var todo = await db.Todos.FindAsync(id);
 
@@ -75,7 +82,7 @@ public static class TodoApi
             })
             .WithName("MarkComplete");
 
-        group.MapPut("/todos/{id}/mark-incomplete", async Task<Results<NoContent, NotFound>> (int id, TodoDb db) =>
+        group.MapPut("/{id}/mark-incomplete", async Task<Results<NoContent, NotFound>> (int id, TodoDb db) =>
             {
                 var todo = await db.Todos.FindAsync(id);
 
@@ -89,7 +96,7 @@ public static class TodoApi
             })
             .WithName("MarkIncomplete");
 
-        group.MapDelete("/todos/{id}", async Task<Results<NoContent, NotFound>> (int id, TodoDb db) =>
+        group.MapDelete("/{id}", async Task<Results<NoContent, NotFound>> (int id, TodoDb db) =>
             {
                 var todo = await db.Todos.FindAsync(id);
 
@@ -103,7 +110,7 @@ public static class TodoApi
             })
             .WithName("DeleteTodo");
 
-        group.MapDelete("/todos/delete-all", async (TodoDb db) => TypedResults.Ok(await db.Database.ExecuteSqlRawAsync("DELETE FROM Todos")))
+        group.MapDelete("/delete-all", async (TodoDb db) => TypedResults.Ok(await db.Database.ExecuteSqlRawAsync("DELETE FROM Todos")))
             .WithName("DeleteAll")
             .RequireAuthorization(policy => policy.RequireRole("admin"));
 
