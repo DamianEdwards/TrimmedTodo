@@ -1,9 +1,10 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using TrimmedTodo.WebApi.EfCore.Sqlite.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,8 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
 var connectionString = builder.Configuration.GetConnectionString("TodoDb") ?? "Data Source=todos.db";
 builder.Services.AddSqlite<TodoDb>(connectionString)
                 .AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -46,22 +49,12 @@ var app = builder.Build();
 
 await EnsureDb(connectionString, app.Services, app.Logger);
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/error");
-    app.MapGet("/error", () => Results.Problem("An error occurred.", statusCode: 500))
-        .ExcludeFromDescription();
-}
-
-//app.UseHttpsRedirection();
-
-//app.UseAuthentication();
-//app.UseAuthorization();
-
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.MapTodoApi();
+//app.UseHttpsRedirection();
+
+app.MapControllers();
 
 app.Run();
 
@@ -73,7 +66,7 @@ static bool ValidateJwtOptions(JwtBearerOptions options, IHostEnvironment hostEn
         ClaimsIssuer = options.ClaimsIssuer,
         Audiences = options.TokenValidationParameters?.ValidAudiences,
         Issuers = options.TokenValidationParameters?.ValidIssuers,
-        IssuerSigningKey = options.TokenValidationParameters?.IssuerSigningKey.ToString()
+        IssuerSigningKey = options.TokenValidationParameters?.IssuerSigningKey?.ToString()
     };
     if ((string.IsNullOrEmpty(relevantOptions.Audience) && relevantOptions.Audiences?.Any() != true)
         || (relevantOptions.ClaimsIssuer is null && relevantOptions.Issuers?.Any() != true)
