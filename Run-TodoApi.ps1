@@ -1,3 +1,5 @@
+$ErrorActionPreference = 'Stop';
+
 $projectName = "TrimmedTodo.MinimalApi.EfCore.Sqlite";
 
 # Set env var for JWT signing key

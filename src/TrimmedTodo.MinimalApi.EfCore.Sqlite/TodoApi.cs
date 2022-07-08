@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using MiniValidation;
 
 namespace Microsoft.AspNetCore.Routing;
 
@@ -40,8 +43,8 @@ public static class TodoApi
 
         group.MapPost("/", async Task<Results<Created<Todo>, ValidationProblem>> (Todo todo, TodoDb db) =>
             {
-                //if (!MiniValidator.TryValidate(todo, out var errors))
-                //    return TypedResults.ValidationProblem(errors);
+                if (!MiniValidator.TryValidate(todo, out var errors))
+                    return TypedResults.ValidationProblem(errors);
 
                 db.Todos.Add(todo);
                 await db.SaveChangesAsync();
@@ -52,8 +55,8 @@ public static class TodoApi
 
         group.MapPut("/{id}", async Task<Results<NoContent, NotFound, ValidationProblem>> (int id, Todo inputTodo, TodoDb db) =>
             {
-                //if (!MiniValidator.TryValidate(inputTodo, out var errors))
-                //    return TypedResults.ValidationProblem(errors);
+                if (!MiniValidator.TryValidate(inputTodo, out var errors))
+                    return TypedResults.ValidationProblem(errors);
 
                 var todo = await db.Todos.FindAsync(id);
 
@@ -118,6 +121,11 @@ public static class TodoApi
     }
 }
 
+public interface IValueResult<TValue>
+{
+    TValue Value { get; }
+}
+
 class Todo
 {
     public int Id { get; set; }
@@ -129,7 +137,11 @@ class Todo
 class TodoDb : DbContext
 {
     public TodoDb(DbContextOptions<TodoDb> options)
-        : base(options) { }
+        : base(options)
+    {
+        Todos = Set<Todo>();
+    }
 
-    public DbSet<Todo> Todos => Set<Todo>();
+    public DbSet<Todo> Todos { get; }
 }
+

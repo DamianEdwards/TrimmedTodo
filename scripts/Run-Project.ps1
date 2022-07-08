@@ -13,7 +13,7 @@ Get-Command dotnet -ErrorAction Stop | Out-Null;
 
 #TODO: Parse current platform RID from `dotnet --info` and default $Rid to that
 
-$ErrorActionPreference = 'Stop';
+#$ErrorActionPreference = 'Stop';
 
 $projectDir = ".\src\$projectName";
 $projectPath = "$projectDir\$projectName.csproj";
@@ -28,11 +28,18 @@ Get-ChildItem -Include bin -Recurse -Directory | Remove-Item -Recurse -Force;
 Get-ChildItem -Include obj -Recurse -Directory | Remove-Item -Recurse -Force;
 
 Write-Host "Publishing ${projectName}: dotnet publish -c Release -r $Rid --self-contained";
-dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true /p:PublishSingleFile=true
+dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName"
+#dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true /p:PublishSingleFile=true
 #dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true
 #dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true
-#dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishAot=true
+#dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishAot=true /p:PublishSingleFile=false
 Write-Host;
+
+if ($LASTEXITCODE -ne 0 -or (Test-Path -Path "$artifacts\$projectName\$projectName.exe") -ne $true)
+{
+    Write-Error "Publish failed, see error above";
+    return;
+}
 
 $appExe = Get-ChildItem -Path "$artifacts\$projectName\$projectName.exe";
 $appSize = ($appExe.Length / (1024 * 1024)).ToString("#.##");

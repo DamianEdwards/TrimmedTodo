@@ -76,7 +76,7 @@ static async Task AddTodo(HttpClient http, string title)
 
 static async Task MarkComplete(HttpClient http, string title)
 {
-     var todo = await http.GetFromJsonAsync($"find?title={Uri.EscapeDataString(title)}", typeof(Todo), SourceGenerationContext.Web) as Todo;
+     var todo = await http.GetFromJsonAsync($"find?title={Uri.EscapeDataString(title)}", SourceGenerationContext.Web.Todo);
 
     if (todo is null)
     {

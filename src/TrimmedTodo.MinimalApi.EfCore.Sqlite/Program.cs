@@ -81,7 +81,7 @@ static bool ValidateJwtOptions(JwtBearerOptions options, IHostEnvironment hostEn
         return false;
     }
     var logger = loggerFactory.CreateLogger(hostEnvironment.ApplicationName ?? nameof(Program));
-    logger.LogInformation("JwtBearerAuthentication options configuration: {JwtOptions}", JsonSerializer.Serialize(relevantOptions, SourceGenerationContext.Default.JwtOptionsSummary));
+    logger.LogInformation("JwtBearerAuthentication options configuration: {JwtOptions}", JsonSerializer.Serialize(relevantOptions, ProgramJsonSerializerContext.Default.JwtOptionsSummary));
     return true;
 }
 
@@ -103,6 +103,6 @@ internal class JwtOptionsSummary
 }
 
 [JsonSerializable(typeof(JwtOptionsSummary))]
-internal partial class SourceGenerationContext : JsonSerializerContext
+internal partial class ProgramJsonSerializerContext : JsonSerializerContext
 {
 }

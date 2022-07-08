@@ -5,9 +5,8 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PublishTrimmed>true</PublishTrimmed>
-    <PublishSingleFile>true</PublishSingleFile>
     <LangVersion>preview</LangVersion>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>
