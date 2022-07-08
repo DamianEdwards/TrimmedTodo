@@ -1,7 +1,7 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,20 +11,27 @@ if (!builder.Environment.IsDevelopment())
     builder.WebHost.ConfigureKestrel(o => o.ListenLocalhost(5079));
 }
 
-builder.Authentication.AddJwtBearer(o =>
-{
-    if (!builder.Environment.IsDevelopment())
+builder.Authentication
+    .AddJwtBearer(o =>
     {
-        var jwtKeyMaterialSecret = builder.Configuration.GetValue<string>("JWT_SIGNING_KEY");
+        if (!builder.Environment.IsDevelopment())
+        {
+            var jwtKeyMaterialSecret = builder.Configuration.GetValue<string>("JWT_SIGNING_KEY");
 
-        if (string.IsNullOrEmpty(jwtKeyMaterialSecret))
-            throw new InvalidOperationException("JWT signing key not found!");
+            if (string.IsNullOrEmpty(jwtKeyMaterialSecret))
+                throw new InvalidOperationException("JWT signing key not found!");
 
-        var jwtKeyMaterial = Convert.FromBase64String(jwtKeyMaterialSecret);
-        var jwtSigningKey = new SymmetricSecurityKey(jwtKeyMaterial);
-        o.TokenValidationParameters.IssuerSigningKey = jwtSigningKey;
-    }
-});
+            var jwtKeyMaterial = Convert.FromBase64String(jwtKeyMaterialSecret);
+            var jwtSigningKey = new SymmetricSecurityKey(jwtKeyMaterial);
+            o.TokenValidationParameters.IssuerSigningKey = jwtSigningKey;
+        }
+    });
+
+builder.Services.Configure<AuthenticationOptions>(o => o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme);
+
+builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Validate<IHostEnvironment, ILoggerFactory>(ValidateJwtOptions,
+        "JWT options are not configured. Run 'dotnet user-jwts create' in project directory to configure JWT.");
 
 var connectionString = builder.Configuration.GetConnectionString("TodoDb") ?? "Data Source=todos.db";
 builder.Services.AddSqlite<TodoDb>(connectionString)
@@ -34,8 +41,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-await EnsureDb(app.Services, app.Logger);
-EnsureJwt(app.Services, app.Logger);
+await EnsureDb(connectionString, app.Services, app.Logger);
 
 if (!app.Environment.IsDevelopment())
 {
@@ -46,6 +52,9 @@ if (!app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
+//app.UseAuthentication();
+//app.UseAuthorization();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -53,17 +62,8 @@ app.MapTodoApi();
 
 app.Run();
 
-async Task EnsureDb(IServiceProvider services, ILogger logger)
+static bool ValidateJwtOptions(JwtBearerOptions options, IHostEnvironment hostEnvironment, ILoggerFactory loggerFactory)
 {
-    logger.LogInformation("Ensuring database exists and is up to date at connection string '{connectionString}'", connectionString);
-
-    using var db = services.CreateScope().ServiceProvider.GetRequiredService<TodoDb>();
-    await db.Database.MigrateAsync();
-}
-
-void EnsureJwt(IServiceProvider services, ILogger logger)
-{
-    var options = services.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>().Get(JwtBearerDefaults.AuthenticationScheme);
     var relevantOptions = new
     {
         Audience = options.Audience,
@@ -76,7 +76,17 @@ void EnsureJwt(IServiceProvider services, ILogger logger)
         || (relevantOptions.ClaimsIssuer is null && relevantOptions.Issuers is null)
         || relevantOptions.IssuerSigningKey is null)
     {
-        throw new InvalidOperationException("JWT options are not configured. Run 'dotnet user-jwts create' in project directory to configure JWT.");
+        return false;
     }
+    var logger = loggerFactory.CreateLogger(hostEnvironment.ApplicationName ?? nameof(Program));
     logger.LogInformation("JwtBearerAuthentication options configuration: {JwtOptions}", JsonSerializer.Serialize(relevantOptions));
+    return true;
+}
+
+static async Task EnsureDb(string cs, IServiceProvider services, ILogger logger)
+{
+    logger.LogInformation("Ensuring database exists and is up to date at connection string '{connectionString}'", cs);
+
+    using var db = services.CreateScope().ServiceProvider.GetRequiredService<TodoDb>();
+    await db.Database.MigrateAsync();
 }
