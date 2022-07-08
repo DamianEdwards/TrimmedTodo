@@ -10,6 +10,7 @@
 *.userosscache
 *.sln.docstates
 todos.db
+.authtoken
 .artifacts
 
 # User-specific files (MonoDevelop/Xamarin Studio)

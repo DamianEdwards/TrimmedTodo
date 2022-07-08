@@ -7,6 +7,11 @@
     <Nullable>enable</Nullable>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishSingleFile>true</PublishSingleFile>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Update=".authtoken" CopyToOutputDirectory="Always" />
+  </ItemGroup>
 
 </Project>

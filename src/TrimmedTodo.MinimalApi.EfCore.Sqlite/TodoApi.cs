@@ -112,7 +112,7 @@ public static class TodoApi
 
         group.MapDelete("/delete-all", async (TodoDb db) => TypedResults.Ok(await db.Database.ExecuteSqlRawAsync("DELETE FROM Todos")))
             .WithName("DeleteAll")
-            .RequireAuthorization(policy => policy.RequireRole("admin"));
+            .RequireAuthorization(policy => policy.RequireAuthenticatedUser().RequireRole("admin"));
 
         return group;
     }

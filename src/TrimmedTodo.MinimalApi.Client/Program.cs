@@ -1,9 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 using var http = new HttpClient();
 http.BaseAddress = new Uri("http://localhost:5079/api/todos/");
+http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 await ListCurrentTodos(http);
 
@@ -106,7 +109,30 @@ static async Task MarkComplete(HttpClient http, string title)
 
 static async Task<int> DeleteAllTodos(HttpClient http)
 {
-    return await http.DeleteFromJsonAsync<int>("delete-all");
+    var token = GetAuthToken();
+    
+    var request = new HttpRequestMessage(HttpMethod.Delete, "delete-all");
+    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    
+    var response = await http.SendAsync(request);
+    response.EnsureSuccessStatusCode();
+
+    return await response.Content.ReadFromJsonAsync<int>();
+}
+
+static string GetAuthToken()
+{
+    var tokenFileName = ".authtoken";
+    var tokenFilePath = Path.Combine(AppContext.BaseDirectory, tokenFileName);
+    if (!File.Exists(tokenFilePath))
+    {
+        throw new InvalidOperationException(
+            $"File '{tokenFileName}' not found. Run 'dotnet user-jwts create --role admin' " +
+            $"in the API project directory to create an auth token and save it in a file named '{tokenFileName}' " +
+            $"in the {Process.GetCurrentProcess().ProcessName} project directory.");
+    }
+    var token = File.ReadAllText(tokenFilePath);
+    return token;
 }
 
 public class Todo

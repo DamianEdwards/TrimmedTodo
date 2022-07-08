@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishSingleFile>true</PublishSingleFile>
+    <UserSecretsId>7deba5fe-f06c-4a7d-9816-cdeccfc4e4a8</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
