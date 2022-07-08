@@ -22,24 +22,9 @@ await MarkComplete(http, "Wash the car");
 
 await ListCurrentTodos(http);
 
-// TODO: Requires an auth token so expect this to fail for now
-try
-{
-    var deletedCount = await DeleteAllTodos(http);
-    Console.WriteLine($"Deleted all {deletedCount} todos!");
-    Console.WriteLine();
-}
-catch (HttpRequestException ex)
-{
-    if (ex.StatusCode == HttpStatusCode.Unauthorized)
-    {
-        Console.WriteLine("Request to delete todos failed as unauthorized as expected");
-    }
-    else
-    {
-        Console.WriteLine($"Unexpected response when deleting todos: {ex.StatusCode}");
-    }
-}
+var deletedCount = await DeleteAllTodos(http);
+Console.WriteLine($"Deleted all {deletedCount} todos!");
+Console.WriteLine();
 
 static async Task ListCurrentTodos(HttpClient http)
 {
@@ -75,7 +60,7 @@ static async Task ListCurrentTodos(HttpClient http)
 
 static async Task AddTodo(HttpClient http, string title)
 {
-    var todo = new Todo() { Title = title };
+    var todo = new Todo { Title = title };
     var response = await http.PostAsJsonAsync("", todo);
     var createdTodo = await response.Content.ReadFromJsonAsync<Todo>();
 

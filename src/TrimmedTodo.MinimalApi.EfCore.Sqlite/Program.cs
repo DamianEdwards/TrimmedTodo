@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +17,13 @@ builder.Authentication
     {
         if (!builder.Environment.IsDevelopment())
         {
-            var jwtKeyMaterialSecret = builder.Configuration.GetValue<string>("JWT_SIGNING_KEY");
+            // When not running in development configure the JWT signing key from environment variable
+            var jwtKeyMaterialValue = builder.Configuration["JWT_SIGNING_KEY"];
 
-            if (string.IsNullOrEmpty(jwtKeyMaterialSecret))
+            if (string.IsNullOrEmpty(jwtKeyMaterialValue))
                 throw new InvalidOperationException("JWT signing key not found!");
 
-            var jwtKeyMaterial = Convert.FromBase64String(jwtKeyMaterialSecret);
+            var jwtKeyMaterial = Convert.FromBase64String(jwtKeyMaterialValue);
             var jwtSigningKey = new SymmetricSecurityKey(jwtKeyMaterial);
             o.TokenValidationParameters.IssuerSigningKey = jwtSigningKey;
         }
@@ -64,22 +66,22 @@ app.Run();
 
 static bool ValidateJwtOptions(JwtBearerOptions options, IHostEnvironment hostEnvironment, ILoggerFactory loggerFactory)
 {
-    var relevantOptions = new
+    var relevantOptions = new JwtOptionsSummary
     {
         Audience = options.Audience,
         ClaimsIssuer = options.ClaimsIssuer,
-        Audiences = options.TokenValidationParameters.ValidAudiences,
-        Issuers = options.TokenValidationParameters.ValidIssuers,
-        IssuerSigningKey = options.TokenValidationParameters.IssuerSigningKey.ToString()
+        Audiences = options.TokenValidationParameters?.ValidAudiences,
+        Issuers = options.TokenValidationParameters?.ValidIssuers,
+        IssuerSigningKey = options.TokenValidationParameters?.IssuerSigningKey.ToString()
     };
-    if ((relevantOptions.Audience is null && relevantOptions.Audiences is null)
-        || (relevantOptions.ClaimsIssuer is null && relevantOptions.Issuers is null)
-        || relevantOptions.IssuerSigningKey is null)
+    if ((string.IsNullOrEmpty(relevantOptions.Audience) && relevantOptions.Audiences?.Any() != true)
+        || (relevantOptions.ClaimsIssuer is null && relevantOptions.Issuers?.Any() != true)
+        || string.IsNullOrEmpty(relevantOptions.IssuerSigningKey))
     {
         return false;
     }
     var logger = loggerFactory.CreateLogger(hostEnvironment.ApplicationName ?? nameof(Program));
-    logger.LogInformation("JwtBearerAuthentication options configuration: {JwtOptions}", JsonSerializer.Serialize(relevantOptions));
+    logger.LogInformation("JwtBearerAuthentication options configuration: {JwtOptions}", JsonSerializer.Serialize(relevantOptions, SourceGenerationContext.Default.JwtOptionsSummary));
     return true;
 }
 
@@ -89,4 +91,18 @@ static async Task EnsureDb(string cs, IServiceProvider services, ILogger logger)
 
     using var db = services.CreateScope().ServiceProvider.GetRequiredService<TodoDb>();
     await db.Database.MigrateAsync();
+}
+
+internal class JwtOptionsSummary
+{
+    public string? Audience { get; set; }
+    public string? ClaimsIssuer { get; set; }
+    public IEnumerable<string>? Audiences { get; set; }
+    public IEnumerable<string>? Issuers { get; set; }
+    public string? IssuerSigningKey { get; set; }
+}
+
+[JsonSerializable(typeof(JwtOptionsSummary))]
+internal partial class SourceGenerationContext : JsonSerializerContext
+{
 }
