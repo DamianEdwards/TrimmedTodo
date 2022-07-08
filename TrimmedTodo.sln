@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.Console.EfCore.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.MinimalApi.EfCore.Sqlite", "src\TrimmedTodo.MinimalApi.EfCore.Sqlite\TrimmedTodo.MinimalApi.EfCore.Sqlite.csproj", "{1C36BAB2-8FE6-465C-9162-BBA800C4841C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrimmedTodo.MinimalApi.Client", "src\TrimmedTodo.MinimalApi.Client\TrimmedTodo.MinimalApi.Client.csproj", "{342F9F14-20AF-4AA1-B063-69FD96BDFFEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.Api.Client", "src\TrimmedTodo.Api.Client\TrimmedTodo.Api.Client.csproj", "{E765F695-4098-4F6E-ABD9-478FB0FEEFC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +25,10 @@ Global
 		{1C36BAB2-8FE6-465C-9162-BBA800C4841C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C36BAB2-8FE6-465C-9162-BBA800C4841C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C36BAB2-8FE6-465C-9162-BBA800C4841C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{342F9F14-20AF-4AA1-B063-69FD96BDFFEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{342F9F14-20AF-4AA1-B063-69FD96BDFFEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{342F9F14-20AF-4AA1-B063-69FD96BDFFEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{342F9F14-20AF-4AA1-B063-69FD96BDFFEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E765F695-4098-4F6E-ABD9-478FB0FEEFC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E765F695-4098-4F6E-ABD9-478FB0FEEFC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E765F695-4098-4F6E-ABD9-478FB0FEEFC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E765F695-4098-4F6E-ABD9-478FB0FEEFC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,7 +36,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{257210C9-B9F1-488D-95A1-DE23E65401F3} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 		{1C36BAB2-8FE6-465C-9162-BBA800C4841C} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
-		{342F9F14-20AF-4AA1-B063-69FD96BDFFEA} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
+		{E765F695-4098-4F6E-ABD9-478FB0FEEFC5} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCCB8893-DE28-4FD3-BE73-91FE054A9D2A}
