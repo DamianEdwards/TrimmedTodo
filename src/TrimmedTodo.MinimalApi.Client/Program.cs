@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using var http = new HttpClient();
 http.BaseAddress = new Uri("http://localhost:5079/api/todos/");
@@ -28,7 +30,7 @@ Console.WriteLine();
 
 static async Task ListCurrentTodos(HttpClient http)
 {
-    var todos = await http.GetFromJsonAsync<List<Todo>>("");
+    var todos = await http.GetFromJsonAsync("", SourceGenerationContext.Web.ListTodo);
 
     if (todos is not { Count: >0 })
     {
@@ -61,8 +63,8 @@ static async Task ListCurrentTodos(HttpClient http)
 static async Task AddTodo(HttpClient http, string title)
 {
     var todo = new Todo { Title = title };
-    var response = await http.PostAsJsonAsync("", todo);
-    var createdTodo = await response.Content.ReadFromJsonAsync<Todo>();
+    var response = await http.PostAsJsonAsync("", todo, SourceGenerationContext.Web.Todo);
+    var createdTodo = await response.Content.ReadFromJsonAsync(SourceGenerationContext.Web.Todo);
 
     if (response is not { StatusCode: HttpStatusCode.Created } || createdTodo is null)
     {
@@ -74,7 +76,7 @@ static async Task AddTodo(HttpClient http, string title)
 
 static async Task MarkComplete(HttpClient http, string title)
 {
-    var todo = await http.GetFromJsonAsync<Todo>($"find?title={Uri.EscapeDataString(title)}");
+     var todo = await http.GetFromJsonAsync($"find?title={Uri.EscapeDataString(title)}", typeof(Todo), SourceGenerationContext.Web) as Todo;
 
     if (todo is null)
     {
@@ -102,7 +104,7 @@ static async Task<int> DeleteAllTodos(HttpClient http)
     var response = await http.SendAsync(request);
     response.EnsureSuccessStatusCode();
 
-    return await response.Content.ReadFromJsonAsync<int>();
+    return await response.Content.ReadFromJsonAsync(SourceGenerationContext.Web.Int32);
 }
 
 static string GetAuthToken()
@@ -126,4 +128,12 @@ public class Todo
     [Required]
     public string? Title { get; set; }
     public bool IsCompleted { get; set; }
+}
+
+[JsonSerializable(typeof(Todo))]
+[JsonSerializable(typeof(List<Todo>))]
+[JsonSerializable(typeof(int))]
+internal partial class SourceGenerationContext : JsonSerializerContext
+{
+    public static SourceGenerationContext Web { get; } = new(new JsonSerializerOptions(JsonSerializerDefaults.Web));
 }
