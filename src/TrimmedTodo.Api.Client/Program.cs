@@ -30,7 +30,7 @@ Console.WriteLine();
 
 static async Task ListCurrentTodos(HttpClient http)
 {
-    var todos = await http.GetFromJsonAsync("", SourceGenerationContext.Web.ListTodo);
+    var todos = await http.GetFromJsonAsync("incomplete", SourceGenerationContext.Web.ListTodo);
 
     if (todos is not { Count: >0 })
     {

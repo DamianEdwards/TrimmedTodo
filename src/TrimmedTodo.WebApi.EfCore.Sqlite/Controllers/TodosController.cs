@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrimmedTodo.WebApi.EfCore.Sqlite.Data;
@@ -21,6 +23,16 @@ public class TodosController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Todo>>> GetAllTodos() =>
         await _db.Todos.ToListAsync();
+
+    // GET: api/<TodoController>/complete
+    [HttpGet("complete")]
+    public async Task<ActionResult<IEnumerable<Todo>>> GetCompleteTodos() =>
+        await _db.Todos.Where(t => t.IsComplete).ToListAsync();
+
+    // GET: api/<TodoController>/incomplete
+    [HttpGet("incomplete")]
+    public async Task<ActionResult<IEnumerable<Todo>>> GetIncompleteTodos() =>
+        await _db.Todos.Where(t => !t.IsComplete).ToListAsync();
 
     // GET api/<TodoController>/5
     [HttpGet("{id}")]
