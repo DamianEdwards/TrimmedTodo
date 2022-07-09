@@ -9,8 +9,12 @@
     <PublishAot>true</PublishAot>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(PublishAot)' == 'true'">
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <DebuggerSupport>false</DebuggerSupport>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Update=".authtoken" CopyToOutputDirectory="Always" />
   </ItemGroup>
-
 </Project>
