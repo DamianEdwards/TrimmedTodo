@@ -1,6 +1,5 @@
-using System.Text.Json.Serialization;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authentication;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +12,7 @@ if (!builder.Environment.IsDevelopment())
     builder.WebHost.ConfigureKestrel(o => o.ListenLocalhost(5079));
 }
 
-builder.Authentication
+builder.Services.AddAuthentication()
     .AddJwtBearer(o =>
     {
         if (!builder.Environment.IsDevelopment())
@@ -30,7 +29,7 @@ builder.Authentication
         }
     });
 
-builder.Services.Configure<AuthenticationOptions>(o => o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme);
+builder.Services.AddAuthorization();
 
 builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
     .Validate<IHostEnvironment, ILoggerFactory>(ValidateJwtOptions,
@@ -75,7 +74,8 @@ static bool ValidateJwtOptions(JwtBearerOptions options, IHostEnvironment hostEn
         return false;
     }
     var logger = loggerFactory.CreateLogger(hostEnvironment.ApplicationName ?? nameof(Program));
-    logger.LogInformation("JwtBearerAuthentication options configuration: {JwtOptions}", JsonSerializer.Serialize(relevantOptions, ProgramJsonSerializerContext.Default.JwtOptionsSummary));
+    logger.LogInformation("JwtBearerAuthentication options configuration: {JwtOptions}",
+        JsonSerializer.Serialize(relevantOptions, ProgramJsonSerializerContext.Default.JwtOptionsSummary));
     return true;
 }
 

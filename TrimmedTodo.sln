@@ -11,7 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.MinimalApi.EfCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.Api.Client", "src\TrimmedTodo.Api.Client\TrimmedTodo.Api.Client.csproj", "{E765F695-4098-4F6E-ABD9-478FB0FEEFC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrimmedTodo.WebApi.EfCore.Sqlite", "src\TrimmedTodo.WebApi.EfCore.Sqlite\TrimmedTodo.WebApi.EfCore.Sqlite.csproj", "{C3F36F35-76AA-4490-91FD-03AC236B99AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.WebApi.EfCore.Sqlite", "src\TrimmedTodo.WebApi.EfCore.Sqlite\TrimmedTodo.WebApi.EfCore.Sqlite.csproj", "{C3F36F35-76AA-4490-91FD-03AC236B99AC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BB3579E6-DCBD-4CAB-9E19-1C93E51632F7}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+		nuget.config = nuget.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
