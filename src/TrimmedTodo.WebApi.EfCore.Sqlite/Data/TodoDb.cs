@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace TrimmedTodo.WebApi.EfCore.Sqlite.Data;
 

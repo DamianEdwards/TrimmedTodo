@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using MiniValidation;
@@ -144,4 +142,3 @@ class TodoDb : DbContext
 
     public DbSet<Todo> Todos { get; }
 }
-

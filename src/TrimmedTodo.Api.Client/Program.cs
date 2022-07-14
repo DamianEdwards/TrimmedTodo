@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
@@ -32,7 +32,7 @@ static async Task ListCurrentTodos(HttpClient http)
 {
     var todos = await http.GetFromJsonAsync("incomplete", SourceGenerationContext.Web.ListTodo);
 
-    if (todos is not { Count: >0 })
+    if (todos is not { Count: > 0 })
     {
         Console.WriteLine("There are currently no todos!");
         Console.WriteLine();
@@ -76,7 +76,7 @@ static async Task AddTodo(HttpClient http, string title)
 
 static async Task MarkComplete(HttpClient http, string title)
 {
-     var todo = await http.GetFromJsonAsync($"find?title={Uri.EscapeDataString(title)}", SourceGenerationContext.Web.Todo);
+    var todo = await http.GetFromJsonAsync($"find?title={Uri.EscapeDataString(title)}", SourceGenerationContext.Web.Todo);
 
     if (todo is null)
     {
@@ -97,10 +97,10 @@ static async Task MarkComplete(HttpClient http, string title)
 static async Task<int> DeleteAllTodos(HttpClient http)
 {
     var token = GetAuthToken();
-    
+
     var request = new HttpRequestMessage(HttpMethod.Delete, "delete-all");
     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-    
+
     var response = await http.SendAsync(request);
     response.EnsureSuccessStatusCode();
 
