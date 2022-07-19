@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TrimmedTodo.ApiClient\TrimmedTodo.ApiClient.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update=".authtoken" CopyToOutputDirectory="Always" />
   </ItemGroup>
 </Project>

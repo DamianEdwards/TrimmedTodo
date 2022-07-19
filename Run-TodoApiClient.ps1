@@ -1,5 +1,5 @@
-#$ErrorActionPreference = 'Stop';
+$ErrorActionPreference = 'Stop';
 
-$projectName = "TrimmedTodo.Api.Client";
+$projectName = "TrimmedTodo.Console.ApiClient";
 
 .\scripts\Run-Project.ps1 -ProjectName $projectName

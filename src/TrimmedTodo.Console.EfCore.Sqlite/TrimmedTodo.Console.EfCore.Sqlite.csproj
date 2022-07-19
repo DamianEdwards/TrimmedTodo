@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,6 +7,8 @@
     <Nullable>enable</Nullable>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishSingleFile>true</PublishSingleFile>
+    <!-- This is required as new trimming defaults break EF Core -->
+    <TrimMode>partial</TrimMode>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,5 +18,4 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0-preview.rc1.*" />
   </ItemGroup>
-
 </Project>

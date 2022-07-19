@@ -56,7 +56,7 @@ static async Task ListCurrentTodos(TodoDb db)
 
 static async Task AddTodo(TodoDb db, string title)
 {
-    var todo = new Todo() { Title = title };
+    var todo = new Todo { Title = title };
     db.Todos.Add(todo);
     await db.SaveChangesAsync();
     Console.WriteLine($"Added todo {todo.Id}");
