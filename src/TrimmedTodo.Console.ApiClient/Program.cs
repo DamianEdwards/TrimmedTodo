@@ -18,7 +18,6 @@ var todoApiClient = new TodoApiClient(baseAddress)
     AuthToken = token
 };
 
-
 await ListCurrentTodos(todoApiClient);
 
 await AddTodo(todoApiClient, "Do the groceries");

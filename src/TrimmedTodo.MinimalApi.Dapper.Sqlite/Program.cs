@@ -1,9 +1,10 @@
+using System.Data;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Dapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using Microsoft.IdentityModel.Tokens;
-using TrimmedTodo.WebApi.EfCore.Sqlite.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,25 +38,45 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
     .ValidateOnStart();
 
 var connectionString = builder.Configuration.GetConnectionString("TodoDb") ?? "Data Source=todos.db;Cache=Shared";
-builder.Services.AddSqlite<TodoDb>(connectionString)
-                .AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddScoped<IDbConnection>(_ => new SqliteConnection(connectionString));
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-await EnsureDb(connectionString, app.Services, app.Logger);
+await EnsureDb(app.Services, app.Logger);
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/error");
+    app.MapGet("/error", () => Results.Problem("An error occurred.", statusCode: 500))
+        .ExcludeFromDescription();
+}
+
+//app.UseHttpsRedirection();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
-//app.UseHttpsRedirection();
-
-app.MapControllers();
+app.MapTodoApi();
 
 app.Run();
+
+async Task EnsureDb(IServiceProvider services, ILogger logger)
+{
+    logger.LogInformation("Ensuring database exists at connection string '{connectionString}'", connectionString);
+
+    using var db = services.CreateScope().ServiceProvider.GetRequiredService<IDbConnection>();
+    var sql = $"""
+                  CREATE TABLE IF NOT EXISTS Todos (
+                  {nameof(Todo.Id)} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                  {nameof(Todo.Title)} TEXT NOT NULL,
+                  {nameof(Todo.IsComplete)} INTEGER DEFAULT 0 NOT NULL CHECK({nameof(Todo.IsComplete)} IN (0, 1))
+                  );
+               """;
+    await db.ExecuteAsync(sql);
+}
 
 static bool ValidateJwtOptions(JwtBearerOptions options, IHostEnvironment hostEnvironment, ILoggerFactory loggerFactory)
 {
@@ -65,7 +86,7 @@ static bool ValidateJwtOptions(JwtBearerOptions options, IHostEnvironment hostEn
         ClaimsIssuer = options.ClaimsIssuer,
         Audiences = options.TokenValidationParameters?.ValidAudiences,
         Issuers = options.TokenValidationParameters?.ValidIssuers,
-        IssuerSigningKey = options.TokenValidationParameters?.IssuerSigningKey?.ToString()
+        IssuerSigningKey = options.TokenValidationParameters?.IssuerSigningKey.ToString()
     };
     if ((string.IsNullOrEmpty(relevantOptions.Audience) && relevantOptions.Audiences?.Any() != true)
         || (relevantOptions.ClaimsIssuer is null && relevantOptions.Issuers?.Any() != true)
@@ -77,14 +98,6 @@ static bool ValidateJwtOptions(JwtBearerOptions options, IHostEnvironment hostEn
     logger.LogInformation("JwtBearerAuthentication options configuration: {JwtOptions}",
         JsonSerializer.Serialize(relevantOptions, ProgramJsonSerializerContext.Default.JwtOptionsSummary));
     return true;
-}
-
-static async Task EnsureDb(string cs, IServiceProvider services, ILogger logger)
-{
-    logger.LogInformation("Ensuring database exists and is up to date at connection string '{connectionString}'", cs);
-
-    using var db = services.CreateScope().ServiceProvider.GetRequiredService<TodoDb>();
-    await db.Database.MigrateAsync();
 }
 
 internal class JwtOptionsSummary

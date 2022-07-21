@@ -46,7 +46,7 @@ public class TodosController : ControllerBase
         await _db.Todos.SingleOrDefaultAsync(t => t.Title == title && t.IsComplete == (isComplete ?? false))
             is Todo todo
                 ? todo
-                : NotFound();
+                : NoContent();
 
     // POST api/<TodoController>
     [HttpPost]

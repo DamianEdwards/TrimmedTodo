@@ -35,7 +35,7 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
         "JWT options are not configured. Run 'dotnet user-jwts create' in project directory to configure JWT.")
     .ValidateOnStart();
 
-var connectionString = builder.Configuration.GetConnectionString("TodoDb") ?? "Data Source=todos.db";
+var connectionString = builder.Configuration.GetConnectionString("TodoDb") ?? "Data Source=todos.db;Cache=Shared";
 builder.Services.AddSqlite<TodoDb>(connectionString)
                 .AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddEndpointsApiExplorer();

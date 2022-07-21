@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Console", "src\H
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Web", "src\HelloWorld.Web\HelloWorld.Web.csproj", "{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrimmedTodo.MinimalApi.Dapper.Sqlite", "src\TrimmedTodo.MinimalApi.Dapper.Sqlite\TrimmedTodo.MinimalApi.Dapper.Sqlite.csproj", "{7DA5CA1C-14FD-48AA-AB69-387786707535}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,10 @@ Global
 		{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA5CA1C-14FD-48AA-AB69-387786707535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA5CA1C-14FD-48AA-AB69-387786707535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA5CA1C-14FD-48AA-AB69-387786707535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA5CA1C-14FD-48AA-AB69-387786707535}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +85,7 @@ Global
 		{2B6AA1B0-BD6B-415F-9F82-0C28C9A89465} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 		{B59EAF71-EC94-4466-9F78-51DC3C63D757} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 		{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
+		{7DA5CA1C-14FD-48AA-AB69-387786707535} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCCB8893-DE28-4FD3-BE73-91FE054A9D2A}

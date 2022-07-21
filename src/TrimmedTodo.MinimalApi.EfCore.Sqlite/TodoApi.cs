@@ -32,11 +32,11 @@ public static class TodoApi
                     : TypedResults.NotFound())
             .WithName("GetTodoById");
 
-        group.MapGet("/find", async Task<Results<Ok<Todo>, NotFound>> (string title, bool? isComplete, TodoDb db) =>
+        group.MapGet("/find", async Task<Results<Ok<Todo>, NoContent>> (string title, bool? isComplete, TodoDb db) =>
             await db.Todos.SingleOrDefaultAsync(t => t.Title == title && t.IsComplete == (isComplete ?? false))
                 is Todo todo
                     ? TypedResults.Ok(todo)
-                    : TypedResults.NotFound())
+                    : TypedResults.NoContent())
             .WithName("FindTodo");
 
         group.MapPost("/", async Task<Results<Created<Todo>, ValidationProblem>> (Todo todo, TodoDb db) =>

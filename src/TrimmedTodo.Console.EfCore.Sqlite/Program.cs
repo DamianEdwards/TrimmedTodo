@@ -112,6 +112,6 @@ public class TodoDb : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=todos.db");
+        optionsBuilder.UseSqlite("Data Source=todos.db;Cache=Shared");
     }
 }

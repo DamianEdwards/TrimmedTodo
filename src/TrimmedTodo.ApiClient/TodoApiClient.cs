@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -89,18 +88,24 @@ public class TodoApiClient
 
     public async Task MarkComplete(string title)
     {
-        var todo = await _httpClient.GetFromJsonAsync($"find?title={Uri.EscapeDataString(title)}", SourceGenerationContext.Web.Todo);
+        Todo? todo = null;
+        var findResponse = await _httpClient.GetAsync($"find?title={Uri.EscapeDataString(title)}");
+
+        if (findResponse.StatusCode == HttpStatusCode.OK)
+        {
+            todo = await findResponse.Content.ReadFromJsonAsync(SourceGenerationContext.Web.Todo);
+        }
 
         if (todo is null)
         {
             throw new InvalidOperationException($"No incomplete todo with title '{title}' was found!");
         }
 
-        var response = await _httpClient.PutAsync($"{todo.Id}/mark-complete", null);
+        var putResponse = await _httpClient.PutAsync($"{todo.Id}/mark-complete", null);
 
-        if (response is not { StatusCode: HttpStatusCode.NoContent })
+        if (putResponse is not { StatusCode: HttpStatusCode.NoContent })
         {
-            throw new InvalidOperationException($"Error marking todo complete: {response.StatusCode} {await response.Content.ReadAsStringAsync()}");
+            throw new InvalidOperationException($"Error marking todo complete: {putResponse.StatusCode} {await putResponse.Content.ReadAsStringAsync()}");
         }
     }
 

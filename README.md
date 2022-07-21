@@ -60,7 +60,9 @@ Deleted all 3 todos!
 
 ### App sizes after publishing
 
-Results taken on Windows 11 x64. All apps are published using "Release" configuration and are self-contained. Only trimming modes that result in the app still working are shown.
+- Results taken on Windows 11 x64
+- All apps are published using "Release" configuration and are self-contained
+- Only trimming modes that result in the app still working are shown
 
 App type | Trim mode | Size
 ---------|-----------|----:
@@ -70,5 +72,6 @@ App type | Trim mode | Size
 [Console - Todo API client](/src/TrimmedTodo.Console.ApiClient/) | AOT | 8.97 MB
 [Web - Hello World](/src/HelloWorld.Web/) | Full | 16.58 MB
 [Web - Hello World](/src/HelloWorld.Web/) | AOT | 17.02 MB
-[Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | Partial | 36.50 MB
-[Web - Todo MVC Web API EF Core & Sqlite](/src/TrimmedTodo.WebApi.EfCore.Sqlite/) | Partial | 39.54 MB
+[Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | Partial + tweaks | 36.50 MB
+[Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | Partial + tweaks | 35.50 MB
+[Web - Todo MVC Web API EF Core & Sqlite](/src/TrimmedTodo.WebApi.EfCore.Sqlite/) | Partial + tweaks | 39.54 MB
