@@ -18,11 +18,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		nuget.config = nuget.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrimmedTodo.ApiClient", "src\TrimmedTodo.ApiClient\TrimmedTodo.ApiClient.csproj", "{A503F0A9-28BA-4BD1-94C1-B01CBDD19553}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.ApiClient", "src\TrimmedTodo.ApiClient\TrimmedTodo.ApiClient.csproj", "{A503F0A9-28BA-4BD1-94C1-B01CBDD19553}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrimmedTodo.Worker", "src\TrimmedTodo.Worker\TrimmedTodo.Worker.csproj", "{0D22FB39-DB7B-459C-8606-5AE188C3961B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.Worker", "src\TrimmedTodo.Worker\TrimmedTodo.Worker.csproj", "{0D22FB39-DB7B-459C-8606-5AE188C3961B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.Console.ApiClient", "src\TrimmedTodo.Console.ApiClient\TrimmedTodo.Console.ApiClient.csproj", "{2B6AA1B0-BD6B-415F-9F82-0C28C9A89465}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Console", "src\HelloWorld.Console\HelloWorld.Console.csproj", "{B59EAF71-EC94-4466-9F78-51DC3C63D757}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Web", "src\HelloWorld.Web\HelloWorld.Web.csproj", "{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +58,14 @@ Global
 		{2B6AA1B0-BD6B-415F-9F82-0C28C9A89465}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B6AA1B0-BD6B-415F-9F82-0C28C9A89465}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B6AA1B0-BD6B-415F-9F82-0C28C9A89465}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B59EAF71-EC94-4466-9F78-51DC3C63D757}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B59EAF71-EC94-4466-9F78-51DC3C63D757}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B59EAF71-EC94-4466-9F78-51DC3C63D757}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B59EAF71-EC94-4466-9F78-51DC3C63D757}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +77,8 @@ Global
 		{A503F0A9-28BA-4BD1-94C1-B01CBDD19553} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 		{0D22FB39-DB7B-459C-8606-5AE188C3961B} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 		{2B6AA1B0-BD6B-415F-9F82-0C28C9A89465} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
+		{B59EAF71-EC94-4466-9F78-51DC3C63D757} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
+		{98EDBC8B-3120-4BF4-A253-B23D9ECB2C76} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCCB8893-DE28-4FD3-BE73-91FE054A9D2A}
