@@ -7,8 +7,6 @@
     <PublishRelease>true</PublishRelease>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishSingleFile>true</PublishSingleFile>
-    <!--<TrimMode>link</TrimMode>-->
-    <!--<TrimmerDefaultAction>link</TrimmerDefaultAction>-->
     <UserSecretsId>7deba5fe-f06c-4a7d-9816-cdeccfc4e4a8</UserSecretsId>
   </PropertyGroup>
 

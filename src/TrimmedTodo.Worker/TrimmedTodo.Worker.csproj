@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishRelease>true</PublishRelease>
     <PublishTrimmed>true</PublishTrimmed>
+    <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
