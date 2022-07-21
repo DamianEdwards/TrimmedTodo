@@ -31,7 +31,7 @@ Get-ChildItem -Include bin -Recurse -Directory | Remove-Item -Recurse -Force;
 Get-ChildItem -Include obj -Recurse -Directory | Remove-Item -Recurse -Force;
 
 Write-Host "Publishing ${projectName}: dotnet publish -r $Rid --self-contained";
-dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName"
+dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName"
 #dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true /p:PublishSingleFile=true
 #dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true
 #dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true

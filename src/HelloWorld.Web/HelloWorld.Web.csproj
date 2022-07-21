@@ -8,6 +8,7 @@
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
+    <!--<PublishAot>true</PublishAot>-->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(PublishAot)' == 'true'">
