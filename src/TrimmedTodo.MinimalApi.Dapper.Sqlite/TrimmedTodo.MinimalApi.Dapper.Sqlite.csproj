@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -9,6 +9,22 @@
     <PublishSingleFile>true</PublishSingleFile>
     <UserSecretsId>7deba5fe-f06c-4a7d-9816-cdeccfc4e4a8</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Manually marking these assemblies as trimmable until we update them -->
+    <TrimmableAssembly Include="Microsoft.IdentityModel.Tokens" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.Components.Server" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.Mvc.Razor" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.Mvc.RazorPages" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.Mvc.TagHelpers" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.Razor" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.Razor.RazorRuntime" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.SignalR.Core" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.SignalR.Common" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.SignalR.Protocols.Json" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.Server.IIS" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0-preview.rc1.*" />

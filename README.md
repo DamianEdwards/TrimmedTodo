@@ -27,9 +27,9 @@ s(219,5): message NETSDK1057: You are using a preview version of .NET. See: http
   Optimizing assemblies for size. This process might take a while.
   TrimmedTodo.Console.EfCore.Sqlite -> ~\TrimmedTodo\.artifacts\TrimmedTodo.Console.EfCore.Sqlite\
 
-App was published as a single 21.29 MB file (TrimmedTodo.Console.EfCore.Sqlite.exe)
+App was published as a single 21.78 MB file (TrimmedTodo.Console.EfCore.Sqlite.exe)
 
-App last access time: 07/06/2022 21:32:29
+App last access time: 08/30/2022 17:30:13
 
 Running TrimmedTodo.Console.EfCore.Sqlite
 
@@ -66,12 +66,21 @@ Deleted all 3 todos!
 
 App type | Trim mode | Size
 ---------|-----------|----:
-[Console - Hello World](/src/HelloWorld.Console/) | AOT | **3.32 MB**
-[Console - Hello World](/src/HelloWorld.Console/) | Full | 11.04 MB
-[Console - Todo EF Core & Sqlite](/src/TrimmedTodo.Console.EfCore.Sqlite/) | Partial | 21.29 MB
-[Console - Todo API client](/src/TrimmedTodo.Console.ApiClient/) | AOT | 8.97 MB
-[Web - Hello World](/src/HelloWorld.Web/) | Full | 16.58 MB
-[Web - Hello World](/src/HelloWorld.Web/) | AOT | 17.02 MB
-[Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | Partial + tweaks | 36.50 MB
-[Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | Partial + tweaks | 35.50 MB
-[Web - Todo MVC Web API EF Core & Sqlite](/src/TrimmedTodo.WebApi.EfCore.Sqlite/) | Partial + tweaks | 39.54 MB
+[Console - Hello World](/src/HelloWorld.Console/) | AOT | 3.32 MB
+[Console - Hello World](/src/HelloWorld.Console/) | AOT + tweaks | 2.18 MB
+[Console - Hello World](/src/HelloWorld.Console/) | AOT + tweaks + hacks | **0.96 MB**
+[Console - Hello World](/src/HelloWorld.Console/) | full | 11.04 MB
+[Console - Todo EF Core & Sqlite](/src/TrimmedTodo.Console.EfCore.Sqlite/) | Partial | 21.78 MB
+[Console - Todo API client](/src/TrimmedTodo.Console.ApiClient/) | AOT | 9.12 MB
+[Console - Todo API client](/src/TrimmedTodo.Console.ApiClient/) | AOT + tweaks | 8.92 MB
+[Console - Todo API client](/src/TrimmedTodo.Console.ApiClient/) | AOT + tweaks + hacks | 8.28 MB
+[Web - Hello World](/src/HelloWorld.Web/) | partial | 29.13 MB
+[Web - Hello World](/src/HelloWorld.Web/) | full | 16.60 MB
+[Web - Hello World](/src/HelloWorld.Web/) | AOT + full | 19.23 MB
+[Web - Hello World](/src/HelloWorld.Web/) | AOT + full + tweaks | 19.00 MB
+[Web - Hello World](/src/HelloWorld.Web/) | AOT + full + tweaks + hacks | 17.73 MB
+[Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial | 39.20 MB
+[Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial + tweaks | 36.07 MB
+[Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial | 35.43 MB
+[Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial + tweaks | 32.33 MB
+[Web - Todo MVC Web API EF Core & Sqlite](/src/TrimmedTodo.WebApi.EfCore.Sqlite/) | partial + tweaks | 39.54 MB

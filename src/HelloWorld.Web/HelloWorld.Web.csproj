@@ -6,14 +6,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishRelease>true</PublishRelease>
     <!--<PublishSingleFile>true</PublishSingleFile>
-    <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>full</TrimMode>-->
+    <PublishTrimmed>true</PublishTrimmed>-->
     <PublishAot>true</PublishAot>
+    <TrimMode>full</TrimMode>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(PublishAot)' == 'true'">
+    <!-- Documented trimming settings (tweaks) -->
     <InvariantGlobalization>true</InvariantGlobalization>
-    <DebuggerSupport>false</DebuggerSupport>
+    <!-- Undocumented trimming settings (hacks) -->
+    <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
   </PropertyGroup>
 
 </Project>

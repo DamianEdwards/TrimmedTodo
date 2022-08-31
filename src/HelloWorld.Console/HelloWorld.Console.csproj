@@ -12,8 +12,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(PublishAot)' == 'true'">
+    <!-- Documented trimming settings (tweaks) -->
     <InvariantGlobalization>true</InvariantGlobalization>
-    <DebuggerSupport>false</DebuggerSupport>
+    <!-- Undocumented trimming settings (hacks) -->
+    <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <IlcDisableReflection>true</IlcDisableReflection>
   </PropertyGroup>
 
 </Project>
