@@ -81,6 +81,6 @@ App type | Trim mode | Size
 [Web - Hello World](/src/HelloWorld.Web/) | AOT + full + tweaks + hacks | 17.73 MB
 [Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial | 39.20 MB
 [Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial + tweaks | 36.07 MB
-[Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial | 35.43 MB
-[Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial + tweaks | 32.33 MB
+[Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.Dapper.Sqlite/) | partial | 35.43 MB
+[Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.Dapper.Sqlite/) | partial + tweaks | 32.33 MB
 [Web - Todo MVC Web API EF Core & Sqlite](/src/TrimmedTodo.WebApi.EfCore.Sqlite/) | partial + tweaks | 39.54 MB
