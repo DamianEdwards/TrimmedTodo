@@ -17,6 +17,7 @@
     <!-- Undocumented trimming settings (hacks) -->
     <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <!--<IlcGenerateMapFile>true</IlcGenerateMapFile>-->
   </PropertyGroup>
 
 </Project>
