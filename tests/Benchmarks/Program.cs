@@ -4,82 +4,63 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
 
-// Clean up previous run
+if (Directory.Exists(PathHelper.BenchmarkArtifactsDir))
+{
+    Directory.Delete(PathHelper.BenchmarkArtifactsDir, true);
+}
 
-
-BenchmarkRunner.Run<HelloWorldWebStartupTimeBenchmarks>();
-//BenchmarkRunner.Run<HelloWorldWebStartupTimeBenchmarks>(new DebugInProcessConfig());
+if (Debugger.IsAttached)
+{
+    BenchmarkRunner.Run<StartupTimeBenchmarks>(new DebugInProcessConfig());
+}
+else
+{
+    BenchmarkRunner.Run<StartupTimeBenchmarks>();
+}
 
 [SimpleJob(launchCount: 1, warmupCount: 2, targetCount: 10)]
-public class HelloWorldWebStartupTimeBenchmarks
+public class StartupTimeBenchmarks
 {
-    private readonly string _projectName = "HelloWorld.Web";
     private string? _appPath;
 
-    [GlobalSetup(Target = nameof(Default))]
-    public void PublishDefault()
+    [Params("HelloWorld.Web")]
+    public string ProjectName { get; set; } = default!;
+
+    //[ParamsAllValues]
+    [Params(PublishScenario.Default)]
+    public PublishScenario Scenario { get; set; }
+
+    [GlobalSetup]
+    public void PublishApp()
     {
-        _appPath = ProjectBuilder.Publish(_projectName);
+        _appPath = ProjectBuilder.Publish(ProjectName, Scenario);
     }
 
     [Benchmark]
-    public void Default()
+    public void StartApp()
     {
         AppRunner.Run(_appPath!, ("SHUTDOWN_ON_START", "true"));
     }
+}
 
-    [GlobalSetup(Target = nameof(SelfContained))]
-    public void PublishSelfContained()
-    {
-        _appPath = ProjectBuilder.Publish(_projectName, selfContained: true, trimLevel: TrimLevel.Default);
-    }
-
-    [Benchmark]
-    public void SelfContained()
-    {
-        AppRunner.Run(_appPath!, ("SHUTDOWN_ON_START", "true"));
-    }
-
-    [GlobalSetup(Target = nameof(Trimmed))]
-    public void PublishTrimmed()
-    {
-        _appPath = ProjectBuilder.Publish(_projectName, trimLevel: TrimLevel.Default);
-    }
-
-    [Benchmark]
-    public void Trimmed()
-    {
-        AppRunner.Run(_appPath!, ("SHUTDOWN_ON_START", "true"));
-    }
-
-    [GlobalSetup(Target = nameof(AOT))]
-    public void PublishAOT()
-    {
-        _appPath = ProjectBuilder.PublishAot(_projectName);
-    }
-
-    [Benchmark]
-    public void AOT()
-    {
-        AppRunner.Run(_appPath!, ("SHUTDOWN_ON_START", "true"));
-    }
-
-    [GlobalCleanup]
-    public void Cleanup()
-    {
-        var appDir = Path.GetDirectoryName(_appPath);
-        if (Directory.Exists(appDir))
-        {
-            Directory.Delete(appDir, true);
-        }
-    }
+public enum PublishScenario
+{
+    Default,
+    SelfContained,
+    Trimmed,
+    AOT
 }
 
 class ProjectBuilder
 {
-    private static readonly string _repoDirPath = PathHelper.GetRepoRoot();
-    private static readonly string _projectsDirPath = Path.Combine(_repoDirPath, "src");
-    private static readonly string _artifactsDirPath = Path.Combine(_repoDirPath, ".artifacts", "benchmarks");
+    public static string Publish(string projectName, PublishScenario scenario) => scenario switch
+    {
+        PublishScenario.Default => Publish(projectName),
+        PublishScenario.SelfContained => Publish(projectName, selfContained: true, trimLevel: TrimLevel.None),
+        PublishScenario.Trimmed => Publish(projectName, selfContained: true, trimLevel: TrimLevel.Default),
+        PublishScenario.AOT => PublishAot(projectName),
+        _ => throw new ArgumentException("Unrecognized publish scenario", nameof(scenario))
+    };
 
     public static string Publish(
         string projectName,
@@ -104,7 +85,7 @@ class ProjectBuilder
             args.Add(GetTrimLevelProperty(trimLevel));
         }
 
-        return Publish(projectName, output, args);
+        return PublishImpl(projectName, output, args);
     }
 
     public static string PublishAot(
@@ -128,12 +109,12 @@ class ProjectBuilder
             args.Add(GetTrimLevelProperty(trimLevel));
         }
 
-        return Publish(projectName, output, args);
+        return PublishImpl(projectName, output, args);
     }
 
-    private static string Publish(string projectName, string? output = null, IEnumerable<string>? args = null)
+    private static string PublishImpl(string projectName, string? output = null, IEnumerable<string>? args = null)
     {
-        var projectPath = Path.Combine(_projectsDirPath, projectName, projectName + ".csproj");
+        var projectPath = Path.Combine(PathHelper.ProjectsDir, projectName, projectName + ".csproj");
 
         if (!File.Exists(projectPath))
         {
@@ -141,7 +122,7 @@ class ProjectBuilder
         }
 
         var runId = Random.Shared.NextInt64().ToString();
-        output ??= Path.Combine(_artifactsDirPath, projectName, runId);
+        output ??= Path.Combine(PathHelper.BenchmarkArtifactsDir, projectName, runId);
 
         var publishArgs = new List<string>
         {
@@ -163,12 +144,7 @@ class ProjectBuilder
             appExePath += ".exe";
         }
 
-        if (!File.Exists(appExePath))
-        {
-            throw new InvalidOperationException("Could not find application exe");
-        }
-
-        return appExePath;
+        return !File.Exists(appExePath) ? throw new InvalidOperationException("Could not find application exe") : appExePath;
     }
 
     private static string GetTrimLevelProperty(TrimLevel trimLevel)
@@ -185,7 +161,7 @@ class AppRunner
 {
     private static readonly string _dotnetFileName = "dotnet" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "");
 
-    public static void Run(string appExePath, params (string Name, string Value)[] envVars)
+    public static void Run(string appExePath, params (string, string)[] envVars)
     {
         if (!File.Exists(appExePath))
         {
@@ -211,9 +187,9 @@ class AppRunner
             process.StartInfo.ArgumentList.Add(appExePath);
         }
 
-        foreach (var envVar in envVars)
+        foreach (var (name, value) in envVars)
         {
-            process.StartInfo.Environment.Add(envVar.Name, envVar.Value);
+            process.StartInfo.Environment.Add(name, value);
         }
 
         if (!process.Start())
@@ -256,8 +232,8 @@ class DotNetCli
             throw new InvalidOperationException("dotnet publish failed");
         }
 
-        var output = process.StandardOutput.ReadToEnd();
-        var error = process.StandardError.ReadToEnd();
+        //var output = process.StandardOutput.ReadToEnd();
+        //var error = process.StandardError.ReadToEnd();
 
         var _ = process.WaitForExit(_timeout);
     }
@@ -265,11 +241,12 @@ class DotNetCli
 
 class PathHelper
 {
-    private static readonly string _repoDirPath = GetRepoRoot();
-    private static readonly string _projectsDirPath = Path.Combine(_repoDirPath, "src");
-    private static readonly string _artifactsDirPath = Path.Combine(_repoDirPath, ".artifacts", "benchmarks");
+    public static string RepoRoot { get; } = GetRepoRoot();
+    public static string ProjectsDir { get; } = Path.Combine(RepoRoot, "src");
+    public static string ArtifactsDir { get; } = Path.Combine(RepoRoot, ".artifacts");
+    public static string BenchmarkArtifactsDir { get; } = Path.Combine(ArtifactsDir, "benchmarks");
 
-    public static string GetRepoRoot()
+    private static string GetRepoRoot()
     {
         var currentDirPath = Environment.CurrentDirectory;
         DirectoryInfo? repoDir = null;
@@ -293,12 +270,7 @@ class PathHelper
             currentDirPath = parent.FullName;
         }
 
-        if (repoDir is null)
-        {
-            throw new InvalidOperationException("Couldn't find repo directory");
-        }
-
-        return repoDir.FullName;
+        return repoDir is null ? throw new InvalidOperationException("Couldn't find repo directory") : repoDir.FullName;
     }
 }
 
