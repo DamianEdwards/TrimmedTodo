@@ -26,8 +26,7 @@ public class StartupTimeBenchmarks
     [Params("HelloWorld.Web")]
     public string ProjectName { get; set; } = default!;
 
-    //[ParamsAllValues]
-    [Params(PublishScenario.Default)]
+    [ParamsAllValues]
     public PublishScenario Scenario { get; set; }
 
     [GlobalSetup]
@@ -55,20 +54,21 @@ class ProjectBuilder
 {
     public static string Publish(string projectName, PublishScenario scenario) => scenario switch
     {
-        PublishScenario.Default => Publish(projectName),
-        PublishScenario.SelfContained => Publish(projectName, selfContained: true, trimLevel: TrimLevel.None),
-        PublishScenario.Trimmed => Publish(projectName, selfContained: true, trimLevel: TrimLevel.Default),
-        PublishScenario.AOT => PublishAot(projectName),
+        PublishScenario.Default => Publish(projectName, runId: Enum.GetName(scenario)),
+        PublishScenario.SelfContained => Publish(projectName, selfContained: true, trimLevel: TrimLevel.None, runId: Enum.GetName(scenario)),
+        PublishScenario.Trimmed => Publish(projectName, selfContained: true, trimLevel: TrimLevel.Default, runId: Enum.GetName(scenario)),
+        PublishScenario.AOT => PublishAot(projectName, runId: Enum.GetName(scenario)),
         _ => throw new ArgumentException("Unrecognized publish scenario", nameof(scenario))
     };
 
-    public static string Publish(
+    private static string Publish(
         string projectName,
         string configuration = "Release",
         string? output = null,
         bool selfContained = false,
         bool singleFile = false,
-        TrimLevel trimLevel = TrimLevel.None)
+        TrimLevel trimLevel = TrimLevel.None,
+        string? runId = null)
     {
         var args = new List<string>
         {
@@ -85,14 +85,15 @@ class ProjectBuilder
             args.Add(GetTrimLevelProperty(trimLevel));
         }
 
-        return PublishImpl(projectName, output, args);
+        return PublishImpl(projectName, output, args, runId);
     }
 
-    public static string PublishAot(
+    private static string PublishAot(
         string projectName,
         string configuration = "Release",
         string? output = null,
-        TrimLevel trimLevel = TrimLevel.Default)
+        TrimLevel trimLevel = TrimLevel.Default,
+        string? runId = null)
     {
         var args = new List<string>
         {
@@ -109,10 +110,10 @@ class ProjectBuilder
             args.Add(GetTrimLevelProperty(trimLevel));
         }
 
-        return PublishImpl(projectName, output, args);
+        return PublishImpl(projectName, output, args, runId);
     }
 
-    private static string PublishImpl(string projectName, string? output = null, IEnumerable<string>? args = null)
+    private static string PublishImpl(string projectName, string? output = null, IEnumerable<string>? args = null, string? runId = null)
     {
         var projectPath = Path.Combine(PathHelper.ProjectsDir, projectName, projectName + ".csproj");
 
@@ -121,7 +122,7 @@ class ProjectBuilder
             throw new ArgumentException($"Project at '{projectPath}' could not be found", nameof(projectName));
         }
 
-        var runId = Random.Shared.NextInt64().ToString();
+        runId ??= Random.Shared.NextInt64().ToString();
         output ??= Path.Combine(PathHelper.BenchmarkArtifactsDir, projectName, runId);
 
         var publishArgs = new List<string>
