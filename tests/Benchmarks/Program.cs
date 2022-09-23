@@ -23,10 +23,11 @@ public class StartupTimeBenchmarks
 {
     private string? _appPath;
 
-    [Params("HelloWorld.Web")]
+    [Params("HelloWorld.Web", "HelloWorld.Console")]
     public string ProjectName { get; set; } = default!;
 
     [ParamsAllValues]
+    //[Params(PublishScenario.Default, PublishScenario.NoAppHost)]
     public PublishScenario Scenario { get; set; }
 
     [GlobalSetup]
@@ -45,6 +46,7 @@ public class StartupTimeBenchmarks
 public enum PublishScenario
 {
     Default,
+    NoAppHost,
     SelfContained,
     Trimmed,
     AOT
@@ -55,6 +57,7 @@ class ProjectBuilder
     public static string Publish(string projectName, PublishScenario scenario) => scenario switch
     {
         PublishScenario.Default => Publish(projectName, runId: Enum.GetName(scenario)),
+        PublishScenario.NoAppHost => Publish(projectName, useAppHost: false, runId: Enum.GetName(scenario)),
         PublishScenario.SelfContained => Publish(projectName, selfContained: true, trimLevel: TrimLevel.None, runId: Enum.GetName(scenario)),
         PublishScenario.Trimmed => Publish(projectName, selfContained: true, trimLevel: TrimLevel.Default, runId: Enum.GetName(scenario)),
         PublishScenario.AOT => PublishAot(projectName, runId: Enum.GetName(scenario)),
@@ -67,6 +70,7 @@ class ProjectBuilder
         string? output = null,
         bool selfContained = false,
         bool singleFile = false,
+        bool useAppHost = true,
         TrimLevel trimLevel = TrimLevel.None,
         string? runId = null)
     {
@@ -83,6 +87,11 @@ class ProjectBuilder
         if (trimLevel != TrimLevel.None)
         {
             args.Add(GetTrimLevelProperty(trimLevel));
+        }
+
+        if (!useAppHost)
+        {
+            args.Add("/p:UseAppHost=false");
         }
 
         return PublishImpl(projectName, output, args, runId);
@@ -135,8 +144,6 @@ class ProjectBuilder
             publishArgs.AddRange(args);
         }
 
-        //Directory.Delete(output, true);
-
         DotNetCli.Publish(publishArgs);
 
         var appExePath = Path.Join(output, projectName);
@@ -145,7 +152,13 @@ class ProjectBuilder
             appExePath += ".exe";
         }
 
-        return !File.Exists(appExePath) ? throw new InvalidOperationException("Could not find application exe") : appExePath;
+        if (!File.Exists(appExePath))
+        {
+            var appDllPath = Path.Join(output, projectName + ".dll");
+            return !File.Exists(appDllPath) ? throw new InvalidOperationException("Could not find application exe or dll") : appDllPath;
+        }
+
+        return appExePath;
     }
 
     private static string GetTrimLevelProperty(TrimLevel trimLevel)
@@ -166,7 +179,7 @@ class AppRunner
     {
         if (!File.Exists(appExePath))
         {
-            throw new ArgumentException("Could not find application exe", nameof(appExePath));
+            throw new ArgumentException($"Could not find application exe '{appExePath}'", nameof(appExePath));
         }
 
         var isAppHost = !Path.GetExtension(appExePath)!.Equals(".dll", StringComparison.OrdinalIgnoreCase);
