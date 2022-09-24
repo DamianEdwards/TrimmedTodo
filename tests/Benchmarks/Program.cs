@@ -29,7 +29,7 @@ public class StartupTimeBenchmarks
 
     //[ParamsAllValues]
     //[Params(PublishScenario.Default, PublishScenario.Trimmed, PublishScenario.AOT)]
-    [Params(PublishScenario.Default, PublishScenario.SingleFile)]
+    [Params(PublishScenario.Default, PublishScenario.SingleFile, PublishScenario.Trimmed)]
     public PublishScenario Scenario { get; set; }
 
     [GlobalSetup]
@@ -161,7 +161,7 @@ class ProjectBuilder
         if (!File.Exists(appExePath))
         {
             var appDllPath = Path.Join(output, projectName + ".dll");
-            return !File.Exists(appDllPath) ? throw new InvalidOperationException("Could not find application exe or dll") : appDllPath;
+            return !File.Exists(appDllPath) ? throw new InvalidOperationException($"Could not find application exe or dll '{appDllPath}'") : appDllPath;
         }
 
         return appExePath;
@@ -259,7 +259,7 @@ class AppRunner
 class DotNetCli
 {
     private static readonly string _fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "dotnet.exe" : "dotnet";
-    private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(180);
+    private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(120);
 
     public static void Clean(IEnumerable<string> args)
     {
@@ -276,40 +276,57 @@ class DotNetCli
         var process = new Process
         {
             StartInfo =
-        {
-            FileName = _fileName,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        }
+            {
+                FileName = _fileName,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            }
         };
 
-        process.StartInfo.ArgumentList.Add(commandName);
-        foreach (var arg in args)
-        {
-            process.StartInfo.ArgumentList.Add(arg);
-        }
+        //process.StartInfo.ArgumentList.Add(commandName);
+        //foreach (var arg in args)
+        //{
+        //    process.StartInfo.ArgumentList.Add(arg);
+        //}
 
-        var cmdLine = $"{process.StartInfo.FileName} {string.Join(' ', process.StartInfo.ArgumentList)}";
+        process.StartInfo.Arguments = $"{commandName} {string.Join(' ', args)}";
+
+        var cmdLine = $"{process.StartInfo.FileName} {process.StartInfo.Arguments}";
         Console.WriteLine("Running dotnet CLI with cmd line:");
         Console.WriteLine(cmdLine);
         Console.WriteLine();
 
         if (!process.Start())
         {
-            throw new InvalidOperationException("dotnet command failed");
+            throw new InvalidOperationException($"dotnet {commandName} failed");
         }
 
-        if (!process.WaitForExit(_timeout))
+        process.WaitForExit();
+
+        //if (!process.WaitForExit(_timeout))
+        //{
+        //    var output = process.StandardOutput.ReadToEnd();
+        //    var error = process.StandardError.ReadToEnd();
+
+        //    process.Kill();
+
+        //    throw new InvalidOperationException(
+        //        $"dotnet {commandName} took longer than the allowed time of {_timeout}" + Environment.NewLine +
+        //        "Standard Output:" + Environment.NewLine +
+        //        output + Environment.NewLine +
+        //        "Standard Error:" + Environment.NewLine +
+        //        error + Environment.NewLine);
+        //}
+
+        if (process.ExitCode != 0)
         {
             var output = process.StandardOutput.ReadToEnd();
             var error = process.StandardError.ReadToEnd();
 
-            process.Kill();
-
             throw new InvalidOperationException(
-                $"dotnet command took longer than the allowed time of {_timeout}" + Environment.NewLine +
+                $"dotnet {commandName} failed on exit ({process.ExitCode})" + Environment.NewLine +
                 "Standard Output:" + Environment.NewLine +
                 output + Environment.NewLine +
                 "Standard Error:" + Environment.NewLine +
