@@ -23,11 +23,13 @@ public class StartupTimeBenchmarks
 {
     private string? _appPath;
 
-    [Params("HelloWorld.Web", "HelloWorld.Console")]
+    //[Params("HelloWorld.Web", "HelloWorld.Console")]
+    [Params("TrimmedTodo.Console.EfCore.Sqlite")]
     public string ProjectName { get; set; } = default!;
 
-    [ParamsAllValues]
-    //[Params(PublishScenario.Default, PublishScenario.NoAppHost)]
+    //[ParamsAllValues]
+    //[Params(PublishScenario.Default, PublishScenario.Trimmed, PublishScenario.AOT)]
+    [Params(PublishScenario.Default, PublishScenario.SingleFile)]
     public PublishScenario Scenario { get; set; }
 
     [GlobalSetup]
@@ -48,6 +50,7 @@ public enum PublishScenario
     Default,
     NoAppHost,
     SelfContained,
+    SingleFile,
     Trimmed,
     AOT
 }
@@ -59,8 +62,9 @@ class ProjectBuilder
         PublishScenario.Default => Publish(projectName, runId: Enum.GetName(scenario)),
         PublishScenario.NoAppHost => Publish(projectName, useAppHost: false, runId: Enum.GetName(scenario)),
         PublishScenario.SelfContained => Publish(projectName, selfContained: true, trimLevel: TrimLevel.None, runId: Enum.GetName(scenario)),
-        PublishScenario.Trimmed => Publish(projectName, selfContained: true, trimLevel: TrimLevel.Default, runId: Enum.GetName(scenario)),
-        PublishScenario.AOT => PublishAot(projectName, runId: Enum.GetName(scenario)),
+        PublishScenario.SingleFile => Publish(projectName, selfContained: true, singleFile: true, trimLevel: TrimLevel.None, runId: Enum.GetName(scenario)),
+        PublishScenario.Trimmed => Publish(projectName, selfContained: true, singleFile: true, trimLevel: GetTrimLevel(projectName), runId: Enum.GetName(scenario)),
+        PublishScenario.AOT => PublishAot(projectName, trimLevel: GetTrimLevel(projectName), runId: Enum.GetName(scenario)),
         _ => throw new ArgumentException("Unrecognized publish scenario", nameof(scenario))
     };
 
@@ -76,7 +80,6 @@ class ProjectBuilder
     {
         var args = new List<string>
         {
-            "--configuration", configuration,
             "--self-contained", trimLevel != TrimLevel.None ? "true" : selfContained.ToString().ToLowerInvariant(),
             "--runtime", RuntimeInformation.RuntimeIdentifier,
             $"/p:PublishTrimmed={(trimLevel == TrimLevel.None ? "false" : "true")}",
@@ -94,7 +97,7 @@ class ProjectBuilder
             args.Add("/p:UseAppHost=false");
         }
 
-        return PublishImpl(projectName, output, args, runId);
+        return PublishImpl(projectName, configuration, output, args, runId);
     }
 
     private static string PublishAot(
@@ -106,9 +109,8 @@ class ProjectBuilder
     {
         var args = new List<string>
         {
-            "--configuration", configuration,
-            "--self-contained", "true",
-            "--runtime", RuntimeInformation.RuntimeIdentifier,
+            "--self-contained true",
+            $"--runtime {RuntimeInformation.RuntimeIdentifier}",
             "/p:PublishAot=true",
             $"/p:PublishTrimmed={(trimLevel == TrimLevel.None ? "false" : "true")}",
             "/p:PublishSingleFile=false"
@@ -119,10 +121,10 @@ class ProjectBuilder
             args.Add(GetTrimLevelProperty(trimLevel));
         }
 
-        return PublishImpl(projectName, output, args, runId);
+        return PublishImpl(projectName, configuration, output, args, runId);
     }
 
-    private static string PublishImpl(string projectName, string? output = null, IEnumerable<string>? args = null, string? runId = null)
+    private static string PublishImpl(string projectName, string configuration = "Release", string? output = null, IEnumerable<string>? args = null, string? runId = null)
     {
         var projectPath = Path.Combine(PathHelper.ProjectsDir, projectName, projectName + ".csproj");
 
@@ -134,17 +136,21 @@ class ProjectBuilder
         runId ??= Random.Shared.NextInt64().ToString();
         output ??= Path.Combine(PathHelper.BenchmarkArtifactsDir, projectName, runId);
 
-        var publishArgs = new List<string>
+        var cmdArgs = new List<string>
         {
             projectPath,
-            "--output", output
+            $"--configuration {configuration}"
         };
+
+        DotNetCli.Clean(cmdArgs);
+
+        cmdArgs.Add($"--output {output}");
         if (args is not null)
         {
-            publishArgs.AddRange(args);
+            cmdArgs.AddRange(args);
         }
 
-        DotNetCli.Publish(publishArgs);
+        DotNetCli.Publish(cmdArgs);
 
         var appExePath = Path.Join(output, projectName);
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -168,6 +174,27 @@ class ProjectBuilder
             TrimLevel.Default => "",
             _ => Enum.GetName(trimLevel)?.ToLower() ?? ""
         };
+    }
+
+    private static TrimLevel GetTrimLevel(string projectName)
+    {
+        if (projectName.Contains("EfCore", StringComparison.OrdinalIgnoreCase)
+            || projectName.Contains("Dapper", StringComparison.OrdinalIgnoreCase))
+        {
+            return TrimLevel.Partial;
+        }
+
+        if (projectName.Contains("Console"))
+        {
+            return TrimLevel.Default;
+        }
+
+        if (projectName.Contains("HelloWorld"))
+        {
+            return TrimLevel.Full;
+        }
+
+        return TrimLevel.Default;
     }
 }
 
@@ -212,6 +239,19 @@ class AppRunner
         }
 
         process.WaitForExit();
+
+        if (process.ExitCode != 0)
+        {
+            var output = process.StandardOutput.ReadToEnd();
+            var error = process.StandardError.ReadToEnd();
+
+            throw new InvalidOperationException(
+                "Application process failed on exit." + Environment.NewLine +
+                "Standard Output:" + Environment.NewLine +
+                output + Environment.NewLine +
+                "Standard Error:" + Environment.NewLine +
+                error + Environment.NewLine);
+        }
     }
 }
 
@@ -219,37 +259,62 @@ class AppRunner
 class DotNetCli
 {
     private static readonly string _fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "dotnet.exe" : "dotnet";
-    private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(60);
+    private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(180);
+
+    public static void Clean(IEnumerable<string> args)
+    {
+        RunCommand("clean", args);
+    }
 
     public static void Publish(IEnumerable<string> args)
+    {
+        RunCommand("publish", args);
+    }
+
+    private static void RunCommand(string commandName, IEnumerable<string> args)
     {
         var process = new Process
         {
             StartInfo =
-            {
-                FileName = _fileName,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            }
+        {
+            FileName = _fileName,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        }
         };
 
-        process.StartInfo.ArgumentList.Add("publish");
+        process.StartInfo.ArgumentList.Add(commandName);
         foreach (var arg in args)
         {
             process.StartInfo.ArgumentList.Add(arg);
         }
 
+        var cmdLine = $"{process.StartInfo.FileName} {string.Join(' ', process.StartInfo.ArgumentList)}";
+        Console.WriteLine("Running dotnet CLI with cmd line:");
+        Console.WriteLine(cmdLine);
+        Console.WriteLine();
+
         if (!process.Start())
         {
-            throw new InvalidOperationException("dotnet publish failed");
+            throw new InvalidOperationException("dotnet command failed");
         }
 
-        //var output = process.StandardOutput.ReadToEnd();
-        //var error = process.StandardError.ReadToEnd();
+        if (!process.WaitForExit(_timeout))
+        {
+            var output = process.StandardOutput.ReadToEnd();
+            var error = process.StandardError.ReadToEnd();
 
-        var _ = process.WaitForExit(_timeout);
+            process.Kill();
+
+            throw new InvalidOperationException(
+                $"dotnet command took longer than the allowed time of {_timeout}" + Environment.NewLine +
+                "Standard Output:" + Environment.NewLine +
+                output + Environment.NewLine +
+                "Standard Error:" + Environment.NewLine +
+                error + Environment.NewLine);
+        }
     }
 }
 
