@@ -109,8 +109,8 @@ class ProjectBuilder
     {
         var args = new List<string>
         {
-            "--self-contained true",
-            $"--runtime {RuntimeInformation.RuntimeIdentifier}",
+            "--self-contained", "true",
+            "--runtime", RuntimeInformation.RuntimeIdentifier,
             "/p:PublishAot=true",
             $"/p:PublishTrimmed={(trimLevel == TrimLevel.None ? "false" : "true")}",
             "/p:PublishSingleFile=false"
@@ -139,12 +139,13 @@ class ProjectBuilder
         var cmdArgs = new List<string>
         {
             projectPath,
-            $"--configuration {configuration}"
+            $"--configuration", configuration
         };
 
         DotNetCli.Clean(cmdArgs);
 
-        cmdArgs.Add($"--output {output}");
+        cmdArgs.AddRange(new[] { $"--output", output});
+        cmdArgs.Add("--disable-build-servers");
         if (args is not null)
         {
             cmdArgs.AddRange(args);
@@ -216,10 +217,7 @@ class AppRunner
             StartInfo =
             {
                 FileName = isAppHost ? appExePath : _dotnetFileName,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
+                UseShellExecute = false
             }
         };
 
@@ -242,15 +240,7 @@ class AppRunner
 
         if (process.ExitCode != 0)
         {
-            var output = process.StandardOutput.ReadToEnd();
-            var error = process.StandardError.ReadToEnd();
-
-            throw new InvalidOperationException(
-                "Application process failed on exit." + Environment.NewLine +
-                "Standard Output:" + Environment.NewLine +
-                output + Environment.NewLine +
-                "Standard Error:" + Environment.NewLine +
-                error + Environment.NewLine);
+            throw new InvalidOperationException($"Application process failed on exit ({process.ExitCode})");
         }
     }
 }
@@ -259,7 +249,7 @@ class AppRunner
 class DotNetCli
 {
     private static readonly string _fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "dotnet.exe" : "dotnet";
-    private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(120);
+    private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(60);
 
     public static void Clean(IEnumerable<string> args)
     {
@@ -278,20 +268,11 @@ class DotNetCli
             StartInfo =
             {
                 FileName = _fileName,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
+                UseShellExecute = false
             }
         };
 
-        //process.StartInfo.ArgumentList.Add(commandName);
-        //foreach (var arg in args)
-        //{
-        //    process.StartInfo.ArgumentList.Add(arg);
-        //}
-
-        process.StartInfo.Arguments = $"{commandName} {string.Join(' ', args)}";
+        process.StartInfo.Arguments = $"{commandName} {string.Join(' ', args.Select(a => a.Contains(' ') ? $"\"{a}\"" : a))}";
 
         var cmdLine = $"{process.StartInfo.FileName} {process.StartInfo.Arguments}";
         Console.WriteLine("Running dotnet CLI with cmd line:");
@@ -305,32 +286,16 @@ class DotNetCli
 
         process.WaitForExit();
 
-        //if (!process.WaitForExit(_timeout))
-        //{
-        //    var output = process.StandardOutput.ReadToEnd();
-        //    var error = process.StandardError.ReadToEnd();
+        if (!process.WaitForExit(_timeout))
+        {
+            process.Kill();
 
-        //    process.Kill();
-
-        //    throw new InvalidOperationException(
-        //        $"dotnet {commandName} took longer than the allowed time of {_timeout}" + Environment.NewLine +
-        //        "Standard Output:" + Environment.NewLine +
-        //        output + Environment.NewLine +
-        //        "Standard Error:" + Environment.NewLine +
-        //        error + Environment.NewLine);
-        //}
+            throw new InvalidOperationException($"dotnet {commandName} took longer than the allowed time of {_timeout}");
+        }
 
         if (process.ExitCode != 0)
         {
-            var output = process.StandardOutput.ReadToEnd();
-            var error = process.StandardError.ReadToEnd();
-
-            throw new InvalidOperationException(
-                $"dotnet {commandName} failed on exit ({process.ExitCode})" + Environment.NewLine +
-                "Standard Output:" + Environment.NewLine +
-                output + Environment.NewLine +
-                "Standard Error:" + Environment.NewLine +
-                error + Environment.NewLine);
+            throw new InvalidOperationException($"dotnet {commandName} failed on exit ({process.ExitCode})");
         }
     }
 }
@@ -344,26 +309,25 @@ class PathHelper
 
     private static string GetRepoRoot()
     {
-        var currentDirPath = Environment.CurrentDirectory;
+        var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
         DirectoryInfo? repoDir = null;
+
         while (true)
         {
-            var parent = Directory.GetParent(currentDirPath);
-
-            if (parent is null)
+            if (currentDir is null)
             {
-                // We hit the root
+                // We hit the file system root
                 break;
             }
 
-            if (File.Exists(Path.Join(parent.FullName, "TrimmedTodo.sln")))
+            if (File.Exists(Path.Join(currentDir.FullName, "TrimmedTodo.sln")))
             {
                 // We're in the repo root
-                repoDir = parent;
+                repoDir = currentDir;
                 break;
             }
 
-            currentDirPath = parent.FullName;
+            currentDir = currentDir.Parent;
         }
 
         return repoDir is null ? throw new InvalidOperationException("Couldn't find repo directory") : repoDir.FullName;
