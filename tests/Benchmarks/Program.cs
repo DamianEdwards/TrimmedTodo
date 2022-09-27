@@ -5,6 +5,7 @@ using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
@@ -31,21 +32,21 @@ else
         );
 }
 
-[SimpleJob(launchCount: 1, warmupCount: 1, targetCount: 3, invocationCount: 6)]
+[SimpleJob(RunStrategy.ColdStart, launchCount: 1, warmupCount: 1, invocationCount: 1, targetCount: 10)]
 public class StartupTimeBenchmarks
 {
     private string? _appPath;
 
     //[Params("HelloWorld.Console")]
-    //[Params("HelloWorld.Web")]
+    [Params("HelloWorld.Web")]
     //[Params("HelloWorld.Console", "HelloWorld.Web")]
-    [Params("HelloWorld.Console", "HelloWorld.Web", "TrimmedTodo.Console.EfCore.Sqlite")]
+    //[Params("HelloWorld.Console", "HelloWorld.Web", "TrimmedTodo.Console.EfCore.Sqlite")]
     //[Params("TrimmedTodo.Console.EfCore.Sqlite")]
     public string ProjectName { get; set; } = default!;
 
     //[ParamsAllValues]
     //[Params(PublishScenario.Default, PublishScenario.Trimmed)]
-    [Params(PublishScenario.Default, PublishScenario.Trimmed, PublishScenario.TrimmedReadyToRun)]
+    [Params(PublishScenario.Default, PublishScenario.Trimmed, PublishScenario.TrimmedReadyToRun, PublishScenario.AOT)]
     //[Params(PublishScenario.SingleFileReadyToRun)]
     //[Params(PublishScenario.Default, PublishScenario.NoAppHost, PublishScenario.ReadyToRun, PublishScenario.SelfContained, PublishScenario.SelfContainedReadyToRun,
     //    PublishScenario.SingleFile, PublishScenario.SingleFileReadyToRun, PublishScenario.Trimmed, PublishScenario.TrimmedReadyToRun)]
