@@ -1,8 +1,12 @@
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Order;
+using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 
 if (Directory.Exists(PathHelper.BenchmarkArtifactsDir))
@@ -10,13 +14,21 @@ if (Directory.Exists(PathHelper.BenchmarkArtifactsDir))
     Directory.Delete(PathHelper.BenchmarkArtifactsDir, true);
 }
 
+var config = (Debugger.IsAttached ? new DebugInProcessConfig() : DefaultConfig.Instance)
+    .AddColumn(new RatioColumn()).HideColumns("Method")
+    .WithOrderer(new GroupByProjectNameOrderer())
+    .WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(42));
+
 if (Debugger.IsAttached)
 {
-    BenchmarkRunner.Run<StartupTimeBenchmarks>(new DebugInProcessConfig());
+    BenchmarkRunner.Run<StartupTimeBenchmarks>(config
+        .WithOption(ConfigOptions.StopOnFirstError, true));
 }
 else
 {
-    BenchmarkRunner.Run<StartupTimeBenchmarks>();
+    BenchmarkRunner.Run<StartupTimeBenchmarks>(config
+        //.WithOption(ConfigOptions.StopOnFirstError, true)
+        );
 }
 
 [SimpleJob(launchCount: 1, warmupCount: 1, targetCount: 3, invocationCount: 6)]
@@ -26,30 +38,27 @@ public class StartupTimeBenchmarks
 
     //[Params("HelloWorld.Console")]
     //[Params("HelloWorld.Web")]
+    //[Params("HelloWorld.Console", "HelloWorld.Web")]
     [Params("HelloWorld.Console", "HelloWorld.Web", "TrimmedTodo.Console.EfCore.Sqlite")]
     //[Params("TrimmedTodo.Console.EfCore.Sqlite")]
     public string ProjectName { get; set; } = default!;
 
     //[ParamsAllValues]
+    //[Params(PublishScenario.Default, PublishScenario.Trimmed)]
+    [Params(PublishScenario.Default, PublishScenario.Trimmed, PublishScenario.TrimmedReadyToRun)]
     //[Params(PublishScenario.SingleFileReadyToRun)]
-    [Params(PublishScenario.Default, PublishScenario.NoAppHost, PublishScenario.ReadyToRun, PublishScenario.SelfContained, PublishScenario.SelfContainedReadyToRun,
-        PublishScenario.SingleFile, PublishScenario.SingleFileReadyToRun, PublishScenario.Trimmed, PublishScenario.TrimmedReadyToRun)]
+    //[Params(PublishScenario.Default, PublishScenario.NoAppHost, PublishScenario.ReadyToRun, PublishScenario.SelfContained, PublishScenario.SelfContainedReadyToRun,
+    //    PublishScenario.SingleFile, PublishScenario.SingleFileReadyToRun, PublishScenario.Trimmed, PublishScenario.TrimmedReadyToRun)]
     //[Params(PublishScenario.Default, PublishScenario.ReadyToRun, PublishScenario.Trimmed, PublishScenario.AOT)]
     //[Params(PublishScenario.Default, PublishScenario.SingleFile, PublishScenario.ReadyToRun, PublishScenario.Trimmed)]
     //[Params(PublishScenario.TrimmedReadyToRun)]
     public PublishScenario Scenario { get; set; }
 
     [GlobalSetup]
-    public void PublishApp()
-    {
-        _appPath = ProjectBuilder.Publish(ProjectName, Scenario);
-    }
+    public void PublishApp() => _appPath = ProjectBuilder.Publish(ProjectName, Scenario);
 
     [Benchmark]
-    public void StartApp()
-    {
-        AppRunner.Run(_appPath!, ("SHUTDOWN_ON_START", "true"));
-    }
+    public void StartApp() => AppRunner.Run(_appPath!, ("SHUTDOWN_ON_START", "true"));
 }
 
 public enum PublishScenario
@@ -64,6 +73,95 @@ public enum PublishScenario
     Trimmed,
     TrimmedReadyToRun,
     AOT
+}
+
+public class RatioColumn : IColumn
+{
+    public string Id { get; } = "Ratio";
+    public string ColumnName { get; } = "Ratio";
+    public bool AlwaysShow { get; } = false;
+    public ColumnCategory Category { get; } = ColumnCategory.Custom;
+    public int PriorityInCategory { get; } = 0;
+    public bool IsNumeric { get; } = true;
+    public UnitType UnitType { get; } = UnitType.Dimensionless;
+    public string Legend { get; } = "[CurrentScenario]/[Default]";
+
+    public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
+    {
+        var baseline = summary.BenchmarksCases
+            .SingleOrDefault(c =>
+            {
+                var scenario = c.Parameters[nameof(StartupTimeBenchmarks.Scenario)];
+
+                if (scenario is not PublishScenario.Default)
+                {
+                    return false;
+                }
+
+                for (var i = 0; i < benchmarkCase.Parameters.Count; i++)
+                {
+                    var p = benchmarkCase.Parameters[i];
+
+                    // Skip scenario parameter
+                    if (p.Name == nameof(StartupTimeBenchmarks.Scenario)) continue;
+
+                    if (c.Parameters[p.Name] != p.Value)
+                    {
+                        // Parameter doesn't match
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+        if (baseline is not null)
+        {
+            var baselineReport = summary.Reports.First(r => r.BenchmarkCase == baseline);
+            var report = summary.Reports.First(r => r.BenchmarkCase == benchmarkCase);
+
+            return (report.ResultStatistics.Mean / baselineReport.ResultStatistics.Mean).ToString("#.00");
+        }
+
+        return "?";
+    }
+
+    public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);
+
+    public bool IsAvailable(Summary summary) =>
+        summary.BenchmarksCases.Where(c => c.Parameters[nameof(StartupTimeBenchmarks.Scenario)] switch
+        {
+            PublishScenario.Default => true,
+            _ => false
+        }).Any();
+
+    public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase) => false;
+}
+
+public class GroupByProjectNameOrderer : DefaultOrderer, IOrderer
+{
+    public override IEnumerable<BenchmarkCase> GetSummaryOrder(ImmutableArray<BenchmarkCase> benchmarksCases, Summary summary)
+    {
+        var benchmarkLogicalGroups = benchmarksCases.GroupBy(b => GetLogicalGroupKeyImpl(b));
+
+        foreach (var logicalGroup in GetLogicalGroupOrder(benchmarkLogicalGroups, benchmarksCases.FirstOrDefault()?.Config.GetLogicalGroupRules()))
+        foreach (var benchmark in GetSummaryOrderForGroup(logicalGroup.ToImmutableArray(), summary))
+            yield return benchmark;
+    }
+
+    public override IEnumerable<IGrouping<string, BenchmarkCase>> GetLogicalGroupOrder(IEnumerable<IGrouping<string, BenchmarkCase>> logicalGroups, IEnumerable<BenchmarkLogicalGroupRule>? order = null)
+    {
+        var initialOrder = base.GetLogicalGroupOrder(logicalGroups, order);
+
+        var cases = initialOrder.SelectMany(g => g.ToList());
+        var newOrder = cases.GroupBy(c => c.Parameters[nameof(StartupTimeBenchmarks.ProjectName)].ToString() ?? "").ToList();
+        return newOrder;
+    }
+
+    string IOrderer.GetLogicalGroupKey(ImmutableArray<BenchmarkCase> allBenchmarksCases, BenchmarkCase benchmarkCase)
+        => GetLogicalGroupKeyImpl(benchmarkCase);
+
+    private static string GetLogicalGroupKeyImpl(BenchmarkCase benchmarkCase)
+        => benchmarkCase.Parameters[nameof(StartupTimeBenchmarks.ProjectName)].ToString() ?? "";
 }
 
 class ProjectBuilder
@@ -165,7 +263,7 @@ class ProjectBuilder
 
         DotNetCli.Clean(cmdArgs);
 
-        cmdArgs.AddRange(new[] { $"--output", output});
+        cmdArgs.AddRange(new[] { $"--output", output });
         cmdArgs.Add("--disable-build-servers");
         if (args is not null)
         {
