@@ -7,6 +7,12 @@ namespace Microsoft.AspNetCore.Builder;
 
 public static class JwtConfigHelper
 {
+    /// <summary>
+    /// Configures JWT Bearer to load the signing key from environment variable when not running in Development.
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">Thrown when the signing key is not found in non-Development environments.</exception>
     public static Action<JwtBearerOptions> ConfigureJwtBearer(WebApplicationBuilder builder)
     {
         return o =>
@@ -26,6 +32,15 @@ public static class JwtConfigHelper
         };
     }
 
+    private const string JwtOptionsLogMessage = "JwtBearerAuthentication options configuration: {JwtOptions}";
+
+    /// <summary>
+    /// Validates that JWT Bearer authentication has been configured correctly.
+    /// </summary>
+    /// <param name="options"></param>
+    /// <param name="hostEnvironment"></param>
+    /// <param name="loggerFactory"></param>
+    /// <returns><c>true</c> if required JWT Bearer settings are loaded, otherwise <c>false</c>.</returns>
     public static bool ValidateJwtOptions(JwtBearerOptions options, IHostEnvironment hostEnvironment, ILoggerFactory loggerFactory)
     {
         var relevantOptions = new JwtOptionsSummary
@@ -39,16 +54,17 @@ public static class JwtConfigHelper
         };
 
         var logger = loggerFactory.CreateLogger(hostEnvironment.ApplicationName ?? nameof(Program));
-        logger.LogInformation("JwtBearerAuthentication options configuration: {JwtOptions}",
-            JsonSerializer.Serialize(relevantOptions, ProgramJsonSerializerContext.Default.JwtOptionsSummary));
+        var jwtOptionsJson = JsonSerializer.Serialize(relevantOptions, ProgramJsonSerializerContext.Default.JwtOptionsSummary);
 
         if ((string.IsNullOrEmpty(relevantOptions.Audience) && relevantOptions.Audiences?.Any() != true)
             || (relevantOptions.ClaimsIssuer is null && relevantOptions.Issuers?.Any() != true)
             || (relevantOptions.IssuerSigningKey is null && relevantOptions.IssuerSigningKeys?.Any() != true))
         {
+            logger.LogError(JwtOptionsLogMessage, jwtOptionsJson);
             return false;
         }
 
+        logger.LogInformation(JwtOptionsLogMessage, jwtOptionsJson);
         return true;
     }
 }
