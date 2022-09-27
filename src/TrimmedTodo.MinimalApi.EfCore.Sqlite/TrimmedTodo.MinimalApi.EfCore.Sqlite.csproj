@@ -11,6 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\HelloWorld.Web\WebApplicationExtensions.cs" Link="WebApplicationExtensions.cs" />
+    <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\JwtConfigHelper.cs" Link="JwtConfigHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Manually marking these assemblies as trimmable until we update them -->
     <TrimmableAssembly Include="Microsoft.IdentityModel.Tokens" />
     <TrimmableAssembly Include="Microsoft.AspNetCore.Components.Server" />
