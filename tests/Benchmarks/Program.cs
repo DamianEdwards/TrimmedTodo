@@ -408,9 +408,13 @@ class DotNetCli
             }
         };
 
-        process.StartInfo.Arguments = $"{commandName} {string.Join(' ', args.Select(a => a.Contains(' ') ? $"\"{a}\"" : a))}";
+        process.StartInfo.ArgumentList.Add(commandName);
+        foreach (var arg in args)
+        {
+            process.StartInfo.ArgumentList.Add(arg);
+        }
 
-        var cmdLine = $"{process.StartInfo.FileName} {process.StartInfo.Arguments}";
+        var cmdLine = $"{process.StartInfo.FileName} {string.Join(' ', process.StartInfo.ArgumentList)}";
         Console.WriteLine("Running dotnet CLI with cmd line:");
         Console.WriteLine(cmdLine);
         Console.WriteLine();
