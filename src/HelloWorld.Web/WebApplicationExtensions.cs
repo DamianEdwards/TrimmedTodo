@@ -16,7 +16,7 @@ public static partial class WebApplicationExtensions
 
         if (app.Configuration["SHUTDOWN_ON_START"] != "true")
         {
-            app.WaitForShutdown();
+            await app.WaitForShutdownAsync();
         }
         else
         {
