@@ -119,11 +119,6 @@ public static class TodoApi
     }
 }
 
-public interface IValueResult<TValue>
-{
-    TValue Value { get; }
-}
-
 class Todo
 {
     public int Id { get; set; }
