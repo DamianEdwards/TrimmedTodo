@@ -23,12 +23,18 @@ $projectPath = "$projectDir\$projectName.csproj";
 $artifacts = ".artifacts";
 
 Write-Host "Cleaning up previous run";
+
+Write-Host "dotnet restore $projectPath -r $Rid /p:Configuration=Release"
+dotnet restore $projectPath -r $Rid /p:Configuration=Release
+
+Write-Host "dotnet clean $projectPath -c Release -r $Rid -v q --nologo"
+dotnet clean $projectPath -c Release -r $Rid -v q --nologo
+
+Get-ChildItem -Include bin -Recurse -Directory | Remove-Item -Recurse -Force;
+Get-ChildItem -Include obj -Recurse -Directory | Remove-Item -Recurse -Force;
 if (Test-Path -Path "$artifacts\$projectName") {
     Get-ChildItem -Path "$artifacts\$projectName" | Remove-Item -Recurse -Force;
 }
-dotnet clean -v q --nologo
-Get-ChildItem -Include bin -Recurse -Directory | Remove-Item -Recurse -Force;
-Get-ChildItem -Include obj -Recurse -Directory | Remove-Item -Recurse -Force;
 
 Write-Host "Publishing ${projectName}: dotnet publish -r $Rid --self-contained";
 dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName"
