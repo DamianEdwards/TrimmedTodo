@@ -103,7 +103,7 @@ class ProjectBuilder
             $"--configuration", configuration
         };
 
-        DotNetCli.Clean(cmdArgs);
+        //DotNetCli.Clean(cmdArgs);
 
         cmdArgs.AddRange(new[] { $"--output", output });
         cmdArgs.Add("--disable-build-servers");
