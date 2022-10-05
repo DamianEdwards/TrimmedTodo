@@ -63,9 +63,10 @@ Deleted all 3 todos!
 - Results taken on Windows 11 x64
 - All apps are published using "Release" configuration and are self-contained
 - Only trimming modes that result in the app still working are shown
+- Execution time measures time for the app to run (startup, execute, close). Web apps are configured to send a request to themselves on startup and then shut themselves down when being measured.
 
-App type | Trim mode | Size
----------|-----------|----:
+App type | Trim mode | Size | Execution time
+---------|-----------|-----:|--------------:
 [Console - Hello World](/src/HelloWorld.Console/) | full | 11.04 MB
 [Console - Hello World](/src/HelloWorld.Console/) | AOT + full | 3.32 MB
 [Console - Hello World](/src/HelloWorld.Console/) | AOT + full + tweaks | 2.18 MB
@@ -79,9 +80,38 @@ App type | Trim mode | Size
 [Web - Hello World](/src/HelloWorld.Web/) | full | 17.28 MB
 [Web - Hello World](/src/HelloWorld.Web/) | AOT + full | 22.07 MB
 [Web - Hello World](/src/HelloWorld.Web/) | AOT + full + tweaks | 21.84 MB
-[Web - Hello World](/src/HelloWorld.Web/) | AOT + full + tweaks + hacks | 20.43 MB
+[Web - Hello World](/src/HelloWorld.Web/) | AOT + full + tweaks + hacks | 20.43 MB | 83.59 ms
 [Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial | 39.80 MB
 [Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial + tweaks | 36.56 MB
 [Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.Dapper.Sqlite/) | partial | 35.43 MB
 [Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.Dapper.Sqlite/) | partial + tweaks | 32.77 MB
 [Web - Todo MVC Web API EF Core & Sqlite](/src/TrimmedTodo.WebApi.EfCore.Sqlite/) | partial + tweaks | 39.75 MB
+
+### App execution times after publishing
+
+- Results taken on Windows 11 x64
+- All apps are published using "Release" configuration
+- Only trimming modes that result in the app still working are shown
+- Execution time measures time for the app to run (startup, execute, close). Web apps are configured to send a request to themselves on startup and then shut themselves down when being measured.
+
+|                          ProjectName |          Scenario |        Mean |     Error |    StdDev |
+|------------------------------------- |------------------ |------------:|----------:|----------:|
+|                   HelloWorld.Console |           Trimmed |    38.76 ms | 21.496 ms | 14.218 ms |
+|                   HelloWorld.Console | TrimmedReadyToRun |    27.52 ms | 24.214 ms | 16.016 ms |
+|                   HelloWorld.Console |               AOT |    12.90 ms |  6.830 ms |  4.518 ms |
+|                                      |                   |             |           |           |
+|                       HelloWorld.Web |           Trimmed |   540.81 ms | 43.958 ms | 29.076 ms |
+|                       HelloWorld.Web | TrimmedReadyToRun |   173.49 ms | 63.661 ms | 42.108 ms |
+|                       HelloWorld.Web |               AOT |    80.17 ms | 43.839 ms | 28.997 ms |
+|                                      |                   |             |           |           |
+|    TrimmedTodo.Console.EfCore.Sqlite |           Trimmed |    898.9 ms |  58.72 ms |  38.84 ms |
+|    TrimmedTodo.Console.EfCore.Sqlite | TrimmedReadyToRun |    314.3 ms | 129.64 ms |  85.75 ms |
+|                                      |                   |             |           |           |
+| TrimmedTodo.MinimalApi.Dapper.Sqlite |           Trimmed |   952.64 ms |  64.99 ms |  42.99 ms |
+| TrimmedTodo.MinimalApi.Dapper.Sqlite | TrimmedReadyToRun |   295.68 ms | 116.17 ms |  76.84 ms |
+|                                      |                   |             |           |           |
+| TrimmedTodo.MinimalApi.EfCore.Sqlite |           Trimmed | 1,400.27 ms |  91.75 ms |  60.68 ms |
+| TrimmedTodo.MinimalApi.EfCore.Sqlite | TrimmedReadyToRun |   460.99 ms | 142.61 ms |  94.33 ms |
+|                                      |                   |             |           |           |
+|     TrimmedTodo.WebApi.EfCore.Sqlite |           Trimmed | 1,416.72 ms | 148.68 ms |  98.34 ms |
+|     TrimmedTodo.WebApi.EfCore.Sqlite | TrimmedReadyToRun |   510.78 ms | 344.67 ms | 227.98 ms |

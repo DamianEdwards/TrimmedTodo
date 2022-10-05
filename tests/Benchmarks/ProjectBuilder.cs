@@ -35,7 +35,6 @@ class ProjectBuilder
         {
             "--runtime", RuntimeInformation.RuntimeIdentifier,
             selfContained || trimLevel != TrimLevel.None ? "--self-contained" : "--no-self-contained",
-            $"/p:PublishTrimmed={(trimLevel == TrimLevel.None ? "false" : "")}",
             $"/p:PublishSingleFile={(singleFile ? "true" : "")}",
             $"/p:PublishReadyToRun={(readyToRun ? "true" : "")}",
             "/p:PublishAot=false"
@@ -43,7 +42,12 @@ class ProjectBuilder
 
         if (trimLevel != TrimLevel.None)
         {
+            args.Add("/p:PublishTrimmed=true");
             args.Add($"/p:TrimMode={GetTrimLevelPropertyValue(trimLevel)}");
+        }
+        else
+        {
+            args.Add("/p:PublishTrimmed=false");
         }
 
         if (!useAppHost)
