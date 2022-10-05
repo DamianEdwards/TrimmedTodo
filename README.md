@@ -65,8 +65,8 @@ Deleted all 3 todos!
 - Only trimming modes that result in the app still working are shown
 - Execution time measures time for the app to run (startup, execute, close). Web apps are configured to send a request to themselves on startup and then shut themselves down when being measured.
 
-App type | Trim mode | Size | Execution time
----------|-----------|-----:|--------------:
+App type | Trim mode | Size
+---------|-----------|-----:
 [Console - Hello World](/src/HelloWorld.Console/) | full | 11.04 MB
 [Console - Hello World](/src/HelloWorld.Console/) | AOT + full | 3.32 MB
 [Console - Hello World](/src/HelloWorld.Console/) | AOT + full + tweaks | 2.18 MB
@@ -80,7 +80,7 @@ App type | Trim mode | Size | Execution time
 [Web - Hello World](/src/HelloWorld.Web/) | full | 17.28 MB
 [Web - Hello World](/src/HelloWorld.Web/) | AOT + full | 22.07 MB
 [Web - Hello World](/src/HelloWorld.Web/) | AOT + full + tweaks | 21.84 MB
-[Web - Hello World](/src/HelloWorld.Web/) | AOT + full + tweaks + hacks | 20.43 MB | 83.59 ms
+[Web - Hello World](/src/HelloWorld.Web/) | AOT + full + tweaks + hacks | 20.43 MB
 [Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial | 39.80 MB
 [Web - Todo Minimal API EF Core & Sqlite](/src/TrimmedTodo.MinimalApi.EfCore.Sqlite/) | partial + tweaks | 36.56 MB
 [Web - Todo Minimal API Dapper & Sqlite](/src/TrimmedTodo.MinimalApi.Dapper.Sqlite/) | partial | 35.43 MB
