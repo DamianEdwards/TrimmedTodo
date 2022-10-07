@@ -3,8 +3,10 @@ using System.Text.Json;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.Emit;
 using Benchmarks;
 
 if (Directory.Exists(PathHelper.BenchmarkArtifactsDir))
@@ -12,25 +14,32 @@ if (Directory.Exists(PathHelper.BenchmarkArtifactsDir))
     Directory.Delete(PathHelper.BenchmarkArtifactsDir, true);
 }
 
-var config = (Debugger.IsAttached ? new DebugInProcessConfig() : DefaultConfig.Instance)
-    .AddColumn(new RatioColumn()).HideColumns("Method")
+var job = Job.Default
+        .WithToolchain(InProcessEmitToolchain.Instance)
+        .WithStrategy(RunStrategy.ColdStart)
+        .WithIterationCount(10);
+
+if (Debugger.IsAttached)
+{
+    job = job.WithCustomBuildConfiguration("Debug");
+}
+
+var config = DefaultConfig.Instance
+    .AddJob(job)
+    .AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.Scenario), PublishScenario.Default))
+    .AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.ProjectName), ParameterRatioColumn.BaselineKind.StartsWith))
+    .HideColumns("Method")
     .WithOrderer(new GroupByProjectNameOrderer())
     .WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(42));
 
 if (Debugger.IsAttached)
 {
-    BenchmarkRunner.Run<StartupTimeBenchmarks>(config
-        //.WithOption(ConfigOptions.StopOnFirstError, true)
-        );
-}
-else
-{
-    BenchmarkRunner.Run<StartupTimeBenchmarks>(config
-        //.WithOption(ConfigOptions.StopOnFirstError, true)
-        );
+    config = config.WithOptions(ConfigOptions.KeepBenchmarkFiles | ConfigOptions.DisableOptimizationsValidator);
 }
 
-[SimpleJob(RunStrategy.ColdStart, launchCount: 1, warmupCount: 1, invocationCount: 1, targetCount: 10)]
+BenchmarkRunner.Run<StartupTimeBenchmarks>(config);
+
+//[SimpleJob(RunStrategy.ColdStart, launchCount: 1, warmupCount: 1, invocationCount: 1, targetCount: 10)]
 public class StartupTimeBenchmarks
 {
     private string _appPath = default!;
@@ -45,12 +54,12 @@ public class StartupTimeBenchmarks
         "TrimmedTodo.MinimalApi.Sqlite",
         "TrimmedTodo.MinimalApi.Dapper.Sqlite",
         "TrimmedTodo.MinimalApi.EfCore.Sqlite",
-        //"TrimmedTodo.WebApi.EfCore.Sqlite",
+        "TrimmedTodo.WebApi.EfCore.Sqlite",
     };
 
     public static IEnumerable<PublishScenario> Scenarios() => new[]
     {
-        PublishScenario.Default,
+        //PublishScenario.Default,
         //PublishScenario.NoAppHost,
         //PublishScenario.ReadyToRun,
         //PublishScenario.SelfContained,

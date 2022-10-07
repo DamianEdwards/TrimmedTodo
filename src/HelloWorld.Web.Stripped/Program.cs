@@ -15,7 +15,6 @@ var host = new WebHostBuilder()
     })
     .Build();
 
-
 await host.StartAsync();
 
 Console.WriteLine($"Listening on http://localhost:{port}");
