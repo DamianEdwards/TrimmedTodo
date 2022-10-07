@@ -23,7 +23,6 @@ class ProjectBuilder
     private static PublishResult Publish(
         string projectName,
         string configuration = "Release",
-        string? output = null,
         bool selfContained = false,
         bool singleFile = false,
         bool readyToRun = false,
@@ -55,13 +54,12 @@ class ProjectBuilder
             args.Add("/p:UseAppHost=false");
         }
 
-        return PublishImpl(projectName, configuration, output, args, runId);
+        return PublishImpl(projectName, configuration, args, runId);
     }
 
     private static PublishResult PublishAot(
         string projectName,
         string configuration = "Release",
-        string? output = null,
         TrimLevel trimLevel = TrimLevel.Default,
         string? runId = null)
     {
@@ -84,10 +82,10 @@ class ProjectBuilder
             args.Add($"/p:TrimMode={GetTrimLevelPropertyValue(trimLevel)}");
         }
 
-        return PublishImpl(projectName, configuration, output, args, runId);
+        return PublishImpl(projectName, configuration, args, runId);
     }
 
-    private static PublishResult PublishImpl(string projectName, string configuration = "Release", string? output = null, IEnumerable<string>? args = null, string? runId = null)
+    private static PublishResult PublishImpl(string projectName, string configuration = "Release", IEnumerable<string>? args = null, string? runId = null)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(projectName);
 
@@ -99,7 +97,7 @@ class ProjectBuilder
         }
 
         runId ??= Random.Shared.NextInt64().ToString();
-        output ??= Path.Combine(PathHelper.BenchmarkArtifactsDir, projectName, runId);
+        var output = PathHelper.GetProjectPublishDir(projectName, runId);
 
         var cmdArgs = new List<string>
         {

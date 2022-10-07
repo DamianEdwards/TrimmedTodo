@@ -26,8 +26,9 @@ if (Debugger.IsAttached)
 
 var config = DefaultConfig.Instance
     .AddJob(job)
-    .AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.Scenario), PublishScenario.Default))
-    .AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.ProjectName), ParameterRatioColumn.BaselineKind.StartsWith))
+    .AddColumn(new AppSizeColumn())
+    .AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.PublishKind), PublishScenario.Default))
+    .AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.Project), BaselineValueComparisonKind.StartsWith))
     .HideColumns("Method")
     .WithOrderer(new GroupByProjectNameOrderer())
     .WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(42));
@@ -39,7 +40,6 @@ if (Debugger.IsAttached)
 
 BenchmarkRunner.Run<StartupTimeBenchmarks>(config);
 
-//[SimpleJob(RunStrategy.ColdStart, launchCount: 1, warmupCount: 1, invocationCount: 1, targetCount: 10)]
 public class StartupTimeBenchmarks
 {
     private string _appPath = default!;
@@ -48,39 +48,39 @@ public class StartupTimeBenchmarks
     public static IEnumerable<string> ProjectNames() => new[]
     {
         //"HelloWorld.Console",
-        //"HelloWorld.Web",
+        "HelloWorld.Web",
         //"HelloWorld.Web.Stripped",
         //"TrimmedTodo.Console.EfCore.Sqlite",
-        "TrimmedTodo.MinimalApi.Sqlite",
-        "TrimmedTodo.MinimalApi.Dapper.Sqlite",
-        "TrimmedTodo.MinimalApi.EfCore.Sqlite",
-        "TrimmedTodo.WebApi.EfCore.Sqlite",
+        //"TrimmedTodo.MinimalApi.Sqlite",
+        //"TrimmedTodo.MinimalApi.Dapper.Sqlite",
+        //"TrimmedTodo.MinimalApi.EfCore.Sqlite",
+        //"TrimmedTodo.WebApi.EfCore.Sqlite",
     };
 
     public static IEnumerable<PublishScenario> Scenarios() => new[]
     {
-        //PublishScenario.Default,
+        PublishScenario.Default,
         //PublishScenario.NoAppHost,
         //PublishScenario.ReadyToRun,
         //PublishScenario.SelfContained,
         //PublishScenario.SelfContainedReadyToRun,
-        //PublishScenario.SingleFile,
+        PublishScenario.SingleFile,
         //PublishScenario.SingleFileReadyToRun,
-        //PublishScenario.Trimmed,
+        PublishScenario.Trimmed,
         PublishScenario.TrimmedReadyToRun,
-        //PublishScenario.AOT
+        PublishScenario.AOT
     };
 
     [ParamsSource(nameof(ProjectNames))]
-    public string ProjectName { get; set; } = default!;
+    public string Project { get; set; } = default!;
 
     [ParamsSource(nameof(Scenarios))]
-    public PublishScenario Scenario { get; set; }
+    public PublishScenario PublishKind { get; set; }
 
     [GlobalSetup]
     public void PublishApp()
     {
-        var (appPath, userSecretsId) = ProjectBuilder.Publish(ProjectName, Scenario);
+        var (appPath, userSecretsId) = ProjectBuilder.Publish(Project, PublishKind);
         _appPath = appPath;
         _userSecretsId = userSecretsId;
     }

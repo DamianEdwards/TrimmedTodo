@@ -75,6 +75,7 @@ public class TodoApiClient
     public async Task<Todo> CreateTodo(string title)
     {
         var todo = new Todo { Title = title };
+
         var response = await _httpClient.PostAsJsonAsync("", todo, SourceGenerationContext.Web.Todo);
         var createdTodo = await response.Content.ReadFromJsonAsync(SourceGenerationContext.Web.Todo);
 

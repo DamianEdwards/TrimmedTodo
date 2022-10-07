@@ -7,6 +7,11 @@ class PathHelper
     public static string ArtifactsDir { get; } = Path.Combine(RepoRoot, ".artifacts");
     public static string BenchmarkArtifactsDir { get; } = Path.Combine(ArtifactsDir, "Benchmarks", "published_apps");
 
+    public static string GetProjectPublishDir(string projectName, string? runId)
+    {
+        return Path.Combine(BenchmarkArtifactsDir, projectName, runId ?? "");
+    }
+
     private static string GetRepoRoot()
     {
         var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());

@@ -7,20 +7,20 @@ namespace Benchmarks;
 public class ParameterRatioColumn : IColumn
 {
     private readonly string _parameterName;
-    private readonly BaselineKind _baselineKind;
+    private readonly BaselineValueComparisonKind _baselineKind;
     private readonly object? _baselineValue;
 
     public ParameterRatioColumn(string parameterName, object? baselineValue)
-        : this(parameterName, BaselineKind.Equals, baselineValue)
+        : this(parameterName, BaselineValueComparisonKind.Equals, baselineValue)
     {
 
     }
 
-    public ParameterRatioColumn(string parameterName, BaselineKind baselineKind, object? baselineValue = null)
+    public ParameterRatioColumn(string parameterName, BaselineValueComparisonKind baselineKind, object? baselineValue = null)
     {
-        if (baselineKind == BaselineKind.StartsWith && baselineValue is not null)
+        if (baselineKind == BaselineValueComparisonKind.StartsWith && baselineValue is not null)
         {
-            throw new ArgumentException($"Specifiying a baseline value for {nameof(BaselineKind)}.{nameof(BaselineKind.StartsWith)} is not supported.", nameof(baselineValue));
+            throw new ArgumentException($"Specifiying a baseline value for {nameof(BaselineValueComparisonKind)}.{nameof(BaselineValueComparisonKind.StartsWith)} is not supported.", nameof(baselineValue));
         }
 
         _parameterName = parameterName;
@@ -29,7 +29,12 @@ public class ParameterRatioColumn : IColumn
 
         Id = $"Ratio_Parameter_{parameterName}";
         ColumnName = $"Ratio ({parameterName})";
-        Legend = $"[Current{_parameterName}]/[{baselineValue}]";
+        Legend = baselineKind switch
+        {
+            BaselineValueComparisonKind.Equals => $"[Current{_parameterName}]/[{baselineValue}]",
+            BaselineValueComparisonKind.StartsWith => $"[Current{_parameterName}]/[Baseline{_parameterName}]",
+            _ => throw new NotSupportedException("")
+        };
     }
 
     public string Id { get; }
@@ -45,7 +50,7 @@ public class ParameterRatioColumn : IColumn
     {
         BenchmarkCase? baseline = null;
 
-        if (_baselineKind == BaselineKind.StartsWith)
+        if (_baselineKind == BaselineValueComparisonKind.StartsWith)
         {
             // Value is like "TrimmedTodo.MinimalApi.Sqlite"
             // Find case with shortest matching value
@@ -65,7 +70,7 @@ public class ParameterRatioColumn : IColumn
 
             baseline = baselineCandidates.MinBy(c => ((string)c.Parameters[_parameterName]).Length);
         }
-        else if (_baselineKind == BaselineKind.Equals)
+        else if (_baselineKind == BaselineValueComparisonKind.Equals)
         {
             baseline = summary.BenchmarksCases
                 .SingleOrDefault(c =>
@@ -115,12 +120,12 @@ public class ParameterRatioColumn : IColumn
                 var parameterValue = c.Parameters[_parameterName];
                 return _baselineKind switch
                 {
-                    BaselineKind.Equals => parameterValue.Equals(_baselineValue),
-                    BaselineKind.StartsWith => parameterValue is string pv &&
+                    BaselineValueComparisonKind.Equals => parameterValue.Equals(_baselineValue),
+                    BaselineValueComparisonKind.StartsWith => parameterValue is string pv &&
                         summary.BenchmarksCases.Any(c2 =>
                             c2.Parameters[_parameterName] is string value
                             && value.StartsWith(pv.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)[0])),
-                    _ => throw new InvalidOperationException($"Unsupported {nameof(BaselineKind)} specified")
+                    _ => throw new InvalidOperationException($"Unsupported {nameof(BaselineValueComparisonKind)} specified")
                 };
             });
         return hasBaselineCase;
@@ -130,10 +135,10 @@ public class ParameterRatioColumn : IColumn
 
     private string GetStartsWithPrefix(BenchmarkCase benchmarkCase) =>
         ((string)benchmarkCase.Parameters[_parameterName]).Split('.', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)[0];
+}
 
-    public enum BaselineKind
-    {
-        Equals,
-        StartsWith
-    }
+public enum BaselineValueComparisonKind
+{
+    Equals,
+    StartsWith
 }
