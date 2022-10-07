@@ -155,7 +155,8 @@ class ProjectBuilder
     private static TrimLevel GetTrimLevel(string projectName)
     {
         if (projectName.Contains("EfCore", StringComparison.OrdinalIgnoreCase)
-            || projectName.Contains("Dapper", StringComparison.OrdinalIgnoreCase))
+            || projectName.Contains("Dapper", StringComparison.OrdinalIgnoreCase)
+            || projectName.Contains("MinimalApi.Sqlite", StringComparison.OrdinalIgnoreCase))
         {
             return TrimLevel.Partial;
         }
