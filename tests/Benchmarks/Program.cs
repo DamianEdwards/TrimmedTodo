@@ -39,11 +39,12 @@ public class StartupTimeBenchmarks
     public static IEnumerable<string> ProjectNames() => new[]
     {
         //"HelloWorld.Console",
-        "HelloWorld.Web",
-        "HelloWorld.Web.Stripped",
+        //"HelloWorld.Web",
+        //"HelloWorld.Web.Stripped",
         //"TrimmedTodo.Console.EfCore.Sqlite",
-        //"TrimmedTodo.MinimalApi.EfCore.Sqlite",
-        //"TrimmedTodo.MinimalApi.Dapper.Sqlite",
+        "TrimmedTodo.MinimalApi.Sqlite",
+        "TrimmedTodo.MinimalApi.Dapper.Sqlite",
+        "TrimmedTodo.MinimalApi.EfCore.Sqlite",
         //"TrimmedTodo.WebApi.EfCore.Sqlite",
     };
 
@@ -56,9 +57,9 @@ public class StartupTimeBenchmarks
         //PublishScenario.SelfContainedReadyToRun,
         //PublishScenario.SingleFile,
         //PublishScenario.SingleFileReadyToRun,
-        PublishScenario.Trimmed,
+        //PublishScenario.Trimmed,
         PublishScenario.TrimmedReadyToRun,
-        PublishScenario.AOT
+        //PublishScenario.AOT
     };
 
     [ParamsSource(nameof(ProjectNames))]

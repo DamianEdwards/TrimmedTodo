@@ -5,7 +5,7 @@ class PathHelper
     public static string RepoRoot { get; } = GetRepoRoot();
     public static string ProjectsDir { get; } = Path.Combine(RepoRoot, "src");
     public static string ArtifactsDir { get; } = Path.Combine(RepoRoot, ".artifacts");
-    public static string BenchmarkArtifactsDir { get; } = Path.Combine(ArtifactsDir, "benchmarks");
+    public static string BenchmarkArtifactsDir { get; } = Path.Combine(ArtifactsDir, "Benchmarks", "published_apps");
 
     private static string GetRepoRoot()
     {
