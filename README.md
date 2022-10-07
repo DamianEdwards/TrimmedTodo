@@ -109,6 +109,8 @@ App type | Trim mode | Size
 |    TrimmedTodo.Console.EfCore.Sqlite |           Trimmed |    898.9 ms |  58.72 ms |  38.84 ms |
 |    TrimmedTodo.Console.EfCore.Sqlite | TrimmedReadyToRun |    314.3 ms | 129.64 ms |  85.75 ms |
 |                                      |                   |             |           |           |
+|        TrimmedTodo.MinimalApi.Sqlite | TrimmedReadyToRun |    291.3 ms | 119.84 ms |  79.27 ms |
+|                                      |                   |             |           |           |
 | TrimmedTodo.MinimalApi.Dapper.Sqlite |           Trimmed |   952.64 ms |  64.99 ms |  42.99 ms |
 | TrimmedTodo.MinimalApi.Dapper.Sqlite | TrimmedReadyToRun |   295.68 ms | 116.17 ms |  76.84 ms |
 |                                      |                   |             |           |           |
