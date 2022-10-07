@@ -7,17 +7,19 @@
     <PublishRelease>true</PublishRelease>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
-    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRun>false</PublishReadyToRun>
     <UserSecretsId>7deba5fe-f06c-4a7d-9816-cdeccfc4e4a8</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="..\HelloWorld.Web\WebApplicationExtensions.cs" Link="WebApplicationExtensions.cs" />
+    <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\JwtConfigHelper.cs" Link="JwtConfigHelper.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Manually marking these assemblies as trimmable until we update them -->
     <TrimmableAssembly Include="Microsoft.IdentityModel.Tokens" />
+    <TrimmableAssembly Include="Microsoft.AspNetCore.Components" />
     <TrimmableAssembly Include="Microsoft.AspNetCore.Components.Server" />
     <TrimmableAssembly Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
     <TrimmableAssembly Include="Microsoft.AspNetCore.Mvc.Razor" />
@@ -36,8 +38,6 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0-rc.2.*" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0-rc.2.*" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="MiniValidation" Version="0.6.0-pre.20220527.55" />
   </ItemGroup>
-
 </Project>

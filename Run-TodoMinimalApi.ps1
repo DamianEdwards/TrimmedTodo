@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop';
 
-$projectName = "TrimmedTodo.MinimalApi.EfCore.Sqlite";
+$projectName = "TrimmedTodo.MinimalApi.Sqlite";
 
 .\scripts\Run-TodoApi.ps1 -ProjectName $projectName
