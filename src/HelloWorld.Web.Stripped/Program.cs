@@ -17,7 +17,7 @@ var host = new WebHostBuilder()
 
 await host.StartAsync();
 
-Console.WriteLine($"Listening on http://localhost:{port}");
+Console.WriteLine($"{DateTime.UtcNow.Ticks} - Listening on http://localhost:{port}");
 
 if (Environment.GetEnvironmentVariable("SHUTDOWN_ON_START") != "true")
 {
@@ -30,6 +30,7 @@ else
         using var http = new HttpClient();
         var response = await http.GetAsync($"http://localhost:{port}");
         response.EnsureSuccessStatusCode();
+        Console.Write($"{DateTime.UtcNow.Ticks} - First request complete");
     }
 
     await host.StopAsync();

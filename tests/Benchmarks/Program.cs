@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
@@ -27,8 +28,8 @@ if (Debugger.IsAttached)
 var config = DefaultConfig.Instance
     .AddJob(job)
     .AddColumn(new AppSizeColumn())
-    .AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.PublishKind), PublishScenario.Default))
-    .AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.Project), BaselineValueComparisonKind.StartsWith))
+    //.AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.PublishKind), PublishScenario.Default))
+    //.AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.Project), BaselineValueComparisonKind.StartsWith))
     .HideColumns("Method")
     .WithOrderer(new GroupByProjectNameOrderer())
     .WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(42));
@@ -42,14 +43,13 @@ BenchmarkRunner.Run<StartupTimeBenchmarks>(config);
 
 public class StartupTimeBenchmarks
 {
-    private string _appPath = default!;
-    private string? _userSecretsId = default;
+    private ProjectBuilder _projectBuilder = default!;
 
     public static IEnumerable<string> ProjectNames() => new[]
     {
         //"HelloWorld.Console",
         "HelloWorld.Web",
-        //"HelloWorld.Web.Stripped",
+        "HelloWorld.Web.Stripped",
         //"TrimmedTodo.Console.EfCore.Sqlite",
         //"TrimmedTodo.MinimalApi.Sqlite",
         //"TrimmedTodo.MinimalApi.Dapper.Sqlite",
@@ -80,57 +80,16 @@ public class StartupTimeBenchmarks
     [GlobalSetup]
     public void PublishApp()
     {
-        var (appPath, userSecretsId) = ProjectBuilder.Publish(Project, PublishKind);
-        _appPath = appPath;
-        _userSecretsId = userSecretsId;
+        _projectBuilder = new ProjectBuilder(Project, PublishKind);
+        _projectBuilder.Publish();
     }
 
     [Benchmark]
-    public void StartApp() => AppRunner.Run(_appPath, GetEnvVars());
+    public void StartApp() => _projectBuilder.Run();
 
-    private (string, string)[] GetEnvVars()
+    [GlobalCleanup]
+    public void SaveAppOutput()
     {
-        var result = new List<(string, string)> { ("SHUTDOWN_ON_START", "true") };
-
-        if (_userSecretsId is not null)
-        {
-            // Set env var for JWT signing key
-            var userSecretsJsonPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "Microsoft", "UserSecrets", _userSecretsId, "secrets.json");
-
-            if (!File.Exists(userSecretsJsonPath))
-            {
-                throw new InvalidOperationException($"Could not find user secrets json file at path '{userSecretsJsonPath}'. " +
-                    "Project has a UserSecretsId but has not been initialized for JWT authentication." +
-                    "Please run 'dotnet user-jwts create' in the '$projectName' directory.");
-            }
-
-            var userSecretsJson = JsonDocument.Parse(File.OpenRead(userSecretsJsonPath));
-            var configKeyName = "Authentication:Schemes:Bearer:SigningKeys";
-            var jwtSigningKey = userSecretsJson.RootElement.GetProperty(configKeyName).EnumerateArray()
-                .Single(o => o.GetProperty("Issuer").GetString() == "dotnet-user-jwts")
-                .GetProperty("Value").GetString();
-
-            if (jwtSigningKey is not null)
-            {
-                result.Add(("JWT_SIGNING_KEY", jwtSigningKey));
-            }
-        }
-
-        return result.ToArray();
+        _projectBuilder.SaveOutput();
     }
-}
-
-public enum PublishScenario
-{
-    Default,
-    NoAppHost,
-    ReadyToRun,
-    SelfContained,
-    SelfContainedReadyToRun,
-    SingleFile,
-    SingleFileReadyToRun,
-    Trimmed,
-    TrimmedReadyToRun,
-    AOT
 }

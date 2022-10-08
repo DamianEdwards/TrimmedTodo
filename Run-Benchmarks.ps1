@@ -7,14 +7,14 @@ $artifacts = ".artifacts";
 
 Write-Host "Cleaning up previous run";
 
-Write-Host "dotnet restore $projectPath /p:Configuration=Release"
-dotnet restore $projectPath /p:Configuration=Release
+#Write-Host "dotnet restore $projectPath /p:Configuration=Release"
+#dotnet restore $projectPath /p:Configuration=Release
 
 Write-Host "dotnet clean $projectPath -c Release -v q --nologo -o "$artifacts\$projectName""
 dotnet clean $projectPath -c Release -v q --nologo -o "$artifacts\$projectName"
 
-Get-ChildItem -Include bin -Recurse -Directory | Remove-Item -Recurse -Force;
-Get-ChildItem -Include obj -Recurse -Directory | Remove-Item -Recurse -Force;
+Get-ChildItem -Include "bin\Release" -Recurse -Directory | Remove-Item -Recurse -Force;
+Get-ChildItem -Include "obj\Release" -Recurse -Directory | Remove-Item -Recurse -Force;
 if (Test-Path -Path "$artifacts\$projectName") {
     Get-ChildItem -Path "$artifacts\$projectName" | Remove-Item -Recurse -Force;
 }
