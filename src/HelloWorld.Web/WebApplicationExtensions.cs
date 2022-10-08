@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Hosting.Server;
+using System.Diagnostics;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -13,6 +14,9 @@ public static partial class WebApplicationExtensions
     public static async Task StartApp(this WebApplication app, PathString firstRequestPath = default)
     {
         await app.StartAsync();
+
+        Console.Write("ServerStartupComplete,");
+        Console.Write(DateTime.UtcNow.Ticks);
 
         if (app.Configuration["SHUTDOWN_ON_START"] != "true")
         {
@@ -32,6 +36,26 @@ public static partial class WebApplicationExtensions
                     var response = await http.GetAsync(url + firstRequestPath);
 
                     response.EnsureSuccessStatusCode();
+
+                    Console.Write("FirstRequestComplete,");
+                    Console.WriteLine(DateTime.UtcNow.Ticks);
+
+                    var process = Process.GetCurrentProcess();
+
+                    Console.Write("Process.PrivateMemorySize64,");
+                    Console.Write(DateTime.UtcNow.Ticks);
+                    Console.Write(",");
+                    Console.WriteLine(process.PrivateMemorySize64);
+
+                    Console.Write("Process.WorkingSet64,");
+                    Console.Write(DateTime.UtcNow.Ticks);
+                    Console.Write(",");
+                    Console.WriteLine(process.WorkingSet64);
+
+                    Console.Write("Process.PeakWorkingSet64,");
+                    Console.Write(DateTime.UtcNow.Ticks);
+                    Console.Write(",");
+                    Console.WriteLine(process.PeakWorkingSet64);
                 }
             }
 

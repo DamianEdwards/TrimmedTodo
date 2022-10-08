@@ -27,7 +27,7 @@ if (Debugger.IsAttached)
 
 var config = DefaultConfig.Instance
     .AddJob(job)
-    .AddColumn(new AppSizeColumn())
+    .AddColumnProvider(new AppMetricsColumnProvider())
     //.AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.PublishKind), PublishScenario.Default))
     //.AddColumn(new ParameterRatioColumn(nameof(StartupTimeBenchmarks.Project), BaselineValueComparisonKind.StartsWith))
     .HideColumns("Method")
@@ -59,15 +59,15 @@ public class StartupTimeBenchmarks
 
     public static IEnumerable<PublishScenario> Scenarios() => new[]
     {
-        PublishScenario.Default,
+        //PublishScenario.Default,
         //PublishScenario.NoAppHost,
         //PublishScenario.ReadyToRun,
         //PublishScenario.SelfContained,
         //PublishScenario.SelfContainedReadyToRun,
-        PublishScenario.SingleFile,
+        //PublishScenario.SingleFile,
         //PublishScenario.SingleFileReadyToRun,
-        PublishScenario.Trimmed,
-        PublishScenario.TrimmedReadyToRun,
+        //PublishScenario.Trimmed,
+        //PublishScenario.TrimmedReadyToRun,
         PublishScenario.AOT
     };
 
@@ -78,14 +78,14 @@ public class StartupTimeBenchmarks
     public PublishScenario PublishKind { get; set; }
 
     [GlobalSetup]
-    public void PublishApp()
+    public void CreateAndPublishApp()
     {
         _projectBuilder = new ProjectBuilder(Project, PublishKind);
         _projectBuilder.Publish();
     }
 
     [Benchmark]
-    public void StartApp() => _projectBuilder.Run();
+    public void RunApp() => _projectBuilder.Run();
 
     [GlobalCleanup]
     public void SaveAppOutput()

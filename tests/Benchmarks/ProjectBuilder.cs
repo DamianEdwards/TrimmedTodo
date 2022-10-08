@@ -11,6 +11,7 @@ internal class ProjectBuilder
     private static readonly string _dotnetFileName = "dotnet" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "");
 
     private PublishResult? _publishResult = null;
+    private long? _appStarted = null;
 
     public ProjectBuilder(string projectName, PublishScenario scenario)
     {
@@ -100,6 +101,8 @@ internal class ProjectBuilder
         {
             HandleError(process, "Failed to start application process");
         }
+
+        _appStarted = DateTime.UtcNow.Ticks;
 
         process.WaitForExit();
 

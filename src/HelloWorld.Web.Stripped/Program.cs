@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 var port = 5000;
 
 var host = new WebHostBuilder()
@@ -17,7 +19,10 @@ var host = new WebHostBuilder()
 
 await host.StartAsync();
 
-Console.WriteLine($"{DateTime.UtcNow.Ticks} - Listening on http://localhost:{port}");
+Console.Write("ServerStartupComplete,");
+Console.Write(DateTime.UtcNow.Ticks);
+Console.Write(",http://localhost:");
+Console.WriteLine(port);
 
 if (Environment.GetEnvironmentVariable("SHUTDOWN_ON_START") != "true")
 {
@@ -30,7 +35,26 @@ else
         using var http = new HttpClient();
         var response = await http.GetAsync($"http://localhost:{port}");
         response.EnsureSuccessStatusCode();
-        Console.Write($"{DateTime.UtcNow.Ticks} - First request complete");
+
+        Console.Write("FirstRequestComplete,");
+        Console.WriteLine(DateTime.UtcNow.Ticks);
+
+        var process = Process.GetCurrentProcess();
+
+        Console.Write("Process.PrivateMemorySize64,");
+        Console.Write(DateTime.UtcNow.Ticks);
+        Console.Write(",");
+        Console.WriteLine(process.PrivateMemorySize64);
+
+        Console.Write("Process.WorkingSet64,");
+        Console.Write(DateTime.UtcNow.Ticks);
+        Console.Write(",");
+        Console.WriteLine(process.WorkingSet64);
+
+        Console.Write("Process.PeakWorkingSet64,");
+        Console.Write(DateTime.UtcNow.Ticks);
+        Console.Write(",");
+        Console.WriteLine(process.PeakWorkingSet64);
     }
 
     await host.StopAsync();
