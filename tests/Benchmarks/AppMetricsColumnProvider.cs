@@ -11,7 +11,7 @@ internal class AppMetricsColumnProvider : IColumnProvider
         // TODO: Refactor AppSizeColumn to use AppOutputMetricColumn
         yield return new AppSizeColumn();
 
-        yield return new AppOutputMetricColumn { MetricId = "Process.PeakWorkingSet64", Id = "AppMemory", ColumnName = "App Memory" };
+        yield return new AppOutputMetricColumn { MetricId = "Environment.WorkingSet", Id = "AppMemory", ColumnName = "App Memory" };
     }
 
     class AppOutputMetricColumn : IColumn

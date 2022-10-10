@@ -16,7 +16,7 @@ public static partial class WebApplicationExtensions
         await app.StartAsync();
 
         Console.Write("ServerStartupComplete,");
-        Console.Write(DateTime.UtcNow.Ticks);
+        Console.WriteLine(DateTime.UtcNow.Ticks);
 
         if (app.Configuration["SHUTDOWN_ON_START"] != "true")
         {
@@ -40,22 +40,10 @@ public static partial class WebApplicationExtensions
                     Console.Write("FirstRequestComplete,");
                     Console.WriteLine(DateTime.UtcNow.Ticks);
 
-                    var process = Process.GetCurrentProcess();
-
-                    Console.Write("Process.PrivateMemorySize64,");
+                    Console.Write("Environment.WorkingSet,");
                     Console.Write(DateTime.UtcNow.Ticks);
                     Console.Write(",");
-                    Console.WriteLine(process.PrivateMemorySize64);
-
-                    Console.Write("Process.WorkingSet64,");
-                    Console.Write(DateTime.UtcNow.Ticks);
-                    Console.Write(",");
-                    Console.WriteLine(process.WorkingSet64);
-
-                    Console.Write("Process.PeakWorkingSet64,");
-                    Console.Write(DateTime.UtcNow.Ticks);
-                    Console.Write(",");
-                    Console.WriteLine(process.PeakWorkingSet64);
+                    Console.WriteLine(Environment.WorkingSet);
                 }
             }
 
