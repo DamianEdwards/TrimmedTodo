@@ -210,12 +210,26 @@ internal class ProjectBuilder
         return PublishImpl(projectName, configuration, args, runId);
     }
 
+    private readonly static List<string> ProjectsSupportingAot = new()
+    {
+        "HelloWorld.Console",
+        "HelloWorld.Web",
+        "HelloWorld.Stripped",
+        "HelloWorld.HttpListener",
+        "TrimmedTodo.Console.ApiClient"
+    };
+
     private static PublishResult PublishAot(
         string projectName,
         string configuration = "Release",
         TrimLevel trimLevel = TrimLevel.Default,
         string? runId = null)
     {
+        if (!ProjectsSupportingAot.Contains(projectName))
+        {
+            throw new NotSupportedException($"The project '{projectName}' does support publishing for AOT.");
+        }
+
         if (trimLevel == TrimLevel.None)
         {
             throw new ArgumentOutOfRangeException(nameof(trimLevel), "'TrimLevel.None' is not supported when publishing for AOT.");

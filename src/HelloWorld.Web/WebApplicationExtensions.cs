@@ -31,10 +31,11 @@ public static partial class WebApplicationExtensions
 
                 if (url is not null)
                 {
-                    using var http = new HttpClient();
-                    var response = await http.GetAsync(url + firstRequestPath);
-
-                    response.EnsureSuccessStatusCode();
+                    {
+                        using var http = new HttpClient();
+                        var response = await http.GetAsync(url + firstRequestPath);
+                        response.EnsureSuccessStatusCode();
+                    }
 
                     Console.Write("FirstRequestComplete,");
                     Console.WriteLine(DateTime.UtcNow.Ticks);

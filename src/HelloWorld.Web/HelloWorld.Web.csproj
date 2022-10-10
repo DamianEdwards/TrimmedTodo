@@ -16,8 +16,8 @@
     <!-- Documented trimming settings (tweaks) -->
     <InvariantGlobalization>true</InvariantGlobalization>
     <!-- Undocumented trimming settings (hacks) -->
-    <!--<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
-    <IlcOptimizationPreference>Size</IlcOptimizationPreference>-->
+    <!--<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>-->
+    <!--<IlcOptimizationPreference>Size</IlcOptimizationPreference>-->
     <!--<IlcGenerateMapFile>true</IlcGenerateMapFile>-->
   </PropertyGroup>
 

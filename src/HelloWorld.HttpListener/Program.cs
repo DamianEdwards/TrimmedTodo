@@ -33,11 +33,13 @@ else
     var exitCode = 0;
     if (Environment.GetEnvironmentVariable("SUPPRESS_FIRST_REQUEST") != "true")
     {
-        using var http = new HttpClient();
         try
         {
-            var response = await http.GetAsync($"http://localhost:{port}");
-            response.EnsureSuccessStatusCode();
+            {
+                using var http = new HttpClient();
+                var response = await http.GetAsync($"http://localhost:{port}");
+                response.EnsureSuccessStatusCode();
+            }
 
             Console.Write("FirstRequestComplete,");
             Console.WriteLine(DateTime.UtcNow.Ticks);
