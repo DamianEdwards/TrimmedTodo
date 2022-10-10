@@ -61,7 +61,7 @@ else
     return exitCode;
 }
 
-async Task<(long, long)> StartRequestLoop()
+async Task<(long, long, long)> StartRequestLoop()
 {
     long requestsReceived = 0;
     long requestsProcessed = 0;
@@ -71,10 +71,10 @@ async Task<(long, long)> StartRequestLoop()
     {
         try
         {
-            var context = await server.GetContextAsync().ContinueWith(t => t.GetAwaiter().GetResult(), stopTokenSource.Token);
+            var context = await server.GetContextAsync().WaitAsync(stopTokenSource.Token);
             requestsReceived++;
 
-            requestTasks.Enqueue(Task.Factory.StartNew(async () =>
+            requestTasks.Enqueue(Task.Run(async () =>
             {
                 await ProcessRequest(context);
                 Interlocked.Increment(ref requestsProcessed);
@@ -86,9 +86,24 @@ async Task<(long, long)> StartRequestLoop()
         }
     }
 
-    await Task.WhenAll(requestTasks);
+    // Drain requests
+    var requestsFailed = 0;
+    try
+    {
+        await Task.WhenAll(requestTasks);
+    }
+    catch (Exception)
+    {
+        foreach (var requestTask in requestTasks)
+        {
+            if (requestTask.IsFaulted)
+            {
+                requestsFailed++;
+            }
+        }
+    }
 
-    return (requestsReceived, requestsProcessed);
+    return (requestsReceived, requestsProcessed, requestsFailed);
 }
 
 async Task ProcessRequest(HttpListenerContext context)
@@ -125,8 +140,11 @@ async void Shutdown()
 
     Console.WriteLine("Shutting down");
     stopTokenSource.Cancel();
-    var (requestsReceived, requestsProcessed) = await requestProcessingTask.WaitAsync(TimeSpan.FromMilliseconds(2000));
+    var (requestsReceived, requestsProcessed, requestsFailed) = await requestProcessingTask.WaitAsync(TimeSpan.FromMilliseconds(2000));
     server.Stop();
-    Console.WriteLine($"Server shut down successfully after receiving {requestsReceived} and processing {requestsProcessed} request(s)");
+    Console.WriteLine("Server shut down successfully");
+    Console.WriteLine($"- {requestsReceived} requests received");
+    Console.WriteLine($"- {requestsProcessed} requests processed");
+    Console.WriteLine($"- {requestsFailed} requests failed");
     shutdownTcs.SetResult();
 }
