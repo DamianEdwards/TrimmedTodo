@@ -22,32 +22,37 @@ Console.CancelKeyPress += async (object? sender, ConsoleCancelEventArgs e) =>
     await Shutdown();
 };
 
-if (Environment.GetEnvironmentVariable("SUPPRESS_FIRST_REQUEST") != "true")
-{
-    using var http = new HttpClient();
-    try
-    {
-        var response = await http.GetAsync($"http://localhost:{port}");
-        response.EnsureSuccessStatusCode();
-
-        Console.Write("FirstRequestComplete,");
-        Console.WriteLine(DateTime.UtcNow.Ticks);
-
-        Console.Write("Environment.WorkingSet,");
-        Console.Write(DateTime.UtcNow.Ticks);
-        Console.Write(",");
-        Console.WriteLine(Environment.WorkingSet);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine("Error occurred: " + ex.ToString());
-        await Shutdown(1);
-    }
-}
-else
+if (Environment.GetEnvironmentVariable("SHUTDOWN_ON_START") != "true")
 {
     Console.WriteLine("Press Ctrl+C to exit");
     Console.ReadLine();
+}
+else
+{
+    if (Environment.GetEnvironmentVariable("SUPPRESS_FIRST_REQUEST") != "true")
+    {
+        using var http = new HttpClient();
+        try
+        {
+            var response = await http.GetAsync($"http://localhost:{port}");
+            response.EnsureSuccessStatusCode();
+
+            Console.Write("FirstRequestComplete,");
+            Console.WriteLine(DateTime.UtcNow.Ticks);
+
+            Console.Write("Environment.WorkingSet,");
+            Console.Write(DateTime.UtcNow.Ticks);
+            Console.Write(",");
+            Console.WriteLine(Environment.WorkingSet);
+
+            await Shutdown(1);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error occurred: " + ex.ToString());
+            await Shutdown(1);
+        }
+    }
 }
 
 async Task ProcessRequests()

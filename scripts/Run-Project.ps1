@@ -36,8 +36,8 @@ dotnet clean $projectPath -c Debug -r $Rid -v q --nologo -o "$artifacts\$project
 Write-Host "dotnet clean $projectPath -c Release -r $Rid -v q --nologo -o "$artifacts\$projectName""
 dotnet clean $projectPath -c Release -r $Rid -v q --nologo -o "$artifacts\$projectName"
 
-Get-ChildItem -Include bin -Recurse -Directory | Remove-Item -Recurse -Force;
-Get-ChildItem -Include obj -Recurse -Directory | Remove-Item -Recurse -Force;
+#Get-ChildItem -Include bin -Recurse -Directory | Remove-Item -Recurse -Force;
+#Get-ChildItem -Include obj -Recurse -Directory | Remove-Item -Recurse -Force;
 if (Test-Path -Path "$artifacts\$projectName") {
     Get-ChildItem -Path "$artifacts\$projectName" | Remove-Item -Recurse -Force;
 }

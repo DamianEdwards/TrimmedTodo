@@ -6,10 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PublishRelease>true</PublishRelease>
-    <PublishSingleFile>true</PublishSingleFile>
-    <PublishTrimmed>true</PublishTrimmed>
+    <!--<PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>-->
     <!--<PublishReadyToRun>true</PublishReadyToRun>-->
-    <!--<PublishAot>true</PublishAot>-->
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 
 </Project>
