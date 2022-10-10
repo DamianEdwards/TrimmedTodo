@@ -106,6 +106,10 @@ App type | Trim mode | Size
 |                       HelloWorld.Web | TrimmedReadyToRun |   173.49 ms | 63.661 ms | 42.108 ms |
 |                       HelloWorld.Web |               AOT |    80.17 ms | 43.839 ms | 28.997 ms |
 |                                      |                   |             |           |           |
+|              HelloWorld.HttpListener |           Trimmed |   253.91 ms |  23.18 ms |  15.33 ms |
+|              HelloWorld.HttpListener | TrimmedReadyToRun |    83.99 ms |  32.94 ms |  21.79 ms |
+|              HelloWorld.HttpListener |               AOT |    47.32 ms |  17.23 ms |  11.39 ms |
+|                                      |                   |             |           |           |
 |    TrimmedTodo.Console.EfCore.Sqlite |           Trimmed |    898.9 ms |  58.72 ms |  38.84 ms |
 |    TrimmedTodo.Console.EfCore.Sqlite | TrimmedReadyToRun |    314.3 ms | 129.64 ms |  85.75 ms |
 |                                      |                   |             |           |           |
