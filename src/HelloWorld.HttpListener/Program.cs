@@ -54,7 +54,8 @@ else
         }
     }
 
-    await Shutdown();
+    Shutdown();
+    await shutdownTcs.Task;
     return exitCode;
 }
 
@@ -113,7 +114,7 @@ async Task ProcessRequest(HttpListenerContext context)
     }
 }
 
-async Task Shutdown()
+async void Shutdown()
 {
     if (Interlocked.CompareExchange(ref shuttingDown, 1, 0) != 0)
     {
