@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 
 var port = 5003;
+var shuttingDown = 0L;
 
 using var server = new HttpListener();
 server.Prefixes.Add($"http://localhost:{port}/");
@@ -14,21 +15,21 @@ Console.Write(",http://localhost:");
 Console.WriteLine(port);
 
 var stopTokenSource = new CancellationTokenSource();
+var shutdownTcs = new TaskCompletionSource();
 
-var requestProcessingTask = Task.Run(ProcessRequests, stopTokenSource.Token);
-
-Console.CancelKeyPress += async (object? sender, ConsoleCancelEventArgs e) =>
-{
-    await Shutdown();
-};
+var requestProcessingTask = Task.Run(StartRequestLoop, stopTokenSource.Token);
 
 if (Environment.GetEnvironmentVariable("SHUTDOWN_ON_START") != "true")
 {
+    Console.CancelKeyPress += (_, __) => Shutdown();
+
     Console.WriteLine("Press Ctrl+C to exit");
-    Console.ReadLine();
+    await shutdownTcs.Task;
+    return 0;
 }
 else
 {
+    var exitCode = 0;
     if (Environment.GetEnvironmentVariable("SUPPRESS_FIRST_REQUEST") != "true")
     {
         using var http = new HttpClient();
@@ -44,48 +45,76 @@ else
             Console.Write(DateTime.UtcNow.Ticks);
             Console.Write(",");
             Console.WriteLine(Environment.WorkingSet);
-
-            await Shutdown(1);
         }
         catch (Exception ex)
         {
             Console.WriteLine("Error occurred: " + ex.ToString());
-            await Shutdown(1);
+            exitCode = 1;
         }
     }
+
+    await Shutdown();
+    return exitCode;
 }
 
-async Task ProcessRequests()
+async Task<long> StartRequestLoop()
 {
+    long requestsProcessed = 0;
     while (!stopTokenSource.Token.IsCancellationRequested)
     {
-        var context = await server.GetContextAsync();
-        var request = context.Request;
-        var response = context.Response;
-
-        var responseText = "Hello World!";
-        var responseBuffer = ArrayPool<byte>.Shared.Rent(Encoding.UTF8.GetByteCount(responseText));
-        var filled = Encoding.UTF8.GetBytes(responseText, 0, responseText.Length, responseBuffer, 0);
-        
-        response.ContentType = "text/plain";
-        response.ContentLength64 = filled;
         try
         {
-            await response.OutputStream.WriteAsync(responseBuffer, 0, filled, stopTokenSource.Token);
+            var context = await server.GetContextAsync().ContinueWith(t => t.GetAwaiter().GetResult(), stopTokenSource.Token);
+            Task.Run(async () =>
+            {
+                await ProcessRequest(context);
+                Interlocked.Increment(ref requestsProcessed);
+            });
         }
-        finally
+        catch (TaskCanceledException)
         {
-            ArrayPool<byte>.Shared.Return(responseBuffer);
+            break;
         }
     }
-
-    server.Stop();
+    return requestsProcessed;
 }
 
-async Task Shutdown(int exitCode = 0)
+async Task ProcessRequest(HttpListenerContext context)
 {
+    var request = context.Request;
+    var response = context.Response;
+
+    var responseText = "Hello World!";
+    var responseBuffer = ArrayPool<byte>.Shared.Rent(Encoding.UTF8.GetByteCount(responseText));
+    var filled = Encoding.UTF8.GetBytes(responseText, 0, responseText.Length, responseBuffer, 0);
+
+    response.ContentType = "text/plain";
+    response.ContentLength64 = filled;
+    try
+    {
+        await response.OutputStream.WriteAsync(responseBuffer, 0, filled, stopTokenSource.Token);
+    }
+    catch (TaskCanceledException)
+    {
+
+    }
+    finally
+    {
+        ArrayPool<byte>.Shared.Return(responseBuffer);
+    }
+}
+
+async Task Shutdown()
+{
+    if (Interlocked.CompareExchange(ref shuttingDown, 1, 0) != 0)
+    {
+        return;
+    }
+
     Console.WriteLine("Shutting down");
     stopTokenSource.Cancel();
-    await requestProcessingTask.WaitAsync(TimeSpan.FromMilliseconds(2000));
-    Environment.Exit(exitCode);
+    var requestsProcessed = await requestProcessingTask.WaitAsync(TimeSpan.FromMilliseconds(2000));
+    server.Stop();
+    Console.WriteLine($"Server shut down successfully after processing {requestsProcessed} requests");
+    shutdownTcs.SetResult();
 }
