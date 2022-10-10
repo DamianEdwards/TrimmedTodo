@@ -50,6 +50,7 @@ public class StartupTimeBenchmarks
         //"HelloWorld.Console",
         "HelloWorld.Web",
         "HelloWorld.Web.Stripped",
+        "HelloWorld.HttpListener",
         //"TrimmedTodo.Console.EfCore.Sqlite",
         //"TrimmedTodo.MinimalApi.Sqlite",
         //"TrimmedTodo.MinimalApi.Dapper.Sqlite",

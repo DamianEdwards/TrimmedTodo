@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 var port = 5000;
 
 var host = new WebHostBuilder()
