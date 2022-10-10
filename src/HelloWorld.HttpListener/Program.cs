@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Text;
 
@@ -57,26 +58,34 @@ else
     return exitCode;
 }
 
-async Task<long> StartRequestLoop()
+async Task<(long, long)> StartRequestLoop()
 {
+    long requestsReceived = 0;
     long requestsProcessed = 0;
+    var requestTasks = new ConcurrentQueue<Task>();
+
     while (!stopTokenSource.Token.IsCancellationRequested)
     {
         try
         {
             var context = await server.GetContextAsync().ContinueWith(t => t.GetAwaiter().GetResult(), stopTokenSource.Token);
-            Task.Run(async () =>
+            requestsReceived++;
+
+            requestTasks.Enqueue(Task.Factory.StartNew(async () =>
             {
                 await ProcessRequest(context);
                 Interlocked.Increment(ref requestsProcessed);
-            });
+            }, stopTokenSource.Token));
         }
         catch (TaskCanceledException)
         {
             break;
         }
     }
-    return requestsProcessed;
+
+    await Task.WhenAll(requestTasks);
+
+    return (requestsReceived, requestsProcessed);
 }
 
 async Task ProcessRequest(HttpListenerContext context)
@@ -113,8 +122,8 @@ async Task Shutdown()
 
     Console.WriteLine("Shutting down");
     stopTokenSource.Cancel();
-    var requestsProcessed = await requestProcessingTask.WaitAsync(TimeSpan.FromMilliseconds(2000));
+    var (requestsReceived, requestsProcessed) = await requestProcessingTask.WaitAsync(TimeSpan.FromMilliseconds(2000));
     server.Stop();
-    Console.WriteLine($"Server shut down successfully after processing {requestsProcessed} requests");
+    Console.WriteLine($"Server shut down successfully after receiving {requestsReceived} and processing {requestsProcessed} request(s)");
     shutdownTcs.SetResult();
 }

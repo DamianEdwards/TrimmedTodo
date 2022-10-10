@@ -24,7 +24,7 @@ internal class AppMetricsColumnProvider : IColumnProvider
         public int PriorityInCategory { get; } = 0;
         public bool IsNumeric { get; } = true;
         public UnitType UnitType { get; } = UnitType.Size;
-        public string Legend => ColumnName;
+        public string Legend => MetricId;
 
         public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
         {
@@ -46,7 +46,7 @@ internal class AppMetricsColumnProvider : IColumnProvider
                         if (line is not null)
                         {
                             var parts = line.Split(',', StringSplitOptions.TrimEntries);
-                            if (parts[0] == MetricId)
+                            if (parts[0] == MetricId && parts.Length >= 3)
                             {
                                 if (long.TryParse(parts[2], out var size))
                                 {
