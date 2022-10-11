@@ -210,7 +210,7 @@ internal class ProjectBuilder
         return PublishImpl(projectName, configuration, args, runId);
     }
 
-    private readonly static List<string> ProjectsSupportingAot = new()
+    private readonly static List<string> _projectsSupportingAot = new()
     {
         "HelloWorld.Console",
         "HelloWorld.Web",
@@ -225,7 +225,7 @@ internal class ProjectBuilder
         TrimLevel trimLevel = TrimLevel.Default,
         string? runId = null)
     {
-        if (!ProjectsSupportingAot.Contains(projectName))
+        if (!_projectsSupportingAot.Contains(projectName))
         {
             throw new NotSupportedException($"The project '{projectName}' does support publishing for AOT.");
         }
