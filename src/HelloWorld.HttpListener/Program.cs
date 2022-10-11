@@ -1,9 +1,7 @@
-using System.Buffers;
 using System.Collections.Concurrent;
 using System.Net;
-using System.Text;
 
-var port = 5003;
+var port = args.Length > 0 && args[0] is { } arg0 && int.TryParse(arg0, out var argPort) ? argPort : 5003;
 var shuttingDown = 0L;
 var responseTextBuffer = "Hello World!"u8.ToArray();
 
@@ -138,11 +136,12 @@ async void Shutdown()
 
     Console.WriteLine("Shutting down");
     stopTokenSource.Cancel();
-    var (requestsReceived, requestsProcessed, requestsFailed) = await requestProcessingTask.WaitAsync(TimeSpan.FromMilliseconds(2000));
+    var (received, processed, failed) = await requestProcessingTask.WaitAsync(TimeSpan.FromMilliseconds(2000));
     server.Stop();
+    var numWidth = Math.Max(received, Math.Max(processed, failed)).ToString().Length;
     Console.WriteLine("Server shut down successfully");
-    Console.WriteLine($"- {requestsReceived} requests received");
-    Console.WriteLine($"- {requestsProcessed} requests processed");
-    Console.WriteLine($"- {requestsFailed} requests failed");
+    Console.WriteLine($"- {received.ToString().PadLeft(numWidth)} requests received");
+    Console.WriteLine($"- {processed.ToString().PadLeft(numWidth)} requests processed");
+    Console.WriteLine($"- {failed.ToString().PadLeft(numWidth)} requests failed");
     shutdownTcs.SetResult();
 }
