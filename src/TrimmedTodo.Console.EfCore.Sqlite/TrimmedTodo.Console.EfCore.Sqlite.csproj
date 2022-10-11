@@ -6,22 +6,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishRelease>true</PublishRelease>
-    <PublishTrimmed>true</PublishTrimmed>
     <PublishSingleFile>true</PublishSingleFile>
-    <!-- This is required as new trimming defaults in .NET 7 break EF Core -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <!-- This is required as new trimming defaults in .NET 7 break EF Core migrations which this app does internally -->
     <TrimMode>partial</TrimMode>
+    <!--<PublishAot>true</PublishAot>-->
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-rc.1.*">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-rc.2.22472.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0-rc.1.*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Manually marking these assemblies as trimmable until we update them -->
-    <!--<TrimmableAssembly Include="Microsoft.EntityFrameworkCore" />-->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0-rc.2.22472.11" />
   </ItemGroup>
 </Project>

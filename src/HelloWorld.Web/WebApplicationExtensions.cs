@@ -14,6 +14,9 @@ public static partial class WebApplicationExtensions
     {
         await app.StartAsync();
 
+        Console.Write("ServerStartupComplete,");
+        Console.WriteLine(DateTime.UtcNow.Ticks);
+
         if (app.Configuration["SHUTDOWN_ON_START"] != "true")
         {
             await app.WaitForShutdownAsync();
@@ -28,10 +31,19 @@ public static partial class WebApplicationExtensions
 
                 if (url is not null)
                 {
-                    using var http = new HttpClient();
-                    var response = await http.GetAsync(url + firstRequestPath);
+                    {
+                        using var http = new HttpClient();
+                        var response = await http.GetAsync(url + firstRequestPath);
+                        response.EnsureSuccessStatusCode();
+                    }
 
-                    response.EnsureSuccessStatusCode();
+                    Console.Write("FirstRequestComplete,");
+                    Console.WriteLine(DateTime.UtcNow.Ticks);
+
+                    Console.Write("Environment.WorkingSet,");
+                    Console.Write(DateTime.UtcNow.Ticks);
+                    Console.Write(",");
+                    Console.WriteLine(Environment.WorkingSet);
                 }
             }
 

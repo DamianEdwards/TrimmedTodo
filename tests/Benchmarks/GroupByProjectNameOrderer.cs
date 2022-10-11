@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Extensions;
 using BenchmarkDotNet.Order;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
@@ -21,7 +22,7 @@ public class GroupByProjectNameOrderer : DefaultOrderer, IOrderer
         var initialOrder = base.GetLogicalGroupOrder(logicalGroups, order);
 
         var cases = initialOrder.SelectMany(g => g.ToList());
-        var newOrder = cases.GroupBy(c => c.Parameters[nameof(StartupTimeBenchmarks.ProjectName)].ToString() ?? "").ToList();
+        var newOrder = cases.GroupBy(c => c.Parameters[nameof(StartupTimeBenchmarks.Project)].ToString() ?? "").ToList();
         return newOrder;
     }
 
@@ -29,5 +30,5 @@ public class GroupByProjectNameOrderer : DefaultOrderer, IOrderer
         => GetLogicalGroupKeyImpl(benchmarkCase);
 
     private static string GetLogicalGroupKeyImpl(BenchmarkCase benchmarkCase)
-        => benchmarkCase.Parameters[nameof(StartupTimeBenchmarks.ProjectName)].ToString() ?? "";
+        => benchmarkCase.Parameters[nameof(StartupTimeBenchmarks.Project)].ToString() ?? "";
 }
