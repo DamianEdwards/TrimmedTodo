@@ -73,9 +73,9 @@ Deleted all 3 todos!
 |                   HelloWorld.Console |               AOT |   10.17 ms |   6.20 ms |   4.10 ms |   0.97 MB |         NA |
 |                                      |                   |            |           |           |           |            |
 |              HelloWorld.HttpListener |     SelfContained |  117.83 ms |  55.49 ms |  36.70 ms |  69.46 MB |   32.03 MB |
-|              HelloWorld.HttpListener |           Trimmed |  246.86 ms |  23.98 ms |  15.86 ms |  12.96 MB |   25.83 MB |
-|              HelloWorld.HttpListener | TrimmedReadyToRun |   82.09 ms |  32.09 ms |  21.23 ms |  20.36 MB |   25.03 MB |
-|              HelloWorld.HttpListener |               AOT |   44.23 ms |  16.73 ms |  11.07 ms |   8.72 MB |   13.43 MB |
+|              HelloWorld.HttpListener |           Trimmed |  275.14 ms |  32.25 ms |  21.33 ms |  12.96 MB |   27.11 MB |
+|              HelloWorld.HttpListener | TrimmedReadyToRun |   96.63 ms |  33.83 ms |  22.38 ms |  20.36 MB |   26.02 MB |
+|              HelloWorld.HttpListener |               AOT |   55.04 ms |   8.69 ms |  12.36 ms |   8.72 MB |   14.59 MB |
 |                                      |                   |            |           |           |           |            |
 |                       HelloWorld.Web |     SelfContained |  233.89 ms | 102.21 ms |  67.61 ms |  94.23 MB |   50.56 MB |
 |                       HelloWorld.Web |           Trimmed |  507.58 ms |  40.40 ms |  26.72 ms |  17.28 MB |   40.39 MB |
