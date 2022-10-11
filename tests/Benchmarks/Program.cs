@@ -46,8 +46,8 @@ public class StartupTimeBenchmarks
     public static IEnumerable<string> ProjectNames() => new[]
     {
         //"HelloWorld.Console",
-        //"HelloWorld.Web",
-        //"HelloWorld.Web.Stripped",
+        "HelloWorld.Web",
+        "HelloWorld.Web.Stripped",
         "HelloWorld.KestrelDirect",
         "HelloWorld.HttpListener",
         //"TrimmedTodo.Console.EfCore.Sqlite",

@@ -1,8 +1,8 @@
 var port = args.Length > 0 && args[0] is { } arg0 && int.TryParse(arg0, out var argPort) ? argPort : 8080;
 var responseText = "Hello World"u8.ToArray();
-var loggerFactory = new SlimConsoleLoggerFactory();
+using var loggerFactory = new SlimConsoleLoggerFactory();
 
-var server = new HttpServer(port, loggerFactory);
+using var server = new HttpServer(port, loggerFactory);
 server.OnRequest(async context =>
 {
     context.Response.ContentType = "text/plain";
@@ -44,5 +44,3 @@ else
 
     await server.StopAsync();
 }
-
-await loggerFactory.FlushAsync();

@@ -1,11 +1,20 @@
-using System.Collections.Concurrent;
-using System.Diagnostics;
+using System.Threading.Channels;
 
 class SlimConsoleLoggerFactory : ILoggerFactory
 {
-    private readonly ConcurrentQueue<Action> _writeQueue = new();
-    private Task _writeTask = Task.CompletedTask;
-    private long _writing = 0;
+    private readonly Channel<Action> _writeChannel = Channel.CreateUnbounded<Action>();
+    private readonly Task _writeTask;
+
+    public SlimConsoleLoggerFactory()
+    {
+        _writeTask = Task.Run(async () =>
+        {
+            await foreach(var write in _writeChannel.Reader.ReadAllAsync())
+            {
+                write();
+            }
+        });
+    }
 
     public void AddProvider(ILoggerProvider provider)
     {
@@ -14,31 +23,15 @@ class SlimConsoleLoggerFactory : ILoggerFactory
 
     public ILogger CreateLogger(string categoryName) => new Logger(Write, categoryName);
 
-    public Task FlushAsync() => _writeTask;
-
     public void Dispose()
     {
-        //_writeTask.Wait();
+        _writeChannel.Writer.TryComplete();
+        _writeTask.Wait();
     }
 
-    private async void Write(Action action)
+    private void Write(Action action)
     {
-        _writeQueue.Enqueue(action);
-
-        if (Interlocked.CompareExchange(ref _writing, 1, 0) == 0)
-        {
-            // Kick-off write task
-            await _writeTask;
-            _writeTask = Task.Run(() =>
-            {
-                while (_writeQueue.TryDequeue(out var write))
-                {
-                    write();
-                }
-
-                Debug.Assert(Interlocked.CompareExchange(ref _writing, 0, 1) == 1);
-            });
-        }
+        _writeChannel.Writer.TryWrite(action);
     }
 
     class Logger : ILogger

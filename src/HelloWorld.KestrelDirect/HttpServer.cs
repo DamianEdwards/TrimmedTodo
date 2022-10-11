@@ -68,6 +68,8 @@ public class HttpServer : IDisposable
             _loggerFactory);
     }
 
+    public TimeSpan StopTimeout { get; set; } = TimeSpan.FromSeconds(1);
+
     public void OnRequest(RequestDelegate requestHandler)
     {
         _requestHandler = requestHandler;
@@ -92,11 +94,13 @@ public class HttpServer : IDisposable
         _logger.LogInformation(ToString());
     }
 
-    public async Task StopAsync()
+    public async Task StopAsync(CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Stopping");
 
-        await _server.StopAsync(default);
+        await _server.StopAsync(cancellationToken == default(CancellationToken)
+            ? new CancellationTokenSource(StopTimeout).Token
+            : cancellationToken);
     }
 
     public async Task RunAsync(CancellationToken cancellationToken = default)
@@ -107,12 +111,12 @@ public class HttpServer : IDisposable
 
         await _completion.Task;
 
-        await StopAsync();
+        await StopAsync(new CancellationTokenSource(StopTimeout).Token);
     }
 
     void IDisposable.Dispose() => _server.Dispose();
 
-    internal sealed class HttpApp : IHttpApplication<HttpApp.Context>
+    internal sealed class HttpApp : IHttpApplication<HttpContext>
     {
         private readonly RequestDelegate _application;
         private readonly ILogger _logger;
@@ -124,60 +128,40 @@ public class HttpServer : IDisposable
         }
 
         // Set up the request
-        public Context CreateContext(IFeatureCollection contextFeatures)
+        public HttpContext CreateContext(IFeatureCollection contextFeatures)
         {
-            Context? hostContext;
-            if (contextFeatures is IHostContextContainer<Context> container)
+            HttpContext? httpContext;
+
+            if (contextFeatures is IHostContextContainer<HttpContext> container)
             {
-                hostContext = container.HostContext;
-                if (hostContext is null)
+                httpContext = container.HostContext;
+                if (httpContext is DefaultHttpContext defaultHttpContext)
                 {
-                    hostContext = new Context();
-                    container.HostContext = hostContext;
+                    defaultHttpContext.Initialize(contextFeatures);
                 }
-            }
-            else
-            {
-                // Server doesn't support pooling, so create a new Context
-                hostContext = new Context();
+                else
+                {
+                    httpContext = new DefaultHttpContext(contextFeatures);
+                    container.HostContext = httpContext;
+                }
+                return httpContext;
             }
 
-            var httpContext = new DefaultHttpContext(contextFeatures);
-            hostContext.HttpContext = httpContext;
-
-            return hostContext;
+            throw new InvalidOperationException("How the world");
         }
 
         // Execute the request
-        public Task ProcessRequestAsync(Context context)
+        public Task ProcessRequestAsync(HttpContext context)
         {
-            return _application(context.HttpContext!);
+            return _application(context!);
         }
 
         // Clean up the request
-        public void DisposeContext(Context context, Exception? exception)
+        public void DisposeContext(HttpContext context, Exception? exception)
         {
-            if (context.HttpContext is DefaultHttpContext httpContext)
+            if (context is DefaultHttpContext httpContext)
             {
                 httpContext.Uninitialize();
-            }
-
-            // Reset the context as it may be pooled
-            context.Reset();
-        }
-
-        internal sealed class Context
-        {
-            public HttpContext? HttpContext { get; set; }
-            public IDisposable? Scope { get; set; }
-
-            public long StartTimestamp { get; set; }
-
-            public void Reset()
-            {
-                // Not resetting HttpContext here as we pool it on the Context
-                Scope = null;
-                StartTimestamp = 0;
             }
         }
     }
@@ -204,10 +188,6 @@ public class HttpServer : IDisposable
         public static SocketOptions Defaults { get; } = new SocketOptions
         {
             Value = new SocketTransportOptions()
-            {
-                WaitForDataBeforeAllocatingBuffer = false,
-                UnsafePreferInlineScheduling = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? Environment.GetEnvironmentVariable("DOTNET_SYSTEM_NET_SOCKETS_INLINE_COMPLETIONS") == "1" : false,
-            }
         };
 
         public SocketTransportOptions Value { get; init; } = new SocketTransportOptions();

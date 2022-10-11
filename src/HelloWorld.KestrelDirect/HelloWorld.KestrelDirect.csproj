@@ -4,11 +4,12 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PublishIISAssets>false</PublishIISAssets>
     <PublishRelease>true</PublishRelease>
-    <!--<PublishSingleFile>true</PublishSingleFile>
-    <PublishTrimmed>true</PublishTrimmed>-->
+    <!--<PublishSingleFile>true</PublishSingleFile>-->
+    <PublishTrimmed>true</PublishTrimmed>
     <!--<PublishReadyToRun>true</PublishReadyToRun>-->
-    <PublishAot>true</PublishAot>
+    <!--<PublishAot>true</PublishAot>-->
     <TrimMode>full</TrimMode>
   </PropertyGroup>
 
