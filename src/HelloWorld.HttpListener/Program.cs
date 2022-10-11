@@ -5,6 +5,7 @@ using System.Text;
 
 var port = 5003;
 var shuttingDown = 0L;
+var responseTextBuffer = "Hello World!"u8.ToArray();
 
 using var server = new HttpListener();
 server.Prefixes.Add($"http://localhost:{port}/");
@@ -111,23 +112,16 @@ async Task ProcessRequest(HttpListenerContext context)
     var request = context.Request;
     var response = context.Response;
 
-    var responseText = "Hello World!";
-    var responseBuffer = ArrayPool<byte>.Shared.Rent(Encoding.UTF8.GetByteCount(responseText));
-    var filled = Encoding.UTF8.GetBytes(responseText, 0, responseText.Length, responseBuffer, 0);
-
     response.ContentType = "text/plain";
-    response.ContentLength64 = filled;
+    response.ContentLength64 = responseBuffer.Length;
+
     try
     {
-        await response.OutputStream.WriteAsync(responseBuffer, 0, filled, stopTokenSource.Token);
+        await response.OutputStream.WriteAsync(responseBuffer.AsMemory(), stopTokenSource.Token);
     }
     catch (TaskCanceledException)
     {
 
-    }
-    finally
-    {
-        ArrayPool<byte>.Shared.Return(responseBuffer);
     }
 }
 
