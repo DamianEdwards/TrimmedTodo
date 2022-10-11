@@ -187,24 +187,24 @@ internal class ProjectBuilder
         {
             "--runtime", RuntimeInformation.RuntimeIdentifier,
             selfContained || trimLevel != TrimLevel.None ? "--self-contained" : "--no-self-contained",
-            $"/p:PublishSingleFile={(singleFile ? "true" : "")}",
-            $"/p:PublishReadyToRun={(readyToRun ? "true" : "")}",
-            "/p:PublishAot=false"
+            $"-p:PublishSingleFile={(singleFile ? "true" : "")}",
+            $"-p:PublishReadyToRun={(readyToRun ? "true" : "")}",
+            "-p:PublishAot=false"
         };
 
         if (trimLevel != TrimLevel.None)
         {
-            args.Add("/p:PublishTrimmed=true");
-            args.Add($"/p:TrimMode={GetTrimLevelPropertyValue(trimLevel)}");
+            args.Add("-p:PublishTrimmed=true");
+            args.Add($"-p:TrimMode={GetTrimLevelPropertyValue(trimLevel)}");
         }
         else
         {
-            args.Add("/p:PublishTrimmed=false");
+            args.Add("-p:PublishTrimmed=false");
         }
 
         if (!useAppHost)
         {
-            args.Add("/p:UseAppHost=false");
+            args.Add("-p:UseAppHost=false");
         }
 
         return PublishImpl(projectName, configuration, args, runId);
@@ -214,7 +214,7 @@ internal class ProjectBuilder
     {
         "HelloWorld.Console",
         "HelloWorld.Web",
-        "HelloWorld.Stripped",
+        "HelloWorld.Web.Stripped",
         "HelloWorld.HttpListener",
         "TrimmedTodo.Console.ApiClient"
     };
@@ -239,14 +239,14 @@ internal class ProjectBuilder
         {
             "--runtime", RuntimeInformation.RuntimeIdentifier,
             "--self-contained",
-            "/p:PublishAot=true",
-            "/p:PublishSingleFile=",
-            "/p:PublishTrimmed="
+            "-p:PublishAot=true",
+            "-p:PublishSingleFile=",
+            "-p:PublishTrimmed="
         };
 
         if (trimLevel != TrimLevel.None)
         {
-            args.Add($"/p:TrimMode={GetTrimLevelPropertyValue(trimLevel)}");
+            args.Add($"-p:TrimMode={GetTrimLevelPropertyValue(trimLevel)}");
         }
 
         return PublishImpl(projectName, configuration, args, runId);

@@ -24,11 +24,11 @@ $artifacts = ".artifacts";
 
 Write-Host "Cleaning up previous run";
 
-Write-Host "dotnet restore $projectPath -r $Rid /p:Configuration=Debug"
-dotnet restore $projectPath -r $Rid /p:Configuration=Debug
+Write-Host "dotnet restore $projectPath -r $Rid -p:Configuration=Debug"
+dotnet restore $projectPath -r $Rid -p:Configuration=Debug
 
-Write-Host "dotnet restore $projectPath -r $Rid /p:Configuration=Release"
-dotnet restore $projectPath -r $Rid /p:Configuration=Release
+Write-Host "dotnet restore $projectPath -r $Rid -p:Configuration=Release"
+dotnet restore $projectPath -r $Rid -p:Configuration=Release
 
 Write-Host "dotnet clean $projectPath -c Debug -r $Rid -v q --nologo -o "$artifacts\$projectName""
 dotnet clean $projectPath -c Debug -r $Rid -v q --nologo -o "$artifacts\$projectName"
@@ -45,10 +45,10 @@ if (Test-Path -Path "$artifacts\$projectName") {
 Write-Host "Publishing ${projectName}: dotnet publish -r $Rid --self-contained";
 dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName"
 #dotnet publish $projectPath -c Release -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName"
-#dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true /p:PublishSingleFile=true
-#dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true
-#dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishTrimmed=true
-#dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" /p:PublishAot=true /p:PublishSingleFile=false
+#dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" -p:PublishTrimmed=true -p:PublishSingleFile=true
+#dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" -p:PublishTrimmed=true
+#dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" -p:PublishTrimmed=true
+#dotnet publish $projectPath -r $Rid --self-contained -v m --nologo -o "$artifacts\$projectName" -p:PublishAot=true -p:PublishSingleFile=false
 Write-Host;
 
 if ($LASTEXITCODE -ne 0 -or (Test-Path -Path "$artifacts\$projectName\$projectName.exe") -ne $true)
