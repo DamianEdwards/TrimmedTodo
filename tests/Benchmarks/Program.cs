@@ -48,8 +48,8 @@ public class StartupTimeBenchmarks
         //"HelloWorld.Console",
         //"HelloWorld.Web",
         //"HelloWorld.Web.Stripped",
-        "HelloWorld.HttpListener",
         "HelloWorld.KestrelDirect",
+        "HelloWorld.HttpListener",
         //"TrimmedTodo.Console.EfCore.Sqlite",
         //"TrimmedTodo.MinimalApi.Sqlite",
         //"TrimmedTodo.MinimalApi.Dapper.Sqlite",
@@ -66,8 +66,8 @@ public class StartupTimeBenchmarks
         //PublishScenario.SelfContainedReadyToRun,
         //PublishScenario.SingleFile,
         //PublishScenario.SingleFileReadyToRun,
-        PublishScenario.Trimmed,
-        PublishScenario.TrimmedReadyToRun,
+        //PublishScenario.Trimmed,
+        //PublishScenario.TrimmedReadyToRun,
         PublishScenario.AOT
     };
 

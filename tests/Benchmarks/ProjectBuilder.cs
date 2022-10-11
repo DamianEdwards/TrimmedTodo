@@ -215,6 +215,7 @@ internal class ProjectBuilder
         "HelloWorld.Console",
         "HelloWorld.Web",
         "HelloWorld.Web.Stripped",
+        "HelloWorld.KestrelDirect",
         "HelloWorld.HttpListener",
         "TrimmedTodo.Console.ApiClient"
     };

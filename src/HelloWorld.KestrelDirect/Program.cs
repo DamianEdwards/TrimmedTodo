@@ -11,7 +11,11 @@ server.OnRequest(async context =>
 });
 
 var stopTokenSource = new CancellationTokenSource();
-Console.CancelKeyPress += (_, __) => stopTokenSource.Cancel();
+Console.CancelKeyPress += (_, a) =>
+{
+    a.Cancel = true;
+    stopTokenSource.Cancel();
+};
 
 if (Environment.GetEnvironmentVariable("SHUTDOWN_ON_START") != "true")
 {

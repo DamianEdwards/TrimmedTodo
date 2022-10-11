@@ -4,7 +4,10 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5094"
+      "applicationUrl": "http://localhost:5094",
+      "environmentVariables": {
+        "SHUTDOWN_ON_START": "false"
+      }
     }
   }
 }
