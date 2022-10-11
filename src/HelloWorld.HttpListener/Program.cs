@@ -113,15 +113,19 @@ async Task ProcessRequest(HttpListenerContext context)
     var response = context.Response;
 
     response.ContentType = "text/plain";
-    response.ContentLength64 = responseBuffer.Length;
+    response.ContentLength64 = responseTextBuffer.Length;
 
     try
     {
-        await response.OutputStream.WriteAsync(responseBuffer.AsMemory(), stopTokenSource.Token);
+        await response.OutputStream.WriteAsync(responseTextBuffer.AsMemory(), stopTokenSource.Token);
     }
     catch (TaskCanceledException)
     {
 
+    }
+    finally
+    {
+        response.Close();
     }
 }
 
