@@ -21,7 +21,11 @@ var requestProcessingTask = Task.Run(StartRequestLoop, stopTokenSource.Token);
 
 if (Environment.GetEnvironmentVariable("SHUTDOWN_ON_START") != "true")
 {
-    Console.CancelKeyPress += (_, __) => Shutdown();
+    Console.CancelKeyPress += (_, a) =>
+    {
+        a.Cancel = true;
+        Shutdown();
+    };
 
     Console.WriteLine("Press Ctrl+C to exit");
     await shutdownTcs.Task;

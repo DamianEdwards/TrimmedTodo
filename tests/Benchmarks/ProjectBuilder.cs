@@ -189,6 +189,7 @@ internal class ProjectBuilder
             selfContained || trimLevel != TrimLevel.None ? "--self-contained" : "--no-self-contained",
             $"-p:PublishSingleFile={(singleFile ? "true" : "")}",
             $"-p:PublishReadyToRun={(readyToRun ? "true" : "")}",
+            "-p:PublishIISAssets=false",
             "-p:PublishAot=false"
         };
 
@@ -215,6 +216,7 @@ internal class ProjectBuilder
         "HelloWorld.Console",
         "HelloWorld.Web",
         "HelloWorld.Web.Stripped",
+        "HelloWorld.KestrelDirect",
         "HelloWorld.HttpListener",
         "TrimmedTodo.Console.ApiClient"
     };
@@ -239,6 +241,7 @@ internal class ProjectBuilder
         {
             "--runtime", RuntimeInformation.RuntimeIdentifier,
             "--self-contained",
+            "-p:PublishIISAssets=false",
             "-p:PublishAot=true",
             "-p:PublishSingleFile=",
             "-p:PublishTrimmed="
