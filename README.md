@@ -87,7 +87,10 @@ Deleted all 3 todos!
 |              HelloWorld.Web.Stripped | TrimmedReadyToRun |  118.70 ms |  25.01 MB |   33.15 MB |
 |              HelloWorld.Web.Stripped |               AOT |   51.85 ms |  12.22 MB |   20.92 MB |
 |                                      |                   |            |           |            |
-|             HelloWorld.KestrelDirect |               AOT |        TBD |  11.16 MB |   15.47 MB |
+|             HelloWorld.KestrelDirect |     SelfContained |  191.51 ms |  93.88 MB |   42.07 MB |
+|             HelloWorld.KestrelDirect |           Trimmed |  332.89 ms |  13.93 MB |   32.30 MB |
+|             HelloWorld.KestrelDirect | TrimmedReadyToRun |  128.09 ms |  23.20 MB |   32.77 MB |
+|             HelloWorld.KestrelDirect |               AOT |   60.37 ms |  11.16 MB |   18.58 MB |
 |                                      |                   |            |           |            |
 |    TrimmedTodo.Console.EfCore.Sqlite |     SelfContained |   591.4 ms |  75.78 MB |         NA |
 |    TrimmedTodo.Console.EfCore.Sqlite |           Trimmed |   834.0 ms |  22.07 MB |         NA |
