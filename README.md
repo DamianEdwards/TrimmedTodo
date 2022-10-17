@@ -104,20 +104,30 @@ Deleted all 3 todos!
 |                                      |                             |            |           |            |
 |    TrimmedTodo.Console.EfCore.Sqlite |               SelfContained |   591.4 ms |  75.78 MB |         NA |
 |    TrimmedTodo.Console.EfCore.Sqlite |                     Trimmed |   834.0 ms |  22.07 MB |         NA |
+|    TrimmedTodo.Console.EfCore.Sqlite |           TrimmedCompressed |   960.4 ms |  13.80 MB |         NA |
 |    TrimmedTodo.Console.EfCore.Sqlite |           TrimmedReadyToRun |   280.3 ms |  51.86 MB |         NA |
+|    TrimmedTodo.Console.EfCore.Sqlite | TrimmedReadyToRunCompressed |   441.3 ms |  26.48 MB |         NA |
 |                                      |                             |            |           |            |
 | TrimmedTodo.MinimalApi.Dapper.Sqlite |               SelfContained |   385.4 ms | 101.19 MB |   68.15 MB |
 | TrimmedTodo.MinimalApi.Dapper.Sqlite |                     Trimmed |   935.4 ms |  32.05 MB |   60.37 MB |
+| TrimmedTodo.MinimalApi.Dapper.Sqlite |           TrimmedCompressed | 1,066.9 ms |  17.81 MB |   72.09 MB |
 | TrimmedTodo.MinimalApi.Dapper.Sqlite |           TrimmedReadyToRun |   286.4 ms |  69.05 MB |   65.18 MB |
+| TrimmedTodo.MinimalApi.Dapper.Sqlite | TrimmedReadyToRunCompressed |   531.6 ms |  33.41 MB |  119.33 MB |
 |                                      |                             |            |           |            |
 | TrimmedTodo.MinimalApi.EfCore.Sqlite |               SelfContained |   760.9 ms | 105.14 MB |   83.41 MB |
 | TrimmedTodo.MinimalApi.EfCore.Sqlite |                     Trimmed | 1,308.9 ms |  36.28 MB |   75.46 MB |
+| TrimmedTodo.MinimalApi.EfCore.Sqlite |           TrimmedCompressed | 1,537.1 ms |  19.21 MB |   88.59 MB |
 | TrimmedTodo.MinimalApi.EfCore.Sqlite |           TrimmedReadyToRun |   415.1 ms |  81.72 MB |   81.32 MB |
+| TrimmedTodo.MinimalApi.EfCore.Sqlite | TrimmedReadyToRunCompressed |   710.0 ms |  38.40 MB |  146.77 MB |
 |                                      |                             |            |           |            |
 |        TrimmedTodo.MinimalApi.Sqlite |               SelfContained |   370.1 ms | 101.00 MB |   66.36 MB |
 |        TrimmedTodo.MinimalApi.Sqlite |                     Trimmed |   829.5 ms |  31.82 MB |   58.36 MB |
+|        TrimmedTodo.MinimalApi.Sqlite |           TrimmedCompressed | 1,022.3 ms |  17.70 MB |   70.61 MB |
 |        TrimmedTodo.MinimalApi.Sqlite |           TrimmedReadyToRun |   273.3 ms |  68.33 MB |   63.04 MB |
+|        TrimmedTodo.MinimalApi.Sqlite | TrimmedReadyToRunCompressed |   496.9 ms |  33.10 MB |  118.80 MB |
 |                                      |                             |            |           |            |
 |     TrimmedTodo.WebApi.EfCore.Sqlite |               SelfContained |   728.9 ms | 105.10 MB |   85.73 MB |
 |     TrimmedTodo.WebApi.EfCore.Sqlite |                     Trimmed | 1,303.2 ms |  39.48 MB |   77.83 MB |
+|     TrimmedTodo.WebApi.EfCore.Sqlite |           TrimmedCompressed | 1,543.9 ms |  20.54 MB |   90.39 MB |
 |     TrimmedTodo.WebApi.EfCore.Sqlite |           TrimmedReadyToRun |   423.3 ms |  86.26 MB |   84.92 MB |
+|     TrimmedTodo.WebApi.EfCore.Sqlite | TrimmedReadyToRunCompressed |   735.9 ms |  40.16 MB |  152.25 MB |
