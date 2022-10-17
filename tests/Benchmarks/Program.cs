@@ -45,7 +45,7 @@ public class StartupTimeBenchmarks
 
     public static IEnumerable<string> ProjectNames() => new[]
     {
-        //"HelloWorld.Console",
+        "HelloWorld.Console",
         "HelloWorld.Web",
         "HelloWorld.Web.Stripped",
         "HelloWorld.KestrelDirect",
@@ -62,12 +62,16 @@ public class StartupTimeBenchmarks
         //PublishScenario.Default,
         //PublishScenario.NoAppHost,
         //PublishScenario.ReadyToRun,
-        //PublishScenario.SelfContained,
+        PublishScenario.SelfContained,
         //PublishScenario.SelfContainedReadyToRun,
         //PublishScenario.SingleFile,
+        //PublishScenario.SingleFileCompressed,
         //PublishScenario.SingleFileReadyToRun,
-        //PublishScenario.Trimmed,
-        //PublishScenario.TrimmedReadyToRun,
+        //PublishScenario.SingleFileReadyToRunCompressed,
+        PublishScenario.Trimmed,
+        PublishScenario.TrimmedCompressed,
+        PublishScenario.TrimmedReadyToRun,
+        PublishScenario.TrimmedReadyToRunCompressed,
         PublishScenario.AOT
     };
 

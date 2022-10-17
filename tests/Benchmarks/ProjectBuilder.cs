@@ -51,9 +51,13 @@ internal class ProjectBuilder
             PublishScenario.SelfContained => Publish(ProjectName, selfContained: true, trimLevel: TrimLevel.None, runId: runId),
             PublishScenario.SelfContainedReadyToRun => Publish(ProjectName, selfContained: true, readyToRun: true, trimLevel: TrimLevel.None, runId: runId),
             PublishScenario.SingleFile => Publish(ProjectName, selfContained: true, singleFile: true, trimLevel: TrimLevel.None, runId: runId),
+            PublishScenario.SingleFileCompressed => Publish(ProjectName, selfContained: true, singleFile: true, enableCompressionInSingleFile: true, trimLevel: TrimLevel.None, runId: runId),
             PublishScenario.SingleFileReadyToRun => Publish(ProjectName, selfContained: true, singleFile: true, readyToRun: true, trimLevel: TrimLevel.None, runId: runId),
+            PublishScenario.SingleFileReadyToRunCompressed => Publish(ProjectName, selfContained: true, singleFile: true, enableCompressionInSingleFile: true, readyToRun: true, trimLevel: TrimLevel.None, runId: runId),
             PublishScenario.Trimmed => Publish(ProjectName, selfContained: true, singleFile: true, trimLevel: GetTrimLevel(ProjectName), runId: runId),
+            PublishScenario.TrimmedCompressed => Publish(ProjectName, selfContained: true, singleFile: true, enableCompressionInSingleFile: true, trimLevel: GetTrimLevel(ProjectName), runId: runId),
             PublishScenario.TrimmedReadyToRun => Publish(ProjectName, selfContained: true, singleFile: true, readyToRun: true, trimLevel: GetTrimLevel(ProjectName), runId: runId),
+            PublishScenario.TrimmedReadyToRunCompressed => Publish(ProjectName, selfContained: true, singleFile: true, enableCompressionInSingleFile: true, readyToRun: true, trimLevel: GetTrimLevel(ProjectName), runId: runId),
             PublishScenario.AOT => PublishAot(ProjectName, trimLevel: GetTrimLevel(ProjectName), runId: runId),
             _ => throw new ArgumentException("Unrecognized publish scenario", nameof(PublishScenario))
         };
@@ -178,6 +182,7 @@ internal class ProjectBuilder
         string configuration = "Release",
         bool selfContained = false,
         bool singleFile = false,
+        bool enableCompressionInSingleFile = false,
         bool readyToRun = false,
         bool useAppHost = true,
         TrimLevel trimLevel = TrimLevel.None,
@@ -188,6 +193,7 @@ internal class ProjectBuilder
             "--runtime", RuntimeInformation.RuntimeIdentifier,
             selfContained || trimLevel != TrimLevel.None ? "--self-contained" : "--no-self-contained",
             $"-p:PublishSingleFile={(singleFile ? "true" : "")}",
+            $"-p:EnableCompressionInSingleFile={(enableCompressionInSingleFile ? "true" : "")}",
             $"-p:PublishReadyToRun={(readyToRun ? "true" : "")}",
             "-p:PublishIISAssets=false",
             "-p:PublishAot=false"
@@ -353,9 +359,13 @@ public enum PublishScenario
     SelfContained,
     SelfContainedReadyToRun,
     SingleFile,
+    SingleFileCompressed,
     SingleFileReadyToRun,
+    SingleFileReadyToRunCompressed,
     Trimmed,
+    TrimmedCompressed,
     TrimmedReadyToRun,
+    TrimmedReadyToRunCompressed,
     AOT
 }
 

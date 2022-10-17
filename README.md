@@ -65,49 +65,57 @@ Deleted all 3 todos!
 - Only trimming modes that result in the app still working are shown
 - Execution time measures time for the app to run (startup, execute, close). Web apps are configured to send a request to themselves on startup and then shut themselves down when being measured.
 
-|                              Project |       PublishKind |  Execution |  App Size | App Memory |
-|   ---------------------------------- |------------------ |-----------:|----------:|-----------:|
-|                   HelloWorld.Console |     SelfContained |   35.71 ms |  69.45 MB |         NA |
-|                   HelloWorld.Console |           Trimmed |   33.97 ms |  11.05 MB |         NA |
-|                   HelloWorld.Console | TrimmedReadyToRun |   26.34 ms |  14.27 MB |         NA |
-|                   HelloWorld.Console |               AOT |   10.17 ms |   0.97 MB |         NA |
-|                                      |                   |            |           |            |
-|              HelloWorld.HttpListener |     SelfContained |  117.83 ms |  69.46 MB |   32.03 MB |
-|              HelloWorld.HttpListener |           Trimmed |  275.14 ms |  12.96 MB |   27.11 MB |
-|              HelloWorld.HttpListener | TrimmedReadyToRun |   96.63 ms |  20.36 MB |   26.02 MB |
-|              HelloWorld.HttpListener |               AOT |   55.04 ms |   8.72 MB |   14.59 MB |
-|                                      |                   |            |           |            |
-|                       HelloWorld.Web |     SelfContained |  233.89 ms |  94.23 MB |   50.56 MB |
-|                       HelloWorld.Web |           Trimmed |  507.58 ms |  17.28 MB |   40.39 MB |
-|                       HelloWorld.Web | TrimmedReadyToRun |  158.79 ms |  37.93 MB |   43.45 MB |
-|                       HelloWorld.Web |               AOT |   72.97 ms |  21.86 MB |   36.15 MB |
-|                                      |                   |            |           |            |
-|              HelloWorld.Web.Stripped |     SelfContained |  173.00 ms |  94.23 MB |   40.77 MB |
-|              HelloWorld.Web.Stripped |           Trimmed |  348.29 ms |  14.49 MB |   32.32 MB |
-|              HelloWorld.Web.Stripped | TrimmedReadyToRun |  118.70 ms |  25.01 MB |   33.15 MB |
-|              HelloWorld.Web.Stripped |               AOT |   51.85 ms |  12.22 MB |   20.92 MB |
-|                                      |                   |            |           |            |
-|             HelloWorld.KestrelDirect |     SelfContained |  191.51 ms |  93.88 MB |   42.07 MB |
-|             HelloWorld.KestrelDirect |           Trimmed |  332.89 ms |  13.93 MB |   32.30 MB |
-|             HelloWorld.KestrelDirect | TrimmedReadyToRun |  128.09 ms |  23.20 MB |   32.77 MB |
-|             HelloWorld.KestrelDirect |               AOT |   60.37 ms |  11.16 MB |   18.58 MB |
-|                                      |                   |            |           |            |
-|    TrimmedTodo.Console.EfCore.Sqlite |     SelfContained |   591.4 ms |  75.78 MB |         NA |
-|    TrimmedTodo.Console.EfCore.Sqlite |           Trimmed |   834.0 ms |  22.07 MB |         NA |
-|    TrimmedTodo.Console.EfCore.Sqlite | TrimmedReadyToRun |   280.3 ms |  51.86 MB |         NA |
-|                                      |                   |            |           |            |
-| TrimmedTodo.MinimalApi.Dapper.Sqlite |     SelfContained |   385.4 ms | 101.19 MB |   68.15 MB |
-| TrimmedTodo.MinimalApi.Dapper.Sqlite |           Trimmed |   935.4 ms |  32.05 MB |   60.37 MB |
-| TrimmedTodo.MinimalApi.Dapper.Sqlite | TrimmedReadyToRun |   286.4 ms |  69.05 MB |   65.18 MB |
-|                                      |                   |            |           |            |
-| TrimmedTodo.MinimalApi.EfCore.Sqlite |     SelfContained |   760.9 ms | 105.14 MB |   83.41 MB |
-| TrimmedTodo.MinimalApi.EfCore.Sqlite |           Trimmed | 1,308.9 ms |  36.28 MB |   75.46 MB |
-| TrimmedTodo.MinimalApi.EfCore.Sqlite | TrimmedReadyToRun |   415.1 ms |  81.72 MB |   81.32 MB |
-|                                      |                   |            |           |            |
-|        TrimmedTodo.MinimalApi.Sqlite |     SelfContained |   370.1 ms | 101.00 MB |   66.36 MB |
-|        TrimmedTodo.MinimalApi.Sqlite |           Trimmed |   829.5 ms |  31.82 MB |   58.36 MB |
-|        TrimmedTodo.MinimalApi.Sqlite | TrimmedReadyToRun |   273.3 ms |  68.33 MB |   63.04 MB |
-|                                      |                   |            |           |            |
-|     TrimmedTodo.WebApi.EfCore.Sqlite |     SelfContained |   728.9 ms | 105.10 MB |   85.73 MB |
-|     TrimmedTodo.WebApi.EfCore.Sqlite |           Trimmed | 1,303.2 ms |  39.48 MB |   77.83 MB |
-|     TrimmedTodo.WebApi.EfCore.Sqlite | TrimmedReadyToRun |   423.3 ms |  86.26 MB |   84.92 MB |
+|                              Project |                 PublishKind |  Execution |  App Size | App Memory |
+|   ---------------------------------- |---------------------------- |-----------:|----------:|-----------:|
+|                   HelloWorld.Console |               SelfContained |   35.71 ms |  69.45 MB |         NA |
+|                   HelloWorld.Console |                     Trimmed |   33.97 ms |  11.05 MB |         NA |
+|                   HelloWorld.Console |           TrimmedCompressed |   43.46 ms |   9.82 MB |            |
+|                   HelloWorld.Console |           TrimmedReadyToRun |   26.34 ms |  14.27 MB |         NA |
+|                   HelloWorld.Console | TrimmedReadyToRunCompressed |   47.07 ms |  11.40 MB |            |
+|                   HelloWorld.Console |                         AOT |   10.17 ms |   0.97 MB |         NA |
+|                                      |                             |            |           |            |
+|              HelloWorld.HttpListener |               SelfContained |  117.83 ms |  69.46 MB |   32.03 MB |
+|              HelloWorld.HttpListener |                     Trimmed |  275.14 ms |  12.96 MB |   27.11 MB |
+|              HelloWorld.HttpListener |           TrimmedCompressed |  287.67 ms |  10.62 MB |   27.20 MB |
+|              HelloWorld.HttpListener |           TrimmedReadyToRun |   96.63 ms |  20.36 MB |   26.02 MB |
+|              HelloWorld.HttpListener | TrimmedReadyToRunCompressed |  131.53 ms |  14.05 MB |   35.07 MB |
+|              HelloWorld.HttpListener |                         AOT |   55.04 ms |   8.72 MB |   14.59 MB |
+|                                      |                             |            |           |            |
+|                       HelloWorld.Web |               SelfContained |  233.89 ms |  94.23 MB |   50.56 MB |
+|                       HelloWorld.Web |                     Trimmed |  507.58 ms |  17.28 MB |   40.39 MB |
+|                       HelloWorld.Web |           TrimmedCompressed |  562.42 ms |  12.33 MB |   42.58 MB |
+|                       HelloWorld.Web |           TrimmedReadyToRun |  158.79 ms |  37.93 MB |   43.45 MB |
+|                       HelloWorld.Web | TrimmedReadyToRunCompressed |  260.63 ms |  20.85 MB |   67.05 MB |
+|                       HelloWorld.Web |                         AOT |   72.97 ms |  21.86 MB |   36.15 MB |
+|                                      |                             |            |           |            |
+|              HelloWorld.Web.Stripped |               SelfContained |  173.00 ms |  94.23 MB |   40.77 MB |
+|              HelloWorld.Web.Stripped |                     Trimmed |  348.29 ms |  14.49 MB |   32.32 MB |
+|              HelloWorld.Web.Stripped |           TrimmedCompressed |  393.29 ms |  11.21 MB |   33.89 MB |
+|              HelloWorld.Web.Stripped |           TrimmedReadyToRun |  118.70 ms |  25.01 MB |   33.15 MB |
+|              HelloWorld.Web.Stripped | TrimmedReadyToRunCompressed |  186.30 ms |  15.88 MB |   47.11 MB |
+|              HelloWorld.Web.Stripped |                         AOT |   51.85 ms |  12.22 MB |   20.92 MB |
+|                                      |                             |            |           |            |
+|             HelloWorld.KestrelDirect |               SelfContained |  191.51 ms |  93.88 MB |   42.07 MB |
+|             HelloWorld.KestrelDirect |                     Trimmed |  332.89 ms |  13.93 MB |   32.30 MB |
+|             HelloWorld.KestrelDirect |           TrimmedReadyToRun |  128.09 ms |  23.20 MB |   32.77 MB |
+|             HelloWorld.KestrelDirect |                         AOT |   60.37 ms |  11.16 MB |   18.58 MB |
+|                                      |                             |            |           |            |
+|    TrimmedTodo.Console.EfCore.Sqlite |               SelfContained |   591.4 ms |  75.78 MB |         NA |
+|    TrimmedTodo.Console.EfCore.Sqlite |                     Trimmed |   834.0 ms |  22.07 MB |         NA |
+|    TrimmedTodo.Console.EfCore.Sqlite |           TrimmedReadyToRun |   280.3 ms |  51.86 MB |         NA |
+|                                      |                             |            |           |            |
+| TrimmedTodo.MinimalApi.Dapper.Sqlite |               SelfContained |   385.4 ms | 101.19 MB |   68.15 MB |
+| TrimmedTodo.MinimalApi.Dapper.Sqlite |                     Trimmed |   935.4 ms |  32.05 MB |   60.37 MB |
+| TrimmedTodo.MinimalApi.Dapper.Sqlite |           TrimmedReadyToRun |   286.4 ms |  69.05 MB |   65.18 MB |
+|                                      |                             |            |           |            |
+| TrimmedTodo.MinimalApi.EfCore.Sqlite |               SelfContained |   760.9 ms | 105.14 MB |   83.41 MB |
+| TrimmedTodo.MinimalApi.EfCore.Sqlite |                     Trimmed | 1,308.9 ms |  36.28 MB |   75.46 MB |
+| TrimmedTodo.MinimalApi.EfCore.Sqlite |           TrimmedReadyToRun |   415.1 ms |  81.72 MB |   81.32 MB |
+|                                      |                             |            |           |            |
+|        TrimmedTodo.MinimalApi.Sqlite |               SelfContained |   370.1 ms | 101.00 MB |   66.36 MB |
+|        TrimmedTodo.MinimalApi.Sqlite |                     Trimmed |   829.5 ms |  31.82 MB |   58.36 MB |
+|        TrimmedTodo.MinimalApi.Sqlite |           TrimmedReadyToRun |   273.3 ms |  68.33 MB |   63.04 MB |
+|                                      |                             |            |           |            |
+|     TrimmedTodo.WebApi.EfCore.Sqlite |               SelfContained |   728.9 ms | 105.10 MB |   85.73 MB |
+|     TrimmedTodo.WebApi.EfCore.Sqlite |                     Trimmed | 1,303.2 ms |  39.48 MB |   77.83 MB |
+|     TrimmedTodo.WebApi.EfCore.Sqlite |           TrimmedReadyToRun |   423.3 ms |  86.26 MB |   84.92 MB |
