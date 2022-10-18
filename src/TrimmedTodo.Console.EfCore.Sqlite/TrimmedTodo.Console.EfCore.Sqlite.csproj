@@ -8,9 +8,6 @@
     <PublishRelease>true</PublishRelease>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
-    <!-- This is required as new trimming defaults in .NET 7 break EF Core migrations which this app does internally -->
-    <TrimMode>partial</TrimMode>
-    <!--<PublishAot>true</PublishAot>-->
   </PropertyGroup>
 
   <ItemGroup>

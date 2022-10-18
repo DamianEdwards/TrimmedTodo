@@ -9,14 +9,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace TrimmedTodo.Console.EfCore.Sqlite.Migrations
 {
     [DbContext(typeof(TodoDb))]
-    [Migration("20220706222300_Initial")]
+    [Migration("20221018004423_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.0-preview.7.22356.4");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.0-rc.2.22472.11");
 
             modelBuilder.Entity("Todo", b =>
                 {
@@ -24,7 +24,7 @@ namespace TrimmedTodo.Console.EfCore.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsCompleted")
+                    b.Property<bool>("IsComplete")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-using var db = new TodoDb();
+using var db = new TodoDb(Environment.GetEnvironmentVariable("CONNECTION_STRING"));
 
 await EnsureDb(db);
 
@@ -25,7 +25,7 @@ Console.WriteLine();
 
 static async Task ListCurrentTodos(TodoDb db)
 {
-    var todos = await db.Todos.Where(t => !t.IsCompleted).ToListAsync();
+    var todos = await db.Todos.Where(t => !t.IsComplete).ToListAsync();
     if (todos.Count == 0)
     {
         Console.WriteLine("There are currently no todos!");
@@ -64,14 +64,14 @@ static async Task AddTodo(TodoDb db, string title)
 
 static async Task MarkComplete(TodoDb db, string title)
 {
-    var todo = await db.Todos.Where(t => t.Title == title && t.IsCompleted == false).SingleOrDefaultAsync();
+    var todo = await db.Todos.Where(t => t.Title == title && t.IsComplete == false).SingleOrDefaultAsync();
 
     if (todo is null)
     {
         throw new InvalidOperationException($"No incomplete todo with title '{title}' was found!");
     }
 
-    todo.IsCompleted = true;
+    todo.IsComplete = true;
 
     await db.SaveChangesAsync();
 
@@ -86,11 +86,18 @@ static async Task<int> DeleteAllTodos(TodoDb db)
 
 static async Task EnsureDb(TodoDb db)
 {
-    Console.WriteLine($"Ensuring database exists and is up to date at connection string '{db.Database.GetConnectionString()}'");
+    if (Environment.GetEnvironmentVariable("SUPPRESS_DB_INIT") != "true")
+    {
+        Console.WriteLine($"Ensuring database exists and is up to date at connection string '{db.Database.GetConnectionString()}'");
 
-    await db.Database.MigrateAsync();
+        await db.Database.MigrateAsync();
 
-    Console.WriteLine();
+        Console.WriteLine();
+    }
+    else
+    {
+        Console.WriteLine($"Database initialization disabled for connection string '{db.Database.GetConnectionString()}'");
+    }
 }
 
 public class Todo
@@ -98,13 +105,18 @@ public class Todo
     public int Id { get; set; }
     [Required]
     public string? Title { get; set; }
-    public bool IsCompleted { get; set; }
+    public bool IsComplete { get; set; }
 }
 
 public class TodoDb : DbContext
 {
-    public TodoDb()
+    private readonly string _cs;
+
+    public TodoDb() : this(null) { }
+
+    public TodoDb(string? connectionString)
     {
+        _cs = !string.IsNullOrEmpty(connectionString) ? connectionString : "Data Source=todos.db;Cache=Shared";
         Todos = Set<Todo>();
     }
 
@@ -112,6 +124,7 @@ public class TodoDb : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=todos.db;Cache=Shared");
+        optionsBuilder.UseSqlite(_cs);
+        optionsBuilder.UseModel(TrimmedTodo.Console.EfCore.Sqlite.CompiledModels.TodoDbModel.Instance);
     }
 }

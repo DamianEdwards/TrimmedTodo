@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,8 +18,10 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
         "JWT options are not configured. Run 'dotnet user-jwts create' in project directory to configure JWT.")
     .ValidateOnStart();
 
-var connectionString = builder.Configuration.GetConnectionString("TodoDb") ?? "Data Source=todos.db;Cache=Shared";
-builder.Services.AddSqlite<TodoDb>(connectionString)
+var connectionString = builder.Configuration.GetConnectionString("TodoDb")
+    ?? builder.Configuration["CONNECTION_STRING"]
+    ?? "Data Source=todos.db;Cache=Shared";
+builder.Services.AddSqlite<TodoDb>(connectionString, null, options => options.UseModel(TrimmedTodo.MinimalApi.EfCore.Sqlite.CompiledModels.TodoDbModel.Instance))
                 .AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -47,8 +48,15 @@ await app.StartApp("/api/todos");
 
 static async Task EnsureDb(string cs, IServiceProvider services, ILogger logger)
 {
-    logger.LogInformation("Ensuring database exists and is up to date at connection string '{connectionString}'", cs);
+    if (Environment.GetEnvironmentVariable("SUPPRESS_DB_INIT") != "true")
+    {
+        logger.LogInformation("Ensuring database exists and is up to date at connection string '{connectionString}'", cs);
 
-    using var db = services.CreateScope().ServiceProvider.GetRequiredService<TodoDb>();
-    await db.Database.MigrateAsync();
+        using var db = services.CreateScope().ServiceProvider.GetRequiredService<TodoDb>();
+        await db.Database.MigrateAsync();
+    }
+    else
+    {
+        Console.WriteLine($"Database initialization disabled for connection string '{cs}'");
+    }
 }

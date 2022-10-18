@@ -174,6 +174,12 @@ internal class ProjectBuilder
             }
         }
 
+        if (ProjectName.Contains("Sqlite"))
+        {
+            result.Add(("CONNECTION_STRING", "Data Source=todos.db;Cache=Shared"));
+            result.Add(("SUPPRESS_DB_INIT", "true"));
+        }
+
         return result.ToArray();
     }
 
@@ -235,7 +241,7 @@ internal class ProjectBuilder
     {
         if (!_projectsSupportingAot.Contains(projectName))
         {
-            throw new NotSupportedException($"The project '{projectName}' does support publishing for AOT.");
+            throw new NotSupportedException($"The project '{projectName}' does not support publishing for AOT.");
         }
 
         if (trimLevel == TrimLevel.None)
@@ -307,6 +313,13 @@ internal class ProjectBuilder
             }
         }
 
+        if (projectName.Contains("sqlite", StringComparison.OrdinalIgnoreCase))
+        {
+            var dbFileName = "todos.db";
+            var dbFileSrc = Path.Combine(PathHelper.RepoRoot, "scripts", dbFileName);
+            File.Copy(dbFileSrc, Path.Join(output, dbFileName));
+        }
+
         return new(appFilePath, GetUserSecretsId(projectPath));
     }
 
@@ -328,6 +341,11 @@ internal class ProjectBuilder
 
     private static TrimLevel GetTrimLevel(string projectName)
     {
+        if (projectName.Equals("TrimmedTodo.Console.EfCore.Sqlite"))
+        {
+            return TrimLevel.Full;
+        }
+
         if (projectName.Contains("EfCore", StringComparison.OrdinalIgnoreCase)
             || projectName.Contains("Dapper", StringComparison.OrdinalIgnoreCase)
             || projectName.Contains("MinimalApi.Sqlite", StringComparison.OrdinalIgnoreCase))

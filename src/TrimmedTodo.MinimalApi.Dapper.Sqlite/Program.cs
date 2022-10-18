@@ -48,15 +48,22 @@ await app.StartApp("/api/todos");
 
 async Task EnsureDb(IServiceProvider services, ILogger logger)
 {
-    logger.LogInformation("Ensuring database exists at connection string '{connectionString}'", connectionString);
+    if (Environment.GetEnvironmentVariable("SUPPRESS_DB_INIT") != "true")
+    {
+        logger.LogInformation("Ensuring database exists at connection string '{connectionString}'", connectionString);
 
-    using var db = services.CreateScope().ServiceProvider.GetRequiredService<IDbConnection>();
-    var sql = $"""
+        using var db = services.CreateScope().ServiceProvider.GetRequiredService<IDbConnection>();
+        var sql = $"""
                   CREATE TABLE IF NOT EXISTS Todos (
                   {nameof(Todo.Id)} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                   {nameof(Todo.Title)} TEXT NOT NULL,
                   {nameof(Todo.IsComplete)} INTEGER DEFAULT 0 NOT NULL CHECK({nameof(Todo.IsComplete)} IN (0, 1))
                   );
                """;
-    await db.ExecuteAsync(sql);
+        await db.ExecuteAsync(sql);
+    }
+    else
+    {
+        Console.WriteLine($"Database initialization disabled for connection string '{connectionString}'");
+    }
 }
