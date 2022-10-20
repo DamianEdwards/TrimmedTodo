@@ -17,13 +17,16 @@ product.Name = null;
 product.UnitPrice = -5;
 validationResults = product.Validate();
 Console.WriteLine($"Product should be invalid, is valid?: {!validationResults.Any()}");
-
-Console.WriteLine("Prese ENTER to exit");
-Console.ReadLine();
+var resultTable = validationResults.Select(r => new { Name = string.Join(", ", r.MemberNames), Message = r.ErrorMessage });
+var nameFieldLength = resultTable.Max(row => row.Name.Length);
+foreach (var result in resultTable)
+{
+    Console.WriteLine($"  {result.Name.PadLeft(nameFieldLength)}: {result.Message}");
+}
 
 public partial class Product
 {
-    [Range(0, int.MaxValue, ErrorMessage = "Id must be greater than 0")]
+    [Range(0, int.MaxValue, ErrorMessage = "**CUSTOM ERROR MESSAGE** Id must be greater than 0.")]
     public int Id { get; set; }
 
     [Required, StringLength(1000, MinimumLength = 1)]
@@ -43,15 +46,15 @@ public partial class Product : IValidate
 
     private static readonly RangeAttribute _unitPriceAttr01 = new(0, double.MaxValue);
 
-    private static readonly IEnumerable<string> _idMemberNames = new[] { nameof(Id) };
-    private static readonly IEnumerable<string> _nameMemberNames = new[] { nameof(Name) };
-    private static readonly IEnumerable<string> _unitPriceMemberNames = new[] { nameof(UnitPrice) };
+    private static readonly string[] _idMemberNames = new[] { nameof(Id) };
+    private static readonly string[] _nameMemberNames = new[] { nameof(Name) };
+    private static readonly string[] _unitPriceMemberNames = new[] { nameof(UnitPrice) };
 
-    private static void ValidateValue(ValidationAttribute attribute, object? value, List<ValidationResult> results, IEnumerable<string>? memberNames)
+    private static void ValidateValue(ValidationAttribute attribute, object? value, List<ValidationResult> results, string[] memberNames)
     {
         if (!attribute.IsValid(value))
         {
-            results.Add(new(attribute.ErrorMessage, memberNames));
+            results.Add(new(attribute.FormatErrorMessage(memberNames[0]), memberNames));
         }
     }
 
