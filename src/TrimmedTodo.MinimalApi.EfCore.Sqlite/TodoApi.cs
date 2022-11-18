@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using MiniValidation;
 
 namespace Microsoft.AspNetCore.Routing;
@@ -113,6 +115,7 @@ public static class TodoApi
 
         group.MapDelete("/delete-all", async (TodoDb db) => TypedResults.Ok(await db.Database.ExecuteSqlRawAsync("DELETE FROM Todos")))
             .WithName("DeleteAll")
+            .WithOpenApi(op => new OpenApiOperation(op).WithSecurityRequirementReference(JwtBearerDefaults.AuthenticationScheme))
             .RequireAuthorization(policy => policy.RequireAuthenticatedUser().RequireRole("admin"));
 
         return group;

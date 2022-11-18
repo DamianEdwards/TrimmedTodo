@@ -19,7 +19,7 @@ var connectionString = builder.Configuration.GetConnectionString("TodoDb") ?? "D
 builder.Services.AddScoped<IDbConnection>(_ => new SqliteConnection(connectionString));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(OpenApiExtensions.ConfigureSwaggerGen);
 
 var app = builder.Build();
 

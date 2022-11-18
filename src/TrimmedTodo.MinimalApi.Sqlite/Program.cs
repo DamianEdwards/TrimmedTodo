@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.Sqlite;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +19,7 @@ var connectionString = builder.Configuration.GetConnectionString("TodoDb")
 builder.Services.AddScoped(_ => new SqliteConnection(connectionString));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(ConfigureSwaggerGen);
+builder.Services.AddSwaggerGen(OpenApiExtensions.ConfigureSwaggerGen);
 
 var app = builder.Build();
 
@@ -40,17 +38,6 @@ app.UseSwaggerUI();
 app.MapTodoApi();
 
 await app.StartApp("/api/todos");
-
-void ConfigureSwaggerGen(SwaggerGenOptions options)
-{
-    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new()
-    {
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        Description = "JWT Authorization header using the Bearer scheme."
-    });
-}
 
 async Task EnsureDb(IServiceProvider services, ILogger logger)
 {

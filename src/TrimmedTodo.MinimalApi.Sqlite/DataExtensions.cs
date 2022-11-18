@@ -76,7 +76,7 @@ public static class DataExtensions
         AsDbParameter((object?)value, name);
 
     private static (string Name, object? Value) AsDbParameter(this object? value, [CallerArgumentExpression(nameof(value))] string name = null!) =>
-        (CleanParameterName(name), value);
+        (CleanParameterName(name), value ?? DBNull.Value);
 
     private static async Task<SqliteDataReader> QueryAsync(this SqliteConnection connection,
         string commandText,
@@ -93,8 +93,8 @@ public static class DataExtensions
         cmd.CommandText = commandText;
         for (var i = 0; i < parameters.Length; i++)
         {
-            var p = parameters[i];
-            cmd.Parameters.AddWithValue(p.Name, p.Value ?? DBNull.Value);
+            var (name, value) = parameters[i];
+            cmd.Parameters.AddWithValue(name, value);
         }
         return cmd;
     }

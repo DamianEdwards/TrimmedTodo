@@ -15,6 +15,7 @@
   <ItemGroup>
     <Compile Include="..\HelloWorld.Web\WebApplicationExtensions.cs" Link="WebApplicationExtensions.cs" />
     <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\JwtConfigHelper.cs" Link="JwtConfigHelper.cs" />
+    <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\OpenApiExtensions.cs" Link="OpenApiExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,5 +41,6 @@
     <PackageReference Include="Microsoft.Data.Sqlite" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="MiniValidation" />
+    <PackageReference Include="uController.SourceGenerator" />
   </ItemGroup>
 </Project>

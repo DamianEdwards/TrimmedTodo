@@ -39,6 +39,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="Dapper" />
     <PackageReference Include="MiniValidation" />
+    <PackageReference Include="uController.SourceGenerator" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.OpenApi.Models;
 using Dapper;
 using MiniValidation;
 
@@ -66,31 +68,26 @@ public static class TodoApi
             .WithName("UpdateTodo");
 
         group.MapPut("/{id}/mark-complete", async Task<Results<NoContent, NotFound>> (int id, IDbConnection db) =>
-            {
-                return await db.ExecuteAsync("UPDATE Todos SET IsComplete = true WHERE Id = @id", new { id }) == 1
+            await db.ExecuteAsync("UPDATE Todos SET IsComplete = true WHERE Id = @id", new { id }) == 1
                     ? TypedResults.NoContent()
-                    : TypedResults.NotFound();
-            })
+                    : TypedResults.NotFound())
             .WithName("MarkComplete");
 
         group.MapPut("/{id}/mark-incomplete", async Task<Results<NoContent, NotFound>> (int id, IDbConnection db) =>
-            {
-                return await db.ExecuteAsync("UPDATE Todos SET IsComplete = false WHERE Id = @id", new { id }) == 1
+            await db.ExecuteAsync("UPDATE Todos SET IsComplete = false WHERE Id = @id", new { id }) == 1
                     ? TypedResults.NoContent()
-                    : TypedResults.NotFound();
-            })
+                    : TypedResults.NotFound())
             .WithName("MarkIncomplete");
 
         group.MapDelete("/{id}", async Task<Results<NoContent, NotFound>> (int id, IDbConnection db) =>
-            {
-                return await db.ExecuteAsync("DELETE FROM Todos WHERE Id = @id", new { id }) == 1
+            await db.ExecuteAsync("DELETE FROM Todos WHERE Id = @id", new { id }) == 1
                     ? TypedResults.NoContent()
-                    : TypedResults.NotFound();
-            })
+                    : TypedResults.NotFound())
             .WithName("DeleteTodo");
 
         group.MapDelete("/delete-all", async (IDbConnection db) => TypedResults.Ok(await db.ExecuteAsync("DELETE FROM Todos")))
             .WithName("DeleteAll")
+            .WithOpenApi(op => new OpenApiOperation(op).WithSecurityRequirementReference(JwtBearerDefaults.AuthenticationScheme))
             .RequireAuthorization(policy => policy.RequireAuthenticatedUser().RequireRole("admin"));
 
         return group;

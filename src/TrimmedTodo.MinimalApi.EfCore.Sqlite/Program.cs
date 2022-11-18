@@ -19,7 +19,7 @@ var connectionString = builder.Configuration.GetConnectionString("TodoDb")
 builder.Services.AddSqlite<TodoDb>(connectionString, null, options => options.UseModel(TrimmedTodo.MinimalApi.EfCore.Sqlite.CompiledModels.TodoDbModel.Instance))
                 .AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(OpenApiExtensions.ConfigureSwaggerGen);
 
 var app = builder.Build();
 
