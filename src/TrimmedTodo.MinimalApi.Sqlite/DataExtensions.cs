@@ -94,14 +94,14 @@ public static class DataExtensions
         for (var i = 0; i < parameters.Length; i++)
         {
             var p = parameters[i];
-            cmd.Parameters.AddWithValue(p.Name, p.Value);
+            cmd.Parameters.AddWithValue(p.Name, p.Value ?? DBNull.Value);
         }
         return cmd;
     }
 
     private static string CleanParameterName(string name)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
         var lastIndexOfPeriod = name.LastIndexOf('.');
         if (lastIndexOfPeriod > 0)

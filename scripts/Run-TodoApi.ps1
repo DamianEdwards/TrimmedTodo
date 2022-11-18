@@ -1,5 +1,8 @@
 $ErrorActionPreference = 'Stop';
 
+# Set env var for urls
+$env:ASPNETCORE_URLS = "http://localhost:5079";
+
 # Set env var for JWT signing key
 $configKeyName = "Authentication:Schemes:Bearer:SigningKeys";
 $userSecretsId = "7deba5fe-f06c-4a7d-9816-cdeccfc4e4a8";

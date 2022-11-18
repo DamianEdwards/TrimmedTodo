@@ -34,7 +34,7 @@ public static class TodoApi
             .WithName("GetTodoById");
 
         group.MapGet("/find", async Task<Results<Ok<Todo>, NoContent>> (string title, bool? isComplete, IDbConnection db) =>
-            await db.QuerySingleOrDefaultAsync<Todo>("SELECT * FROM Todos WHERE Title = @title AND IsComplete = @isComplete", new { title, isComplete = isComplete ?? false })
+            await db.QuerySingleOrDefaultAsync<Todo>("SELECT * FROM Todos WHERE Title = @title COLLATE NOCASE AND IsComplete = @isComplete", new { title, isComplete = isComplete ?? false })
                 is Todo todo
                     ? TypedResults.Ok(todo)
                     : TypedResults.NoContent())

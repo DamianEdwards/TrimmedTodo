@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Data.Sqlite;
+using Microsoft.OpenApi.Models;
 using MiniValidation;
 
 namespace Microsoft.AspNetCore.Routing;
@@ -31,7 +33,7 @@ public static class TodoApi
             .WithName("GetTodoById");
 
         group.MapGet("/find", async Task<Results<Ok<Todo>, NoContent>> (string title, bool? isComplete, SqliteConnection db) =>
-            await db.QuerySingleAsync<Todo>("SELECT * FROM Todos WHERE Title = @title AND IsComplete = @isComplete",
+            await db.QuerySingleAsync<Todo>("SELECT * FROM Todos WHERE Title = @title COLLATE NOCASE AND (@isComplete is NULL OR IsComplete = @isComplete)",
                 title.AsDbParameter(), isComplete.AsDbParameter())
                 is Todo todo
                     ? TypedResults.Ok(todo)
@@ -91,6 +93,22 @@ public static class TodoApi
 
         group.MapDelete("/delete-all", async (SqliteConnection db) => TypedResults.Ok(await db.ExecuteAsync("DELETE FROM Todos")))
             .WithName("DeleteAll")
+            .WithOpenApi(op => new(op)
+            {
+                Security = new[]
+                {
+                    new OpenApiSecurityRequirement
+                    {
+                        {
+                            new()
+                            {
+                                Reference = new() { Type = ReferenceType.SecurityScheme, Id = JwtBearerDefaults.AuthenticationScheme }
+                            },
+                            Array.Empty<string>()
+                        }
+                    }
+                }
+            })
             .RequireAuthorization(policy => policy.RequireAuthenticatedUser().RequireRole("admin"));
 
         return group;

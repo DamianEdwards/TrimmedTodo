@@ -15,7 +15,7 @@ internal class ProjectBuilder
 
     public ProjectBuilder(string projectName, PublishScenario scenario)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(projectName);
+        ArgumentException.ThrowIfNullOrEmpty(projectName);
 
         ProjectName = projectName;
         PublishScenario = scenario;
@@ -180,6 +180,13 @@ internal class ProjectBuilder
             result.Add(("SUPPRESS_DB_INIT", "true"));
         }
 
+        var projectPath = Path.Combine(PathHelper.ProjectsDir, ProjectName, ProjectName + ".csproj");
+        var sdkName = GetSdkName(projectPath);
+        if (sdkName?.Equals("Microsoft.NET.Sdk.Web", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            result.Add(("ASPNETCORE_URLS", "http://localhost:5079"));
+        }
+
         return result.ToArray();
     }
 
@@ -269,7 +276,7 @@ internal class ProjectBuilder
 
     private static PublishResult PublishImpl(string projectName, string configuration = "Release", IEnumerable<string>? args = null, string? runId = null)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(projectName);
+        ArgumentException.ThrowIfNullOrEmpty(projectName);
 
         var projectPath = Path.Combine(PathHelper.ProjectsDir, projectName, projectName + ".csproj");
 
@@ -328,6 +335,13 @@ internal class ProjectBuilder
         var xml = XDocument.Load(projectFilePath);
         var userSecretsIdElement = xml.Descendants("UserSecretsId").FirstOrDefault();
         return userSecretsIdElement?.Value;
+    }
+
+    private static string? GetSdkName(string projectFilePath)
+    {
+        var xml = XDocument.Load(projectFilePath);
+        var sdkNameElement = xml.Descendants("Project").First();
+        return sdkNameElement.Attribute(XName.Get("Sdk"))?.Value;
     }
 
     private static string GetTrimLevelPropertyValue(TrimLevel trimLevel)

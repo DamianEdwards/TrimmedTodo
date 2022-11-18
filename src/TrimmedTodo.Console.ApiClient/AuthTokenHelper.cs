@@ -15,7 +15,7 @@ internal static class AuthTokenHelper
                 $"in the API project directory to create an auth token and save it in a file named '{tokenFileName}' " +
                 $"in the {Process.GetCurrentProcess().ProcessName} project directory.");
         }
-        var token = File.ReadAllText(tokenFilePath);
+        var token = File.ReadAllText(tokenFilePath).Trim();
         return token;
     }
 }

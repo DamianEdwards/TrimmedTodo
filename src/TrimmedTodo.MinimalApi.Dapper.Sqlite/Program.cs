@@ -5,11 +5,6 @@ using Microsoft.Data.Sqlite;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (!builder.Environment.IsDevelopment())
-{
-    builder.WebHost.ConfigureKestrel(o => o.ListenLocalhost(5079));
-}
-
 builder.Services.AddAuthentication()
     .AddJwtBearer(JwtConfigHelper.ConfigureJwtBearer(builder));
 
