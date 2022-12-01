@@ -176,7 +176,7 @@ internal class ProjectBuilder
 
         if (ProjectName.Contains("Sqlite"))
         {
-            result.Add(("CONNECTION_STRING", "Data Source=todos.db;Cache=Shared"));
+            result.Add(("CONNECTION_STRING", Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? "Data Source=todos.db;Cache=Shared"));
             result.Add(("SUPPRESS_DB_INIT", "true"));
         }
 
@@ -237,7 +237,8 @@ internal class ProjectBuilder
         "HelloWorld.Web.Stripped",
         "HelloWorld.KestrelDirect",
         "HelloWorld.HttpListener",
-        "TrimmedTodo.Console.ApiClient"
+        "TrimmedTodo.Console.ApiClient",
+        "TrimmedTodo.Console.PostgreSQL"
     };
 
     private static PublishResult PublishAot(
@@ -356,7 +357,8 @@ internal class ProjectBuilder
     private static TrimLevel GetTrimLevel(string projectName)
     {
         if (projectName.Equals("TrimmedTodo.Console.EfCore.Sqlite")
-            || projectName.Equals("TrimmedTodo.Console.Sqlite"))
+            || projectName.Equals("TrimmedTodo.Console.Sqlite")
+            || projectName.Equals("TrimmedTodo.Console.PostgreSQL"))
         {
             return TrimLevel.Full;
         }

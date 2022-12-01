@@ -1,9 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Net.Http.Headers;
 using Npgsql;
 
-var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? "Data Source=todos.db;Cache=Shared";
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
+    "Server=localhost;Port=5432;User Id=TodosApp;Password=password;Database=Todos";
 using var db = new NpgsqlConnection(connectionString);
+await db.OpenAsync();
 
 await EnsureDb(db);
 
@@ -27,18 +30,15 @@ Console.WriteLine();
 
 static async Task ListCurrentTodos(NpgsqlConnection db)
 {
-    var todos = db.QueryAsync<Todo>("SELECT * FROM Todos");
-    var todosList = new List<Todo>();
-
-    await foreach (var todo in todos)
-    {
-        if (todo is not null)
-        {
-            todosList.Add(todo);
-        }
-    }
-
-    if (todosList.Count == 0)
+    var todos = await db.QueryAsync<Todo>(
+        """
+            SELECT *
+            FROM "Todos"
+            WHERE "IsComplete" = false
+        """)
+        .ToListAsync();
+    
+    if (todos.Count == 0)
     {
         Console.WriteLine("There are currently no todos!");
         Console.WriteLine();
@@ -47,8 +47,8 @@ static async Task ListCurrentTodos(NpgsqlConnection db)
 
     var idColHeading = "Id";
     var titleColHeading = "Title";
-    var idWidth = int.Max(idColHeading.Length, todosList.Max(t => t.Id).ToString().Length);
-    var titleWidth = int.Max(titleColHeading.Length, todosList.Max(t => t.Title?.Length ?? 0));
+    var idWidth = int.Max(idColHeading.Length, todos.Max(t => t.Id).ToString().Length);
+    var titleWidth = int.Max(titleColHeading.Length, todos.Max(t => t.Title?.Length ?? 0));
     var lineWidth = idWidth + 1 + titleWidth;
 
     Console.Write(idColHeading.PadRight(idWidth));
@@ -56,7 +56,7 @@ static async Task ListCurrentTodos(NpgsqlConnection db)
     Console.WriteLine(titleColHeading.PadRight(titleWidth));
     Console.WriteLine(new string('-', lineWidth));
 
-    foreach (var todo in todosList)
+    foreach (var todo in todos)
     {
         Console.Write(todo.Id.ToString().PadRight(idWidth));
         Console.Write(" ");
@@ -71,15 +71,28 @@ static async Task AddTodo(NpgsqlConnection db, string title)
     var todo = new Todo { Title = title };
 
     var createdTodo = await db.QuerySingleAsync<Todo>(
-        "INSERT INTO Todos(Title, IsComplete) Values(@Title, @IsComplete) RETURNING *",
-        todo.Title.AsDbParameter(), todo.IsComplete.AsDbParameter());
+        """
+            INSERT INTO "Todos"("Title", "IsComplete")
+            Values (@Title, @IsComplete)
+            RETURNING *
+        """,
+        parameters => parameters
+            .AddTyped(todo.Title)
+            .AddTyped(todo.IsComplete));
     
     Console.WriteLine($"Added todo {createdTodo?.Id}");
 }
 
 static async Task MarkComplete(NpgsqlConnection db, string title)
 {
-    var result = await db.ExecuteAsync("UPDATE Todos SET IsComplete = true WHERE Title = @title AND IsComplete = false", title.AsDbParameter());
+    var result = await db.ExecuteAsync(
+        """
+            UPDATE "Todos"
+              SET "IsComplete" = true
+            WHERE "Title" = @title
+              AND "IsComplete" = false
+        """,
+        p => p.AddTyped(title));
     
     if (result == 0)
     {
@@ -92,42 +105,62 @@ static async Task MarkComplete(NpgsqlConnection db, string title)
 
 static async Task<int> DeleteAllTodos(NpgsqlConnection db)
 {
-    return await db.ExecuteAsync("DELETE FROM Todos");
+    return await db.ExecuteAsync(@"DELETE FROM ""Todos""");
 }
 
 async Task EnsureDb(NpgsqlConnection db)
 {
     if (Environment.GetEnvironmentVariable("SUPPRESS_DB_INIT") != "true")
     {
-        Console.WriteLine($"Ensuring database exists and is up to date at connection string '{connectionString}'");
+        Console.WriteLine($"Ensuring database exists and is up to date at connection string '{ObscurePassword(connectionString)}'");
 
         var sql = $"""
-                  CREATE TABLE IF NOT EXISTS Todos (
-                  {nameof(Todo.Id)} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                  {nameof(Todo.Title)} TEXT NOT NULL,
-                  {nameof(Todo.IsComplete)} INTEGER DEFAULT 0 NOT NULL CHECK({nameof(Todo.IsComplete)} IN (0, 1))
+                  CREATE TABLE IF NOT EXISTS public."Todos"
+                  (
+                      "{nameof(Todo.Id)}" SERIAL PRIMARY KEY,
+                      "{nameof(Todo.Title)}" text NOT NULL,
+                      "{nameof(Todo.IsComplete)}" boolean NOT NULL DEFAULT false
                   );
-               """;
+
+                  ALTER TABLE IF EXISTS public."Todos"
+                      OWNER to "TodosApp";
+
+                  DELETE FROM "Todos";
+                  """;
         await db.ExecuteAsync(sql);
 
         Console.WriteLine();
     }
     else
     {
-        Console.WriteLine($"Database initialization disabled for connection string '{connectionString}'");
+        Console.WriteLine($"Database initialization disabled for connection string '{ObscurePassword(connectionString)}'");
+    }
+
+    string ObscurePassword(string connectionString)
+    {
+        var passwordKey = "Password=";
+        var passwordIndex = connectionString.IndexOf(passwordKey, 0, StringComparison.OrdinalIgnoreCase);
+        if (passwordIndex < 0)
+        {
+            return connectionString;
+        }
+        var semiColonIndex = connectionString.IndexOf(";", passwordIndex, StringComparison.OrdinalIgnoreCase);
+        return connectionString.Substring(0, passwordIndex + passwordKey.Length) +
+               "*****" +
+               (semiColonIndex >= 0 ? connectionString.Substring(semiColonIndex) : "");
     }
 }
 
 sealed class Todo : IDataReaderMapper<Todo>
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
     [Required]
-    public string Title { get; set; } = default!;
+    public required string Title { get; set; }
     public bool IsComplete { get; set; }
 
     public static Todo Map(NpgsqlDataReader dataReader)
     {
-        return !dataReader.HasRows ? new() : new()
+        return new()
         {
             Id = dataReader.GetInt32(nameof(Id)),
             Title = dataReader.GetString(nameof(Title)),
