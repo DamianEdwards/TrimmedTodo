@@ -43,6 +43,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.HttpListener", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.KestrelDirect", "src\HelloWorld.KestrelDirect\HelloWorld.KestrelDirect.csproj", "{F05AA1B7-567F-49B8-AFA3-E99D1F0FD565}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrimmedTodo.Console.Sqlite", "src\TrimmedTodo.Console.Sqlite\TrimmedTodo.Console.Sqlite.csproj", "{BA7939E7-8D20-4767-A2EA-06C2DEE28F73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{F05AA1B7-567F-49B8-AFA3-E99D1F0FD565}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F05AA1B7-567F-49B8-AFA3-E99D1F0FD565}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F05AA1B7-567F-49B8-AFA3-E99D1F0FD565}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA7939E7-8D20-4767-A2EA-06C2DEE28F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA7939E7-8D20-4767-A2EA-06C2DEE28F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA7939E7-8D20-4767-A2EA-06C2DEE28F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA7939E7-8D20-4767-A2EA-06C2DEE28F73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,6 +130,7 @@ Global
 		{694295A5-DBBF-44A6-896B-EE904EEE9661} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 		{26CD72C3-DEA2-410E-A9B7-E04039E17DDB} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 		{F05AA1B7-567F-49B8-AFA3-E99D1F0FD565} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
+		{BA7939E7-8D20-4767-A2EA-06C2DEE28F73} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCCB8893-DE28-4FD3-BE73-91FE054A9D2A}

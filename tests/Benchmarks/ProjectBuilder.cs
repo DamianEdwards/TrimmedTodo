@@ -355,7 +355,8 @@ internal class ProjectBuilder
 
     private static TrimLevel GetTrimLevel(string projectName)
     {
-        if (projectName.Equals("TrimmedTodo.Console.EfCore.Sqlite"))
+        if (projectName.Equals("TrimmedTodo.Console.EfCore.Sqlite")
+            || projectName.Equals("TrimmedTodo.Console.Sqlite"))
         {
             return TrimLevel.Full;
         }

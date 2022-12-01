@@ -50,10 +50,11 @@ public class StartupTimeBenchmarks
         //"HelloWorld.Web.Stripped",
         //"HelloWorld.KestrelDirect",
         //"HelloWorld.HttpListener",
-        //"TrimmedTodo.Console.EfCore.Sqlite",
+        "TrimmedTodo.Console.Sqlite",
+        "TrimmedTodo.Console.EfCore.Sqlite",
         //"TrimmedTodo.MinimalApi.Sqlite",
         //"TrimmedTodo.MinimalApi.Dapper.Sqlite",
-        "TrimmedTodo.MinimalApi.EfCore.Sqlite",
+        //"TrimmedTodo.MinimalApi.EfCore.Sqlite",
         //"TrimmedTodo.WebApi.EfCore.Sqlite",
     };
 

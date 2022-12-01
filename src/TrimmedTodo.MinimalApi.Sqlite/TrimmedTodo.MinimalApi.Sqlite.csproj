@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <Compile Include="..\HelloWorld.Web\WebApplicationExtensions.cs" Link="WebApplicationExtensions.cs" />
+    <Compile Include="..\TrimmedTodo.Console.Sqlite\DataExtensions.cs" Link="DataExtensions.cs" />
     <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\JwtConfigHelper.cs" Link="JwtConfigHelper.cs" />
     <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\OpenApiExtensions.cs" Link="OpenApiExtensions.cs" />
   </ItemGroup>
