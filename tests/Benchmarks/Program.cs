@@ -51,7 +51,8 @@ public class StartupTimeBenchmarks
         //"HelloWorld.KestrelDirect",
         //"HelloWorld.HttpListener",
         "TrimmedTodo.Console.Sqlite",
-        "TrimmedTodo.Console.EfCore.Sqlite",
+        "TrimmedTodo.Console.PostgreSQL",
+        //"TrimmedTodo.Console.EfCore.Sqlite",
         //"TrimmedTodo.MinimalApi.Sqlite",
         //"TrimmedTodo.MinimalApi.Dapper.Sqlite",
         //"TrimmedTodo.MinimalApi.EfCore.Sqlite",
@@ -63,7 +64,7 @@ public class StartupTimeBenchmarks
         //PublishScenario.Default,
         //PublishScenario.NoAppHost,
         //PublishScenario.ReadyToRun,
-        PublishScenario.SelfContained,
+        //PublishScenario.SelfContained,
         //PublishScenario.SelfContainedReadyToRun,
         //PublishScenario.SingleFile,
         //PublishScenario.SingleFileCompressed,
@@ -71,9 +72,9 @@ public class StartupTimeBenchmarks
         //PublishScenario.SingleFileReadyToRunCompressed,
         PublishScenario.Trimmed,
         PublishScenario.TrimmedCompressed,
-        PublishScenario.TrimmedReadyToRun,
-        PublishScenario.TrimmedReadyToRunCompressed,
-        //PublishScenario.AOT,
+        //PublishScenario.TrimmedReadyToRun,
+        //PublishScenario.TrimmedReadyToRunCompressed,
+        PublishScenario.AOT,
     };
 
     [ParamsSource(nameof(ProjectNames))]
