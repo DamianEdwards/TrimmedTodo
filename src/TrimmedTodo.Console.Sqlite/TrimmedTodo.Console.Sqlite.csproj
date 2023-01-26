@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
     <PublishRelease>true</PublishRelease>
     <!--<PublishSingleFile>true</PublishSingleFile>-->
-    <PublishTrimmed>true</PublishTrimmed>
-    <!--<PublishAot>true</PublishAot>-->
+    <!-- <PublishTrimmed>true</PublishTrimmed> -->
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>
