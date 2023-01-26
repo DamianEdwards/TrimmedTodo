@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishRelease>true</PublishRelease>
@@ -15,9 +15,9 @@
     <!-- Documented trimming settings (tweaks) -->
     <InvariantGlobalization>true</InvariantGlobalization>
     <!-- Undocumented trimming settings (hacks) -->
-    <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+    <!-- <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
-    <IlcDisableReflection>true</IlcDisableReflection>
+    <IlcDisableReflection>true</IlcDisableReflection> -->
   </PropertyGroup>
 
 </Project>

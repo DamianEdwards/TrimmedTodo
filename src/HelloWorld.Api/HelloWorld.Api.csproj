@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <PublishAot>true</PublishAot>
+    <TrimMode>full</TrimMode>
+    <PublishIISAssets>false</PublishIISAssets>
+  </PropertyGroup>
+
+</Project>
