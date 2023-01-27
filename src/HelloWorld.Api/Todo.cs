@@ -27,9 +27,9 @@ static class TodoGenerator
         {
             var prefixes = _parts[i].Prefixes;
             var suffixes = _parts[i].Suffixes;
-            for (int j = 0; j < prefixes.Length; j++)
+            for (var j = 0; j < prefixes.Length; j++)
             {
-                for (int k = 0; k < suffixes.Length; k++)
+                for (var k = 0; k < suffixes.Length; k++)
                 {
                     titleMap.Add((i, j, k));
                 }

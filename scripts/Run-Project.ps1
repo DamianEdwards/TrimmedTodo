@@ -30,11 +30,11 @@ dotnet restore $projectPath -r $Rid -p:Configuration=Debug
 Write-Host "dotnet restore $projectPath -r $Rid -p:Configuration=Release"
 dotnet restore $projectPath -r $Rid -p:Configuration=Release
 
-Write-Host "dotnet clean $projectPath -c Debug -r $Rid -v q --nologo -o "$artifacts\$projectName""
-dotnet clean $projectPath -c Debug -r $Rid -v q --nologo -o "$artifacts\$projectName"
+Write-Host "dotnet clean $projectPath -c Debug -v q --nologo -o "$artifacts\$projectName""
+dotnet clean $projectPath -c Debug -v q --nologo -o "$artifacts\$projectName"
 
 Write-Host "dotnet clean $projectPath -c Release -r $Rid -v q --nologo -o "$artifacts\$projectName""
-dotnet clean $projectPath -c Release -r $Rid -v q --nologo -o "$artifacts\$projectName"
+dotnet clean $projectPath -c Release -v q --nologo -o "$artifacts\$projectName"
 
 #Get-ChildItem -Include bin -Recurse -Directory | Remove-Item -Recurse -Force;
 #Get-ChildItem -Include obj -Recurse -Directory | Remove-Item -Recurse -Force;

@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using HelloWorld.Api;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateSlimBuilder(args);
 builder.Logging.AddConsole();
 
 builder.Services.ConfigureHttpJsonOptions(options =>

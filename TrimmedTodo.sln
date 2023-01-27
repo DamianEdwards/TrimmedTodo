@@ -43,9 +43,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.HttpListener", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.KestrelDirect", "src\HelloWorld.KestrelDirect\HelloWorld.KestrelDirect.csproj", "{F05AA1B7-567F-49B8-AFA3-E99D1F0FD565}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrimmedTodo.Console.Sqlite", "src\TrimmedTodo.Console.Sqlite\TrimmedTodo.Console.Sqlite.csproj", "{BA7939E7-8D20-4767-A2EA-06C2DEE28F73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.Console.Sqlite", "src\TrimmedTodo.Console.Sqlite\TrimmedTodo.Console.Sqlite.csproj", "{BA7939E7-8D20-4767-A2EA-06C2DEE28F73}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrimmedTodo.Console.PostgreSQL", "src\TrimmedTodo.Console.PostgreSQL\TrimmedTodo.Console.PostgreSQL.csproj", "{ABBA7AF4-E5A1-4EDA-9EDE-569324CD712A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.Api", "src\HelloWorld.Api\HelloWorld.Api.csproj", "{A6307C1E-8E51-4557-A9E6-3F694274A9C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,6 +119,10 @@ Global
 		{ABBA7AF4-E5A1-4EDA-9EDE-569324CD712A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABBA7AF4-E5A1-4EDA-9EDE-569324CD712A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABBA7AF4-E5A1-4EDA-9EDE-569324CD712A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6307C1E-8E51-4557-A9E6-3F694274A9C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6307C1E-8E51-4557-A9E6-3F694274A9C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6307C1E-8E51-4557-A9E6-3F694274A9C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6307C1E-8E51-4557-A9E6-3F694274A9C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,6 +144,7 @@ Global
 		{F05AA1B7-567F-49B8-AFA3-E99D1F0FD565} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 		{BA7939E7-8D20-4767-A2EA-06C2DEE28F73} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 		{ABBA7AF4-E5A1-4EDA-9EDE-569324CD712A} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
+		{A6307C1E-8E51-4557-A9E6-3F694274A9C0} = {42D7C3C4-1A33-430D-9694-E37AD0044933}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCCB8893-DE28-4FD3-BE73-91FE054A9D2A}
