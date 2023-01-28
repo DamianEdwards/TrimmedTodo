@@ -3,21 +3,21 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0-alpha" />
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.0-alpha" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0-alpha.1.23077.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0-alpha.1.23077.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0-alpha.1.23077.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-alpha.1.23077.1" />
+    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="8.0.0-alpha.1.23077.1" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0-alpha.1.23077.2" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="8.0.0-alpha.1.23077.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0-alpha.1.23076.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0-alpha.1.23076.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0-alpha.1.23076.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0-alpha.1.23076.2" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.0-alpha.1.23076.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageVersion Include="Microsoft.OpenApi" Version="1.4.3" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="1.5.0" />
     <PackageVersion Include="MinimalApis.Extensions" Version="0.10.1" />
     <PackageVersion Include="MiniValidation" Version="0.7.2" />
     <PackageVersion Include="Dapper" Version="2.0.123" />

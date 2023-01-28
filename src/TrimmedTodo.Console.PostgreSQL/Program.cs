@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Net.Http.Headers;
 using Npgsql;
 
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
@@ -33,8 +32,8 @@ static async Task ListCurrentTodos(NpgsqlConnection db)
     var todos = await db.QueryAsync<Todo>(
         """
             SELECT *
-            FROM "Todos"
-            WHERE "IsComplete" = false
+            FROM Todos
+            WHERE IsComplete = false
         """)
         .ToListAsync();
     
@@ -72,7 +71,7 @@ static async Task AddTodo(NpgsqlConnection db, string title)
 
     var createdTodo = await db.QuerySingleAsync<Todo>(
         """
-            INSERT INTO "Todos"("Title", "IsComplete")
+            INSERT INTO Todos(Title, IsComplete)
             Values (@Title, @IsComplete)
             RETURNING *
         """,
@@ -87,10 +86,10 @@ static async Task MarkComplete(NpgsqlConnection db, string title)
 {
     var result = await db.ExecuteAsync(
         """
-            UPDATE "Todos"
-              SET "IsComplete" = true
-            WHERE "Title" = @title
-              AND "IsComplete" = false
+            UPDATE Todos
+              SET IsComplete = true
+            WHERE Title = @title
+              AND IsComplete = false
         """,
         p => p.AddTyped(title));
     
@@ -105,7 +104,7 @@ static async Task MarkComplete(NpgsqlConnection db, string title)
 
 static async Task<int> DeleteAllTodos(NpgsqlConnection db)
 {
-    return await db.ExecuteAsync(@"DELETE FROM ""Todos""");
+    return await db.ExecuteAsync(@"DELETE FROM Todos");
 }
 
 async Task EnsureDb(NpgsqlConnection db)
@@ -115,17 +114,17 @@ async Task EnsureDb(NpgsqlConnection db)
         Console.WriteLine($"Ensuring database exists and is up to date at connection string '{ObscurePassword(connectionString)}'");
 
         var sql = $"""
-                  CREATE TABLE IF NOT EXISTS public."Todos"
+                  CREATE TABLE IF NOT EXISTS public.Todos
                   (
-                      "{nameof(Todo.Id)}" SERIAL PRIMARY KEY,
-                      "{nameof(Todo.Title)}" text NOT NULL,
-                      "{nameof(Todo.IsComplete)}" boolean NOT NULL DEFAULT false
+                      {nameof(Todo.Id)} SERIAL PRIMARY KEY,
+                      {nameof(Todo.Title)} text NOT NULL,
+                      {nameof(Todo.IsComplete)} boolean NOT NULL DEFAULT false
                   );
 
-                  ALTER TABLE IF EXISTS public."Todos"
+                  ALTER TABLE IF EXISTS public.Todos
                       OWNER to "TodosApp";
 
-                  DELETE FROM "Todos";
+                  DELETE FROM public.Todos;
                   """;
         await db.ExecuteAsync(sql);
 
@@ -145,9 +144,9 @@ async Task EnsureDb(NpgsqlConnection db)
             return connectionString;
         }
         var semiColonIndex = connectionString.IndexOf(";", passwordIndex, StringComparison.OrdinalIgnoreCase);
-        return connectionString.Substring(0, passwordIndex + passwordKey.Length) +
+        return connectionString[..(passwordIndex + passwordKey.Length)] +
                "*****" +
-               (semiColonIndex >= 0 ? connectionString.Substring(semiColonIndex) : "");
+               (semiColonIndex >= 0 ? connectionString[semiColonIndex..] : "");
     }
 }
 

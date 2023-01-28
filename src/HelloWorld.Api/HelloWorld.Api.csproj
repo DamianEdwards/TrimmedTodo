@@ -10,4 +10,7 @@
     <PublishIISAssets>false</PublishIISAssets>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="uController.SourceGenerator" />
+  </ItemGroup>
 </Project>

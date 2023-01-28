@@ -32,14 +32,7 @@ public class TodoApiClient
         get => _httpClient.DefaultRequestHeaders.Authorization?.Parameter;
         set
         {
-            if (value is not null)
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", value);
-            }
-            else
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = null;
-            }
+            _httpClient.DefaultRequestHeaders.Authorization = value is not null ? new("Bearer", value) : null;
         }
     }
 
@@ -64,12 +57,7 @@ public class TodoApiClient
     {
         var todos = await _httpClient.GetFromJsonAsync("incomplete", SourceGenerationContext.Web.ListTodo);
 
-        if (todos is null)
-        {
-            return ReadOnly.EmptyList<Todo>();
-        }
-
-        return todos;
+        return todos is null ? ReadOnly.EmptyList<Todo>() : todos;
     }
 
     public async Task<Todo> CreateTodo(string title)
@@ -79,12 +67,9 @@ public class TodoApiClient
         var response = await _httpClient.PostAsJsonAsync("", todo, SourceGenerationContext.Web.Todo);
         var createdTodo = await response.Content.ReadFromJsonAsync(SourceGenerationContext.Web.Todo);
 
-        if (response is not { StatusCode: HttpStatusCode.Created } || createdTodo is null)
-        {
-            throw new InvalidOperationException($"Error creating todo: {response.StatusCode} {await response.Content.ReadAsStringAsync()}");
-        }
-
-        return createdTodo;
+        return response is not { StatusCode: HttpStatusCode.Created } || createdTodo is null
+            ? throw new InvalidOperationException($"Error creating todo: {response.StatusCode} {await response.Content.ReadAsStringAsync()}")
+            : createdTodo;
     }
 
     public async Task MarkComplete(string title)
@@ -96,10 +81,23 @@ public class TodoApiClient
         {
             todo = await findResponse.Content.ReadFromJsonAsync(SourceGenerationContext.Web.Todo);
         }
+        else if (findResponse.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new InvalidOperationException($"No incomplete todo with title '{title}' was found!");
+        }
+        else if (findResponse.StatusCode == HttpStatusCode.BadRequest)
+        {
+            throw new InvalidOperationException($"Server indicated there was a problem with the request (400 Bad Request).");
+        }
+        else if (findResponse.StatusCode == HttpStatusCode.InternalServerError)
+        {
+            var body = await findResponse.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"Server error (500 Bad Request): {body}");
+        }
 
         if (todo is null)
         {
-            throw new InvalidOperationException($"No incomplete todo with title '{title}' was found!");
+            throw new InvalidOperationException($"Server unexpectedly returned empty response.");
         }
 
         var putResponse = await _httpClient.PutAsync($"{todo.Id}/mark-complete", null);

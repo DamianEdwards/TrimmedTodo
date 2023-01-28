@@ -5,10 +5,35 @@ namespace Npgsql;
 
 public static class DataExtensions
 {
+    public static async ValueTask OpenIfClosedAsync(this NpgsqlConnection connection)
+    {
+        if (connection.State == ConnectionState.Closed)
+        {
+            await connection.OpenAsync();
+        }
+    }
+
+    public static async Task<int> ExecuteAsync(this NpgsqlConnection connection, string commandText)
+    {
+        using var cmd = connection.CreateCommand(commandText);
+
+        await connection.OpenIfClosedAsync();
+        return await cmd.ExecuteNonQueryAsync();
+    }
+
     public static async Task<int> ExecuteAsync(this NpgsqlConnection connection, string commandText, params (string Name, object? Value)[] parameters)
     {
         using var cmd = connection.CreateCommand(commandText, parameters);
 
+        await connection.OpenIfClosedAsync();
+        return await cmd.ExecuteNonQueryAsync();
+    }
+
+    public static async Task<int> ExecuteAsync(this NpgsqlConnection connection, string commandText, params NpgsqlParameter[] parameters)
+    {
+        using var cmd = connection.CreateCommand(commandText, parameters);
+
+        await connection.OpenIfClosedAsync();
         return await cmd.ExecuteNonQueryAsync();
     }
 
@@ -16,12 +41,23 @@ public static class DataExtensions
     {
         using var cmd = connection.CreateCommand(commandText, configureParameters);
 
+        await connection.OpenIfClosedAsync();
         return await cmd.ExecuteNonQueryAsync();
     }
 
     public static async Task<T?> QuerySingleAsync<T>(this NpgsqlConnection connection, string commandText, params (string Name, object? Value)[] parameters)
         where T : IDataReaderMapper<T>
     {
+        await connection.OpenIfClosedAsync();
+        using var reader = await connection.QuerySingleAsync(commandText, parameters);
+
+        return await reader.MapSingleAsync<T>();
+    }
+
+    public static async Task<T?> QuerySingleAsync<T>(this NpgsqlConnection connection, string commandText, params NpgsqlParameter[] parameters)
+        where T : IDataReaderMapper<T>
+    {
+        await connection.OpenIfClosedAsync();
         using var reader = await connection.QuerySingleAsync(commandText, parameters);
 
         return await reader.MapSingleAsync<T>();
@@ -37,12 +73,12 @@ public static class DataExtensions
         return await reader.MapSingleAsync<T>();
     }
 
-    public static async IAsyncEnumerable<T> QueryAsync<T>(this NpgsqlConnection connection, string commandText, params (string Name, object? Value)[] parameters)
+    public static async IAsyncEnumerable<T> QueryAsync<T>(this NpgsqlConnection connection, string commandText, params NpgsqlParameter[] parameters)
         where T : IDataReaderMapper<T>
     {
-        using var reader = await connection.QueryAsync(commandText, parameters);
+        var query = connection.QueryAsync<T>(commandText, parameterCollection => parameterCollection.AddRange(parameters));
 
-        await foreach (var item in MapAsync<T>(reader))
+        await foreach (var item in query)
         {
             yield return item;
         }
@@ -53,6 +89,7 @@ public static class DataExtensions
     {
         using var cmd = connection.CreateCommand(commandText, configureParameters);
 
+        await connection.OpenIfClosedAsync();
         using var reader = await connection.QueryAsync(cmd);
 
         await foreach (var item in MapAsync<T>(reader))
@@ -97,6 +134,9 @@ public static class DataExtensions
     public static Task<NpgsqlDataReader> QuerySingleAsync(this NpgsqlConnection connection, string commandText, params (string Name, object? Value)[] parameters)
         => QueryAsync(connection, commandText, CommandBehavior.SingleResult | CommandBehavior.SingleRow, parameters);
 
+    public static Task<NpgsqlDataReader> QuerySingleAsync(this NpgsqlConnection connection, string commandText, params NpgsqlParameter[] parameters)
+        => QueryAsync(connection, commandText, CommandBehavior.SingleResult | CommandBehavior.SingleRow, parameters);
+
     public static Task<NpgsqlDataReader> QuerySingleAsync(this NpgsqlConnection connection, NpgsqlCommand command)
         => QueryAsync(connection, command, CommandBehavior.SingleResult | CommandBehavior.SingleRow);
 
@@ -107,6 +147,15 @@ public static class DataExtensions
     {
         using var cmd = connection.CreateCommand(commandText, parameters);
 
+        await connection.OpenIfClosedAsync();
+        return await cmd.ExecuteReaderAsync(commandBehavior);
+    }
+
+    public static async Task<NpgsqlDataReader> QueryAsync(this NpgsqlConnection connection, string commandText, CommandBehavior commandBehavior, params NpgsqlParameter[] parameters)
+    {
+        using var cmd = connection.CreateCommand(commandText, parameters);
+
+        await connection.OpenIfClosedAsync();
         return await cmd.ExecuteReaderAsync(commandBehavior);
     }
 
@@ -115,12 +164,13 @@ public static class DataExtensions
 
     public static async Task<NpgsqlDataReader> QueryAsync(this NpgsqlConnection connection, NpgsqlCommand command, CommandBehavior commandBehavior)
     {
+        await connection.OpenIfClosedAsync();
         return await command.ExecuteReaderAsync(commandBehavior);
     }
 
     public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> enumerable, int? initialCapacity = null)
     {
-        var list = initialCapacity.HasValue ? new List<T>(initialCapacity.Value): new List<T>();
+        var list = initialCapacity.HasValue ? new List<T>(initialCapacity.Value) : new List<T>();
 
         await foreach (var item in enumerable)
         {
@@ -158,6 +208,19 @@ public static class DataExtensions
     public static (string Name, object? Value) AsDbParameter(this bool? value, [CallerArgumentExpression(nameof(value))] string name = null!) =>
         AsDbParameter((object?)value, name);
 
+    public static NpgsqlParameter AsTypedDbParameter<T>(this T value, [CallerArgumentExpression(nameof(value))] string name = null!)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        var parameter = new NpgsqlParameter<T>
+        {
+            ParameterName = CleanParameterName(name),
+            TypedValue = value
+        };
+
+        return parameter;
+    }
+
     public static (string Name, object? Value) AsDbParameter(this int value, [CallerArgumentExpression(nameof(value))] string name = null!) =>
         AsDbParameter((object)value, name);
 
@@ -194,6 +257,17 @@ public static class DataExtensions
         return cmd;
     }
 
+    private static NpgsqlCommand CreateCommand(this NpgsqlConnection connection, string commandText, params NpgsqlParameter[] parameters)
+    {
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = commandText;
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            cmd.Parameters.Add(parameters[i]);
+        }
+        return cmd;
+    }
+
     private static NpgsqlCommand CreateCommand(this NpgsqlConnection connection, string commandText, Action<NpgsqlParameterCollection>? configureParameters = null)
     {
         var cmd = connection.CreateCommand();
@@ -209,14 +283,8 @@ public static class DataExtensions
 
     private static string CleanParameterName(string name)
     {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-
         var lastIndexOfPeriod = name.LastIndexOf('.');
-        if (lastIndexOfPeriod > 0)
-        {
-            return name.Substring(lastIndexOfPeriod + 1);
-        }
-        return name;
+        return lastIndexOfPeriod > 0 ? name[(lastIndexOfPeriod + 1)..] : name;
     }
 }
 

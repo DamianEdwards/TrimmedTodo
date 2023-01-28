@@ -42,6 +42,6 @@
     <PackageReference Include="Microsoft.Data.Sqlite" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="MiniValidation" />
-    <PackageReference Include="uController.SourceGenerator" />
+    <!--<PackageReference Include="uController.SourceGenerator" />-->
   </ItemGroup>
 </Project>
