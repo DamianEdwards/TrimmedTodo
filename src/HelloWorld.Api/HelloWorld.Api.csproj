@@ -6,11 +6,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <PublishAot>true</PublishAot>
-    <TrimMode>full</TrimMode>
-    <PublishIISAssets>false</PublishIISAssets>
+    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
+    <StripSymbols>true</StripSymbols>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="uController.SourceGenerator" />
+    <Compile Include="..\HelloWorld.Web\WebApplicationExtensions.cs" Link="WebApplicationExtensions.cs" />
   </ItemGroup>
 </Project>

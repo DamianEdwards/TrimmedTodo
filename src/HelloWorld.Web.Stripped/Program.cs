@@ -22,13 +22,13 @@ Console.Write(DateTime.UtcNow.Ticks);
 Console.Write(",http://localhost:");
 Console.WriteLine(port);
 
-if (Environment.GetEnvironmentVariable("SHUTDOWN_ON_START") != "true")
+if (!string.Equals(Environment.GetEnvironmentVariable("SHUTDOWN_ON_START"), "true", StringComparison.OrdinalIgnoreCase))
 {
     await host.WaitForShutdownAsync();
 }
 else
 {
-    if (Environment.GetEnvironmentVariable("SUPPRESS_FIRST_REQUEST") != "true")
+    if (!string.Equals(Environment.GetEnvironmentVariable("SUPPRESS_FIRST_REQUEST"), "true", StringComparison.OrdinalIgnoreCase))
     {
         {
             using var http = new HttpClient();

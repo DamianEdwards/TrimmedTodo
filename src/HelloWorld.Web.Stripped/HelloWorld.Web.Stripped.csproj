@@ -4,13 +4,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <PublishIISAssets>false</PublishIISAssets>
     <PublishRelease>true</PublishRelease>
-    <PublishSingleFile>true</PublishSingleFile>
+    <!--<PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>-->
     <!--<PublishReadyToRun>true</PublishReadyToRun>-->
-    <!--<PublishAot>true</PublishAot>-->
-    <TrimMode>full</TrimMode>
+    <PublishAot>true</PublishAot>
+    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
+    <StripSymbols>true</StripSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(PublishAot)' == 'true'">

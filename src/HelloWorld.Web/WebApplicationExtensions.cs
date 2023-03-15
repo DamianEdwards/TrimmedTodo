@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -10,7 +10,7 @@ public static partial class WebApplicationExtensions
     /// </summary>
     /// <param name="app"></param>
     /// <returns></returns>
-    public static async Task StartApp(this WebApplication app, PathString firstRequestPath = default)
+    public static async Task StartApp(this WebApplication app)
     {
         await app.StartAsync();
 
@@ -21,9 +21,21 @@ public static partial class WebApplicationExtensions
         {
             await app.WaitForShutdownAsync();
         }
-        else
+    }
+
+    /// <summary>
+    /// Starts the application with awareness of configuration values used by benchmarks & scripts to control the startup behavior.
+    /// </summary>
+    /// <param name="app"></param>
+    /// <param name="firstRequestPath"></param>
+    /// <returns></returns>
+    public static async Task StartApp(this WebApplication app, PathString firstRequestPath)
+    {
+        await app.StartApp();
+
+        if (string.Equals(app.Configuration["SHUTDOWN_ON_START"], "true", StringComparison.OrdinalIgnoreCase))
         {
-            if (app.Configuration["SUPPRESS_FIRST_REQUEST"] != "true")
+            if (!string.Equals(app.Configuration["SUPPRESS_FIRST_REQUEST"], "true", StringComparison.OrdinalIgnoreCase))
             {
                 var server = app.Services.GetRequiredService<IServer>();
                 var addresses = server.Features.Get<IServerAddressesFeature>();

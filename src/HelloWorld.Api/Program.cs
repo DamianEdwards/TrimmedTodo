@@ -20,7 +20,8 @@ todosApi.MapGet("/{id}", (int id) =>
         ? Results.Ok(todo)
         : Results.NotFound());
 
-app.Run();
+//app.Run();
+await app.StartApp("/api/todos");
 
 [JsonSerializable(typeof(Todo[]))]
 internal partial class AppJsonSerializerContext : JsonSerializerContext
