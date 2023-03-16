@@ -10,7 +10,6 @@
     <TrimMode>full</TrimMode>-->
     <!--<PublishReadyToRun>true</PublishReadyToRun>-->
     <PublishAot>true</PublishAot>
-    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
     <StripSymbols>true</StripSymbols>
   </PropertyGroup>
 

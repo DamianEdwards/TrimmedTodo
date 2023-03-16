@@ -6,7 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <PublishAot>true</PublishAot>
-    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
     <StripSymbols>true</StripSymbols>
   </PropertyGroup>
 

@@ -8,6 +8,7 @@
     <LangVersion>preview</LangVersion>
     <PublishRelease>true</PublishRelease>
     <PublishAot>true</PublishAot>
+    <StripSymbols>true</StripSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(PublishAot)' == 'true'">

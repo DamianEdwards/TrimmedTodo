@@ -10,6 +10,7 @@
     <PublishTrimmed>true</PublishTrimmed>
     <PublishReadyToRun>false</PublishReadyToRun>
     <UserSecretsId>7deba5fe-f06c-4a7d-9816-cdeccfc4e4a8</UserSecretsId>
+    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
   </PropertyGroup>
 
   <ItemGroup>
