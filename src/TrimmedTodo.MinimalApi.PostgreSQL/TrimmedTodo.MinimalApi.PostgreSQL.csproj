@@ -9,6 +9,7 @@
     <!--<PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishReadyToRun>false</PublishReadyToRun>-->
+    <PublishAot>true</PublishAot>
     <UserSecretsId>7deba5fe-f06c-4a7d-9816-cdeccfc4e4a8</UserSecretsId>
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
   </PropertyGroup>
@@ -16,8 +17,8 @@
   <ItemGroup>
     <Compile Include="..\HelloWorld.Web\WebApplicationExtensions.cs" Link="WebApplicationExtensions.cs" />
     <Compile Include="..\TrimmedTodo.Console.PostgreSQL\DataExtensions.cs" Link="DataExtensions.cs" />
-    <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\JwtConfigHelper.cs" Link="JwtConfigHelper.cs" />
-    <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\OpenApiExtensions.cs" Link="OpenApiExtensions.cs" />
+    <!--<Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\JwtConfigHelper.cs" Link="JwtConfigHelper.cs" />
+    <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\OpenApiExtensions.cs" Link="OpenApiExtensions.cs" />-->
   </ItemGroup>
 
   <ItemGroup>
@@ -38,11 +39,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <!--<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />-->
+    <!--<PackageReference Include="Microsoft.AspNetCore.OpenApi" />-->
     <PackageReference Include="npgsql" />
-    <PackageReference Include="Swashbuckle.AspNetCore" />
-    <PackageReference Include="MiniValidation" />
+    <!--<PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="MiniValidation" />-->
     <!--<PackageReference Include="uController.SourceGenerator" />-->
   </ItemGroup>
 </Project>
