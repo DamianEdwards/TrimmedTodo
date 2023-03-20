@@ -16,11 +16,15 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("TodoDb")
     ?? builder.Configuration["CONNECTION_STRING"]
     ?? "Server=localhost;Port=5432;User Id=TodosApp;Password=password;Database=Todos";
-builder.Services.AddScoped(_ =>
+builder.Services.AddSingleton(_ =>
 {
-    var db = new NpgsqlConnection(connectionString);
-    db.Open();
-    return db;
+    var dataSourceBuilder = new NpgsqlSlimDataSourceBuilder(connectionString);
+    return dataSourceBuilder.Build();
+});
+builder.Services.AddScoped(serviceProvider =>
+{
+    var dataSource = serviceProvider.GetRequiredService<NpgsqlDataSource>();
+    return dataSource.OpenConnection();
 });
 
 //builder.Services.AddEndpointsApiExplorer();
