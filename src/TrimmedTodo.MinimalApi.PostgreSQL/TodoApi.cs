@@ -17,75 +17,79 @@ public static class TodoApi
 
         group.WithTags("Todos");
 
-        group.MapGet("/", (NpgsqlConnection db) => db.QueryAsync<Todo>(@"SELECT * FROM Todos"))
+        group.MapGet("/", (NpgsqlDataSource db) => db.QueryAsync<Todo>("SELECT * FROM Todos"))
             .WithName("GetAllTodos");
 
-        group.MapGet("/complete", (NpgsqlConnection db) => db.QueryAsync<Todo>("SELECT * FROM Todos WHERE IsComplete = true"))
+        group.MapGet("/complete", (NpgsqlDataSource db) => db.QueryAsync<Todo>("SELECT * FROM Todos WHERE IsComplete = true"))
             .WithName("GetCompleteTodos");
 
-        group.MapGet("/incomplete", (NpgsqlConnection db) => db.QueryAsync<Todo>("SELECT * FROM Todos WHERE IsComplete = false"))
+        group.MapGet("/incomplete", (NpgsqlDataSource db) => db.QueryAsync<Todo>("SELECT * FROM Todos WHERE IsComplete = false"))
             .WithName("GetIncompleteTodos");
 
-        group.MapGet("/{id:int}", async Task<Results<Ok<Todo>, NotFound>> (int id, NpgsqlConnection db) =>
-            await db.QuerySingleAsync<Todo>("SELECT * FROM Todos WHERE Id = @id", id.AsTypedDbParameter())
+        group.MapGet("/{id:int}", async Task<Results<Ok<Todo>, NotFound>> (int id, NpgsqlDataSource db) =>
+            await db.QuerySingleAsync<Todo>("SELECT * FROM Todos WHERE Id = $1", id.AsTypedDbParameter())
                 is Todo todo
                     ? TypedResults.Ok(todo)
                     : TypedResults.NotFound())
             .WithName("GetTodoById");
 
-        group.MapGet("/find", async Task<Results<Ok<Todo>, NotFound>> (string title, bool? isComplete, NpgsqlConnection db) =>
-            await db.QuerySingleAsync<Todo>("SELECT * FROM Todos WHERE LOWER(Title) = LOWER(@title) AND (@isComplete is NULL OR IsComplete = @isComplete)",
-                title.AsTypedDbParameter(), isComplete.AsTypedDbParameter())
+        group.MapGet("/find", async Task<Results<Ok<Todo>, NotFound>> (string title, bool? isComplete, NpgsqlDataSource db) =>
+            await db.QuerySingleAsync<Todo>("SELECT * FROM Todos WHERE LOWER(Title) = LOWER($1) AND ($2 is NULL OR IsComplete = $2)",
+                title.AsTypedDbParameter(),
+                isComplete.AsTypedDbParameter())
                 is Todo todo
                     ? TypedResults.Ok(todo)
                     : TypedResults.NotFound())
             .WithName("FindTodo");
 
-        group.MapPost("/", async Task<Results<Created<Todo>, ValidationProblem>> (Todo todo, NpgsqlConnection db) =>
+        group.MapPost("/", async Task<Results<Created<Todo>, ValidationProblem>> (Todo todo, NpgsqlDataSource db) =>
         {
             if (!MiniValidator.TryValidate(todo, out var errors))
                 return TypedResults.ValidationProblem(errors);
 
             var createdTodo = await db.QuerySingleAsync<Todo>(
-                "INSERT INTO Todos(Title, IsComplete) Values(@Title, @IsComplete) RETURNING *",
-                todo.Title.AsTypedDbParameter(), todo.IsComplete.AsTypedDbParameter());
+                "INSERT INTO Todos(Title, IsComplete) Values($1, $2) RETURNING *",
+                todo.Title.AsTypedDbParameter(),
+                todo.IsComplete.AsTypedDbParameter());
 
             return TypedResults.Created($"/todos/{createdTodo?.Id}", createdTodo);
         })
         .WithName("CreateTodo");
 
-        group.MapPut("/{id}", async Task<Results<NoContent, NotFound, ValidationProblem>> (int id, Todo inputTodo, NpgsqlConnection db) =>
+        group.MapPut("/{id}", async Task<Results<NoContent, NotFound, ValidationProblem>> (int id, Todo inputTodo, NpgsqlDataSource db) =>
         {
             inputTodo.Id = id;
 
             return !MiniValidator.TryValidate(inputTodo, out var errors)
                 ? (Results<NoContent, NotFound, ValidationProblem>)TypedResults.ValidationProblem(errors)
-                : await db.ExecuteAsync("UPDATE Todos SET Title = @Title, IsComplete = @IsComplete WHERE Id = @Id",
-                                        inputTodo.Title.AsTypedDbParameter(), inputTodo.IsComplete.AsTypedDbParameter()) == 1
+                : await db.ExecuteAsync("UPDATE Todos SET Title = $1, IsComplete = $2 WHERE Id = $3",
+                                        inputTodo.Title.AsTypedDbParameter(),
+                                        inputTodo.IsComplete.AsTypedDbParameter(),
+                                        id.AsTypedDbParameter()) == 1
                     ? TypedResults.NoContent()
                     : TypedResults.NotFound();
         })
         .WithName("UpdateTodo");
 
-        group.MapPut("/{id}/mark-complete", async Task<Results<NoContent, NotFound>> (int id, NpgsqlConnection db) =>
-            await db.ExecuteAsync("UPDATE Todos SET IsComplete = true WHERE Id = @id", id.AsTypedDbParameter()) == 1
+        group.MapPut("/{id}/mark-complete", async Task<Results<NoContent, NotFound>> (int id, NpgsqlDataSource db) =>
+            await db.ExecuteAsync("UPDATE Todos SET IsComplete = true WHERE Id = $1", id.AsTypedDbParameter()) == 1
                 ? TypedResults.NoContent()
                 : TypedResults.NotFound())
         .WithName("MarkComplete");
 
-        group.MapPut("/{id}/mark-incomplete", async Task<Results<NoContent, NotFound>> (int id, NpgsqlConnection db) =>
-            await db.ExecuteAsync("UPDATE Todos SET IsComplete = false WHERE Id = @id", id.AsTypedDbParameter()) == 1
+        group.MapPut("/{id}/mark-incomplete", async Task<Results<NoContent, NotFound>> (int id, NpgsqlDataSource db) =>
+            await db.ExecuteAsync("UPDATE Todos SET IsComplete = false WHERE Id = $1", id.AsTypedDbParameter()) == 1
                 ? TypedResults.NoContent()
                 : TypedResults.NotFound())
         .WithName("MarkIncomplete");
 
-        group.MapDelete("/{id}", async Task<Results<NoContent, NotFound>> (int id, NpgsqlConnection db) =>
-            await db.ExecuteAsync("DELETE FROM Todos WHERE Id = @id", id.AsTypedDbParameter()) == 1
+        group.MapDelete("/{id}", async Task<Results<NoContent, NotFound>> (int id, NpgsqlDataSource db) =>
+            await db.ExecuteAsync("DELETE FROM Todos WHERE Id = $1", id.AsTypedDbParameter()) == 1
                 ? TypedResults.NoContent()
                 : TypedResults.NotFound())
         .WithName("DeleteTodo");
 
-        group.MapDelete("/delete-all", async (NpgsqlConnection db) => TypedResults.Ok(await db.ExecuteAsync("DELETE FROM Todos")))
+        group.MapDelete("/delete-all", async (NpgsqlDataSource db) => TypedResults.Ok(await db.ExecuteAsync("DELETE FROM Todos")))
             .WithName("DeleteAll")
             .WithOpenApi(op => new OpenApiOperation(op).WithSecurityRequirementReference(JwtBearerDefaults.AuthenticationScheme))
             .RequireAuthorization(policy => policy.RequireAuthenticatedUser().RequireRole("admin"));
