@@ -1,10 +1,10 @@
-using System.ComponentModel.DataAnnotations;
+//using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+//using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.OpenApi.Models;
-using MiniValidation;
+//using Microsoft.OpenApi.Models;
+//using MiniValidation;
 using Npgsql;
 
 namespace Microsoft.AspNetCore.Routing;
@@ -44,8 +44,8 @@ public static class TodoApi
 
         group.MapPost("/", async Task<Results<Created<Todo>, ValidationProblem>> (Todo todo, NpgsqlDataSource db) =>
         {
-            if (!MiniValidator.TryValidate(todo, out var errors))
-                return TypedResults.ValidationProblem(errors);
+            //if (!MiniValidator.TryValidate(todo, out var errors))
+            //    return TypedResults.ValidationProblem(errors);
 
             var createdTodo = await db.QuerySingleAsync<Todo>(
                 "INSERT INTO Todos(Title, IsComplete) Values($1, $2) RETURNING *",
@@ -60,12 +60,12 @@ public static class TodoApi
         {
             inputTodo.Id = id;
 
-            return !MiniValidator.TryValidate(inputTodo, out var errors)
-                ? (Results<NoContent, NotFound, ValidationProblem>)TypedResults.ValidationProblem(errors)
-                : await db.ExecuteAsync("UPDATE Todos SET Title = $1, IsComplete = $2 WHERE Id = $3",
-                                        inputTodo.Title.AsTypedDbParameter(),
-                                        inputTodo.IsComplete.AsTypedDbParameter(),
-                                        id.AsTypedDbParameter()) == 1
+            //return !MiniValidator.TryValidate(inputTodo, out var errors)
+            //    ? (Results<NoContent, NotFound, ValidationProblem>)TypedResults.ValidationProblem(errors)
+            return await db.ExecuteAsync("UPDATE Todos SET Title = $1, IsComplete = $2 WHERE Id = $3",
+                                         inputTodo.Title.AsTypedDbParameter(),
+                                         inputTodo.IsComplete.AsTypedDbParameter(),
+                                         id.AsTypedDbParameter()) == 1
                     ? TypedResults.NoContent()
                     : TypedResults.NotFound();
         })
@@ -90,9 +90,9 @@ public static class TodoApi
         .WithName("DeleteTodo");
 
         group.MapDelete("/delete-all", async (NpgsqlDataSource db) => TypedResults.Ok(await db.ExecuteAsync("DELETE FROM Todos")))
-            .WithName("DeleteAll")
-            .WithOpenApi(op => new OpenApiOperation(op).WithSecurityRequirementReference(JwtBearerDefaults.AuthenticationScheme))
-            .RequireAuthorization(policy => policy.RequireAuthenticatedUser().RequireRole("admin"));
+            .WithName("DeleteAll");
+            //.WithOpenApi(op => new OpenApiOperation(op).WithSecurityRequirementReference(JwtBearerDefaults.AuthenticationScheme))
+            //.RequireAuthorization(policy => policy.RequireAuthenticatedUser().RequireRole("admin"));
 
         return group;
     }
@@ -101,7 +101,7 @@ public static class TodoApi
 sealed class Todo : IDataReaderMapper<Todo>
 {
     public int Id { get; set; }
-    [Required]
+    //[Required]
     public string Title { get; set; } = default!;
     public bool IsComplete { get; set; }
 

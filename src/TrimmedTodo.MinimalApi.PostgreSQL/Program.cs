@@ -1,17 +1,17 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+//using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication()
-    .AddJwtBearer(JwtConfigHelper.ConfigureJwtBearer(builder));
+//builder.Services.AddAuthentication()
+//    .AddJwtBearer(JwtConfigHelper.ConfigureJwtBearer(builder));
 
-builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization();
 
-builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-    .Validate<IHostEnvironment, ILoggerFactory>(JwtConfigHelper.ValidateJwtOptions,
-        "JWT options are not configured. Run 'dotnet user-jwts create' in project directory to configure JWT.")
-    .ValidateOnStart();
+//builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+//    .Validate<IHostEnvironment, ILoggerFactory>(JwtConfigHelper.ValidateJwtOptions,
+//        "JWT options are not configured. Run 'dotnet user-jwts create' in project directory to configure JWT.")
+//    .ValidateOnStart();
 
 var connectionString = builder.Configuration.GetConnectionString("TodoDb")
     ?? builder.Configuration["CONNECTION_STRING"]
@@ -22,8 +22,8 @@ builder.Services.AddSingleton(_ =>
     return dataSourceBuilder.Build();
 });
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(OpenApiExtensions.ConfigureSwaggerGen);
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen(OpenApiExtensions.ConfigureSwaggerGen);
 builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.AddContext<AppJsonSerializerContext>());
 
 var app = builder.Build();
@@ -37,8 +37,8 @@ if (!app.Environment.IsDevelopment())
         .ExcludeFromDescription();
 }
 
-app.UseSwagger();
-app.UseSwaggerUI();
+//app.UseSwagger();
+//app.UseSwaggerUI();
 
 app.MapTodoApi();
 
