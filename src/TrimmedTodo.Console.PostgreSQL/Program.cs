@@ -5,7 +5,9 @@ using Npgsql;
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
     "Server=localhost;Port=5432;User Id=TodosApp;Password=password;Database=Todos";
 
-await using var db = NpgsqlDataSource.Create(connectionString);
+var dataSourceBuilder = new NpgsqlSlimDataSourceBuilder(connectionString);
+await using var db = dataSourceBuilder.Build();
+
 
 await EnsureDb(db);
 
