@@ -50,7 +50,7 @@ async Task EnsureDb(IServiceProvider services, ILogger logger)
     {
         logger.LogInformation("Ensuring database exists and is up to date at connection string '{connectionString}'", ObscurePassword(connectionString));
 
-        using var db = services.CreateScope().ServiceProvider.GetRequiredService<NpgsqlDataSource>();
+        var db = services.GetRequiredService<NpgsqlDataSource>();
         var sql = $"""
                   CREATE TABLE IF NOT EXISTS public.todos
                   (
