@@ -4,8 +4,10 @@ using Npgsql;
 
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
     "Server=localhost;Port=5432;User Id=TodosApp;Password=password;Database=Todos";
-using var db = new NpgsqlConnection(connectionString);
-await db.OpenAsync();
+
+var dataSourceBuilder = new NpgsqlSlimDataSourceBuilder(connectionString);
+await using var db = dataSourceBuilder.Build();
+
 
 await EnsureDb(db);
 
@@ -27,13 +29,13 @@ var deletedCount = await DeleteAllTodos(db);
 Console.WriteLine($"Deleted all {deletedCount} todos!");
 Console.WriteLine();
 
-static async Task ListCurrentTodos(NpgsqlConnection db)
+static async Task ListCurrentTodos(NpgsqlDataSource db)
 {
     var todos = await db.QueryAsync<Todo>(
         """
-            SELECT *
-            FROM Todos
-            WHERE IsComplete = false
+        SELECT *
+        FROM Todos
+        WHERE IsComplete = false
         """)
         .ToListAsync();
     
@@ -65,33 +67,31 @@ static async Task ListCurrentTodos(NpgsqlConnection db)
     Console.WriteLine();
 }
 
-static async Task AddTodo(NpgsqlConnection db, string title)
+static async Task AddTodo(NpgsqlDataSource db, string title)
 {
     var todo = new Todo { Title = title };
 
     var createdTodo = await db.QuerySingleAsync<Todo>(
         """
-            INSERT INTO Todos(Title, IsComplete)
-            Values (@Title, @IsComplete)
-            RETURNING *
+        INSERT INTO Todos(Title, IsComplete)
+        Values ($1, $2)
+        RETURNING *
         """,
-        parameters => parameters
-            .AddTyped(todo.Title)
-            .AddTyped(todo.IsComplete));
+        todo.Title.AsTypedDbParameter(),
+        todo.IsComplete.AsTypedDbParameter());
     
     Console.WriteLine($"Added todo {createdTodo?.Id}");
 }
 
-static async Task MarkComplete(NpgsqlConnection db, string title)
+static async Task MarkComplete(NpgsqlDataSource db, string title)
 {
     var result = await db.ExecuteAsync(
         """
-            UPDATE Todos
-              SET IsComplete = true
-            WHERE Title = @title
-              AND IsComplete = false
+        UPDATE Todos
+        SET IsComplete = true
+        WHERE Title = $1 AND IsComplete = false
         """,
-        p => p.AddTyped(title));
+        title.AsTypedDbParameter());
     
     if (result == 0)
     {
@@ -102,12 +102,12 @@ static async Task MarkComplete(NpgsqlConnection db, string title)
     Console.WriteLine();
 }
 
-static async Task<int> DeleteAllTodos(NpgsqlConnection db)
+static async Task<int> DeleteAllTodos(NpgsqlDataSource db)
 {
-    return await db.ExecuteAsync(@"DELETE FROM Todos");
+    return await db.ExecuteAsync("DELETE FROM Todos");
 }
 
-async Task EnsureDb(NpgsqlConnection db)
+async Task EnsureDb(NpgsqlDataSource db)
 {
     if (Environment.GetEnvironmentVariable("SUPPRESS_DB_INIT") != "true")
     {

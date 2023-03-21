@@ -16,11 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("TodoDb")
     ?? builder.Configuration["CONNECTION_STRING"]
     ?? "Server=localhost;Port=5432;User Id=TodosApp;Password=password;Database=Todos";
-builder.Services.AddScoped(_ =>
+builder.Services.AddSingleton(_ =>
 {
-    var db = new NpgsqlConnection(connectionString);
-    db.Open();
-    return db;
+    var dataSourceBuilder = new NpgsqlSlimDataSourceBuilder(connectionString);
+    return dataSourceBuilder.Build();
 });
 
 //builder.Services.AddEndpointsApiExplorer();
@@ -51,8 +50,7 @@ async Task EnsureDb(IServiceProvider services, ILogger logger)
     {
         logger.LogInformation("Ensuring database exists and is up to date at connection string '{connectionString}'", ObscurePassword(connectionString));
 
-        using var db = services.CreateScope().ServiceProvider.GetRequiredService<NpgsqlConnection>();
-        await db.OpenIfClosedAsync();
+        var db = services.GetRequiredService<NpgsqlDataSource>();
         var sql = $"""
                   CREATE TABLE IF NOT EXISTS public.todos
                   (
