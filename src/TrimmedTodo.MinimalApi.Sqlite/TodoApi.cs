@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text.Json.Serialization;
+//using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Data.Sqlite;
-using Microsoft.OpenApi.Models;
-using MiniValidation;
+//using Microsoft.OpenApi.Models;
+//using MiniValidation;
 
 namespace Microsoft.AspNetCore.Routing;
 
@@ -42,8 +43,8 @@ public static class TodoApi
 
         group.MapPost("/", async Task<Results<Created<Todo>, ValidationProblem>> (Todo todo, SqliteConnection db) =>
         {
-            if (!MiniValidator.TryValidate(todo, out var errors))
-                return TypedResults.ValidationProblem(errors);
+            //if (!MiniValidator.TryValidate(todo, out var errors))
+            //    return TypedResults.ValidationProblem(errors);
 
             var createdTodo = await db.QuerySingleAsync<Todo>(
                 "INSERT INTO Todos(Title, IsComplete) Values(@Title, @IsComplete) RETURNING *",
@@ -57,8 +58,8 @@ public static class TodoApi
         {
             inputTodo.Id = id;
 
-            if (!MiniValidator.TryValidate(inputTodo, out var errors))
-                return TypedResults.ValidationProblem(errors);
+            //if (!MiniValidator.TryValidate(inputTodo, out var errors))
+            //    return TypedResults.ValidationProblem(errors);
 
             return await db.ExecuteAsync("UPDATE Todos SET Title = @Title, IsComplete = @IsComplete WHERE Id = @Id",
                 inputTodo.Title.AsDbParameter(), inputTodo.IsComplete.AsDbParameter()) == 1
@@ -86,9 +87,9 @@ public static class TodoApi
         .WithName("DeleteTodo");
 
         group.MapDelete("/delete-all", async (SqliteConnection db) => TypedResults.Ok(await db.ExecuteAsync("DELETE FROM Todos")))
-            .WithName("DeleteAll")
-            .WithOpenApi(op => new OpenApiOperation(op).WithSecurityRequirementReference(JwtBearerDefaults.AuthenticationScheme))
-            .RequireAuthorization(policy => policy.RequireAuthenticatedUser().RequireRole("admin"));
+            .WithName("DeleteAll");
+            //.WithOpenApi(op => new OpenApiOperation(op).WithSecurityRequirementReference(JwtBearerDefaults.AuthenticationScheme))
+            //.RequireAuthorization(policy => policy.RequireAuthenticatedUser().RequireRole("admin"));
 
         return group;
     }
@@ -110,4 +111,12 @@ sealed class Todo : IDataReaderMapper<Todo>
             IsComplete = dataReader.GetBoolean(nameof(IsComplete))
         };
     }
+}
+
+[JsonSerializable(typeof(Todo))]
+[JsonSerializable(typeof(IAsyncEnumerable<Todo>))]
+[JsonSerializable(typeof(IEnumerable<Todo>))]
+internal partial class AppJsonSerializerContext : JsonSerializerContext
+{
+
 }

@@ -24,7 +24,8 @@ builder.Services.AddSingleton(_ =>
 
 //builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen(OpenApiExtensions.ConfigureSwaggerGen);
-builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.AddContext<AppJsonSerializerContext>());
+
+builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default));
 
 var app = builder.Build();
 

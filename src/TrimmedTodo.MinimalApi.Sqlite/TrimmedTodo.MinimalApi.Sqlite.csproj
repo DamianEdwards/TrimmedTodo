@@ -6,9 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishIISAssets>false</PublishIISAssets>
     <PublishRelease>true</PublishRelease>
-    <PublishSingleFile>true</PublishSingleFile>
+    <!--<PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
-    <PublishReadyToRun>false</PublishReadyToRun>
+    <PublishReadyToRun>false</PublishReadyToRun>-->
+    <PublishAot>true</PublishAot>
     <UserSecretsId>7deba5fe-f06c-4a7d-9816-cdeccfc4e4a8</UserSecretsId>
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
   </PropertyGroup>
@@ -16,33 +17,15 @@
   <ItemGroup>
     <Compile Include="..\HelloWorld.Web\WebApplicationExtensions.cs" Link="WebApplicationExtensions.cs" />
     <Compile Include="..\TrimmedTodo.Console.Sqlite\DataExtensions.cs" Link="DataExtensions.cs" />
-    <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\JwtConfigHelper.cs" Link="JwtConfigHelper.cs" />
-    <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\OpenApiExtensions.cs" Link="OpenApiExtensions.cs" />
+    <!--<Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\JwtConfigHelper.cs" Link="JwtConfigHelper.cs" />
+    <Compile Include="..\TrimmedTodo.MinimalApi.Dapper.Sqlite\OpenApiExtensions.cs" Link="OpenApiExtensions.cs" />-->
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Manually marking these assemblies as trimmable until we update them -->
-    <TrimmableAssembly Include="Microsoft.IdentityModel.Tokens" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.Components" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.Components.Server" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.Mvc.Razor" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.Mvc.RazorPages" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.Mvc.TagHelpers" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.Razor" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.Razor.RazorRuntime" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.SignalR.Core" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.SignalR.Common" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.SignalR.Protocols.Json" />
-    <TrimmableAssembly Include="Microsoft.AspNetCore.Server.IIS" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <!--<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />-->
     <PackageReference Include="Microsoft.Data.Sqlite" />
-    <PackageReference Include="Swashbuckle.AspNetCore" />
-    <PackageReference Include="MiniValidation" />
-    <!--<PackageReference Include="uController.SourceGenerator" />-->
+    <!--<PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="MiniValidation" />-->
   </ItemGroup>
 </Project>

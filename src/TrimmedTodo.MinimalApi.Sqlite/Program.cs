@@ -1,25 +1,27 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+//using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.Sqlite;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication()
-    .AddJwtBearer(JwtConfigHelper.ConfigureJwtBearer(builder));
+//builder.Services.AddAuthentication()
+//    .AddJwtBearer(JwtConfigHelper.ConfigureJwtBearer(builder));
 
-builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization();
 
-builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-    .Validate<IHostEnvironment, ILoggerFactory>(JwtConfigHelper.ValidateJwtOptions,
-        "JWT options are not configured. Run 'dotnet user-jwts create' in project directory to configure JWT.")
-    .ValidateOnStart();
+//builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+//    .Validate<IHostEnvironment, ILoggerFactory>(JwtConfigHelper.ValidateJwtOptions,
+//        "JWT options are not configured. Run 'dotnet user-jwts create' in project directory to configure JWT.")
+//    .ValidateOnStart();
 
 var connectionString = builder.Configuration.GetConnectionString("TodoDb")
     ?? builder.Configuration["CONNECTION_STRING"]
     ?? "Data Source=todos.db;Cache=Shared";
 builder.Services.AddScoped(_ => new SqliteConnection(connectionString));
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(OpenApiExtensions.ConfigureSwaggerGen);
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen(OpenApiExtensions.ConfigureSwaggerGen);
+
+builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default));
 
 var app = builder.Build();
 
@@ -32,8 +34,8 @@ if (!app.Environment.IsDevelopment())
         .ExcludeFromDescription();
 }
 
-app.UseSwagger();
-app.UseSwaggerUI();
+//app.UseSwagger();
+//app.UseSwaggerUI();
 
 app.MapTodoApi();
 
