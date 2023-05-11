@@ -25,6 +25,6 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageVersion Include="coverlet.collector" Version="3.2.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.13.2" />
-    <PackageVersion Include="Npgsql" Version="8.0.0-preview.2" />
+    <PackageVersion Include="Npgsql" Version="8.0.0-preview.3" />
   </ItemGroup>
 </Project>
